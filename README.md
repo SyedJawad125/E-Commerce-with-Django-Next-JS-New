@@ -1,0 +1,1 @@
+Ecommerce Web App, In which admin can CRUD of categories products and manage the employee records of the company in admin site after login and Public can visits site easily and purchased many products. Frontend with Next JS 14 and Backend with Django DRF.
