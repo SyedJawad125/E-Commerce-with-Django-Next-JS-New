@@ -48,7 +48,7 @@ const Publiccategory = () => {
       <br />
       { data && data.data ? <p>Total: {data.data.count}</p> : <p>Total: 0</p>}
       <br/>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-4">
         {records.length > 0 ? (
           records.map((item) => (
             <div

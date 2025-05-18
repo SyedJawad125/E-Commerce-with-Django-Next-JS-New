@@ -40,13 +40,13 @@ const PublicProducts = () => {
     };
 
     return (
-        <div className="container mx-auto my-4 ml-56 w-3/4">
+        <div className="container mx-auto my-4 ml-8 mr-2 w-[calc(100%-6rem)]">
             <h2 className="text-2xl font-bold mb-4">List Of Products</h2>
             <br />
             <br />
             {data && data.data ? <p>Total: {data.data.count}</p> : <p>Total: 0</p>}
             <br/>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-2">
                 {records.length > 0 ? (
                     records.map((item) => (
                         <div
