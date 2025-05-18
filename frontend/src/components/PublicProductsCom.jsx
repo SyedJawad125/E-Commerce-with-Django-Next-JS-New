@@ -61,11 +61,13 @@ const PublicProducts = () => {
                                 alt={item.name}
                             />
                             <div className="card-body5 p-4">
-                                <h5 className="card-title text-lg font-semibold">{item.name}</h5>
-                                <p className="card-text text-sm mt-2">Description: {item.description}</p>
-                                <p className="card-text text-sm mt-2 font-bold">Price: {item.price}</p>
-                                <p className="card-text text-sm mt-2">Category: {item.category_name}</p>
+                                <h5 className="card-title text-sm font-medium -m-6 p-3">{item.name}</h5>
+                                <p className="card-text text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
+                                <p className="card-text text-xs mt-1 font-semibold -m-6 p-3">Price: {item.price}</p>
+                                {/* <p className="card-text text-xs mt-1 -m-6 p-3">Category: {item.category_name}</p> */}
                             </div>
+
+
                         </div>
                     ))
                 ) : (
