@@ -28,7 +28,7 @@ const PublicProductLeftSideSlider = () => {
         <div className="h-full bg-gray-800 p-2 shadow-md">
             <div className="h-full overflow-hidden relative">
                 {/* First set of categories (visible initially) */}
-                <div className="animate-scrollUp space-y-2 ml-2 mr-2">
+                <div className="animate-scrollUp space-y-2 ml-4 mr-2">
                     {categories.map((category) => (
                         <div
                             key={category.id}
@@ -72,7 +72,7 @@ const PublicProductLeftSideSlider = () => {
                     }
                 }
                 .animate-scrollUp {
-                    animation: scrollUp ${categories.length * 3}s linear infinite;
+                    animation: scrollUp ${categories.length * 4}s linear infinite;
                     width: 100%;
                 }
             `}</style>
