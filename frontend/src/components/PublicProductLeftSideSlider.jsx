@@ -25,58 +25,58 @@ const PublicProductLeftSideSlider = () => {
     const totalHeight = categories.length * itemHeight;
 
     return (
-        <div className="h-full bg-gray-800 p-2 shadow-md">
-            <div className="h-full overflow-hidden relative">
-                {/* First set of categories (visible initially) */}
-                <div className="animate-scrollUp space-y-2 ml-4 mr-2">
-                    {categories.map((category) => (
-                        <div
-                            key={category.id}
-                            className="bg-white rounded shadow cursor-pointer p-1 hover:bg-gray-200 transition"
-                        >
-                            <img
-                                src={`http://localhost:8000/${category.image}`}
-                                alt={category.name}
-                                className="w-full h-24 object-cover rounded"
-                            />
-                            <p className="text-center text-sm mt-2 font-medium">{category.name}</p>
-                        </div>
-                    ))}
+        <div className="h-full bg-gray-900 p-5 shadow-lg">
+        <div className="h-full overflow-hidden relative space-y-2">
+            {/* First set of categories (visible initially) */}
+            <div className="animate-scrollUp space-y-4">
+            {categories.map((category) => (
+                <div
+                key={category.id}
+                className="bg-white shadow-md cursor-pointer p-2 hover:bg-gray-100 transition duration-300"
+                >
+                <img
+                    src={`http://localhost:8000/${category.image}`}
+                    alt={category.name}
+                    className="w-full h-28 object-cover"
+                />
+                {/* <p className="text-center text-sm mt-2 font-semibold text-gray-800">{category.name}</p> */}
                 </div>
-                
-                {/* Second set of categories (duplicate for seamless looping) */}
-                <div className="animate-scrollUp space-y-2 ml-4 absolute top-full">
-                    {categories.map((category) => (
-                        <div
-                            key={`${category.id}-duplicate`}
-                            className="bg-white rounded shadow cursor-pointer p-1 hover:bg-gray-800 transition"
-                        >
-                            <img
-                                src={`http://localhost:8000/${category.image}`}
-                                alt={category.name}
-                                className="w-full h-28 object-cover rounded"
-                            />
-                            <p className="text-center text-sm mt-2 font-medium">{category.name}</p>
-                        </div>
-                    ))}
-                </div>
+            ))}
             </div>
 
-            <style jsx>{`
-                @keyframes scrollUp {
-                    0% {
-                        transform: translateY(0);
-                    }
-                    100% {
-                        transform: translateY(-${totalHeight}px);
-                    }
-                }
-                .animate-scrollUp {
-                    animation: scrollUp ${categories.length * 4}s linear infinite;
-                    width: 100%;
-                }
-            `}</style>
+            {/* Second set of categories (duplicate for seamless looping) */}
+            <div className="animate-scrollUp space-y-4 absolute top-full w-full">
+            {categories.map((category) => (
+                <div
+                key={`${category.id}-duplicate`}
+                className="bg-white shadow-md cursor-pointer p-2 hover:bg-gray-100 transition duration-300"
+                >
+                <img
+                    src={`http://localhost:8000/${category.image}`}
+                    alt={category.name}
+                    className="w-full h-28 object-cover"
+                />
+                {/* <p className="text-center text-sm mt-2 font-semibold text-gray-800">{category.name}</p> */}
+                </div>
+            ))}
+            </div>
         </div>
+
+        <style jsx>{`
+            @keyframes scrollUp {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-${totalHeight}px);
+            }
+            }
+            .animate-scrollUp {
+            animation: scrollUp ${categories.length * 4}s linear infinite;
+            }
+        `}</style>
+    </div>
+
     );
 };
 
