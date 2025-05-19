@@ -3,41 +3,36 @@ import React, { useEffect, useState } from 'react';
 import AxiosInstance from '@/components/AxiosInstance';
 import { useRouter } from 'next/navigation';
 
+const PublicCategoryLeftSideSlider = () => {
+  const router = useRouter();
+  const [products, setProducts] = useState([]);
 
-const PublicProductLeftSideSlider = () => {
-    const router = useRouter();
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await AxiosInstance.get('/ecommerce/publicproduct');
+        if (res?.data?.data?.data) {
+          setProducts(res.data.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
 
-    const [products, setProducts] = useState([]);
+    fetchProducts();
+  }, []);
 
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const res = await AxiosInstance.get('/ecommerce/publicproduct');
-                if (res && res.data) {
-                    setProducts(res.data.data.data);
-                }
-            } catch (error) {
-                console.log('Error fetching products', error);
-            }
-        };
-
-        fetchProducts();
-    }, []);
-
-    // Calculate total height needed for seamless looping
-    const itemHeight = 112; // Approximate height of each item (h-24 + padding)
-    const totalHeight = products.length * itemHeight;
-
-    const handleProductClick = (ProductId) => {
-    // Correctly pass categoryId in query parameters
+  const handleProductClick = (ProductId) => {
     router.push(`/productdetailpage?ProductId=${ProductId}`);
-
   };
-    return (
-        <div className="h-full bg-gray-900 p-5 shadow-lg">
-      <div className="h-full overflow-hidden relative space-y-2">
 
-        {/* First set of categories */}
+  const itemHeight = 112; // Height of each item
+  const animationHeight = products.length * itemHeight;
+
+  return (
+    <div className="h-full bg-gray-900 p-5 shadow-lg">
+      <div className="h-full overflow-hidden relative space-y-2">
+        {/* First loop */}
         <div className="animate-scrollUp space-y-4">
           {products.map((product) => (
             <div
@@ -54,9 +49,9 @@ const PublicProductLeftSideSlider = () => {
           ))}
         </div>
 
-        {/* Second set of categories */}
+        {/* Duplicate for seamless loop */}
         <div className="animate-scrollUp space-y-4 absolute top-full w-full">
-          {categories.map((product) => (
+          {products.map((product) => (
             <div
               key={`${product.id}-duplicate`}
               onClick={() => handleProductClick(product.id)}
@@ -78,7 +73,7 @@ const PublicProductLeftSideSlider = () => {
             transform: translateY(0);
           }
           100% {
-            transform: translateY(-${products.length * 100}px); // Adjust to your card height
+            transform: translateY(-${animationHeight}px);
           }
         }
         .animate-scrollUp {
@@ -86,8 +81,7 @@ const PublicProductLeftSideSlider = () => {
         }
       `}</style>
     </div>
-
-    );
+  );
 };
 
-export default PublicProductLeftSideSlider;
+export default PublicCategoryLeftSideSlider;

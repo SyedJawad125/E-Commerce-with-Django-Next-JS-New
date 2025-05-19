@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import AxiosInstance from '@/components/AxiosInstance';
 import { useRouter } from 'next/navigation';
 
-
+// This left Side Slider in Public Product Page. Which goes to Categories.
 const PublicProductLeftSideSlider = () => {
     const router = useRouter();
 

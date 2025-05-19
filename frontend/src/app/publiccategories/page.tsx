@@ -3,7 +3,7 @@ import NavbarCom from "@/components/NavbarCom";
 import TopNavbarCom from "@/components/TopNavbarCom";
 import FooterCom from "@/components/FooterCom";
 import PublicCategoriesCom from "@/components/PublicCategoriesCom";
-import PublicProductLeftSideSlider from "@/components/PublicProductLeftSideSlider";
+import PublicCategoryLeftSideSlider from "@/components/PublicCategoryLeftSideSlider";
 
 
 
@@ -18,7 +18,7 @@ const page = () => {
       <div className="flex flex-1">
         {/* Left slider taking 15% width */}
         <div className="w-[12%]">
-          <PublicProductLeftSideSlider />
+          <PublicCategoryLeftSideSlider />
         </div>
 
         {/* Right product section taking remaining 85% */}
