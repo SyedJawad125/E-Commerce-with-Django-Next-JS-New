@@ -38,7 +38,7 @@ const PublicCategoryLeftSideSlider = () => {
             <div
               key={product.id}
               onClick={() => handleProductClick(product.id)}
-              className="bg-white shadow-md cursor-pointer p-2 hover:bg-gray-100 transition duration-300"
+              className="bg-white shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
             >
               <img
                 src={`http://localhost:8000/${product.image}`}

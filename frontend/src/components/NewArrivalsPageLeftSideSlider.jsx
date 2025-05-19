@@ -35,42 +35,42 @@ const NewArrivalsPageLeftSideSlider = () => {
   };
     return (
         <div className="h-full bg-gray-900 p-5 shadow-lg">
-      <div className="h-full overflow-hidden relative space-y-2">
+          <div className="h-full overflow-hidden relative space-y-2">
 
-        {/* First set of categories */}
-        <div className="animate-scrollUp space-y-4">
-          {categories.map((category) => (
-            <div
-              key={category.id}
-              onClick={() => handleCategoryClick(category.id)}
-              className="bg-white shadow-md cursor-pointer p-2 hover:bg-gray-100 transition duration-300"
-            >
-              <img
-                src={`http://localhost:8000/${category.image}`}
-                alt={category.name}
-                className="w-full h-28 object-cover"
-              />
+            {/* First set of categories */}
+            <div className="animate-scrollUp space-y-4">
+              {categories.map((category) => (
+                <div
+                  key={category.id}
+                  onClick={() => handleCategoryClick(category.id)}
+                  className="bg-white shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
+                >
+                  <img
+                    src={`http://localhost:8000/${category.image}`}
+                    alt={category.name}
+                    className="w-full h-28 object-cover"
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Second set of categories */}
-        <div className="animate-scrollUp space-y-4 absolute top-full w-full">
-          {categories.map((category) => (
-            <div
-              key={`${category.id}-duplicate`}
-              onClick={() => handleCategoryClick(category.id)}
-              className="bg-white shadow-md cursor-pointer p-2 hover:bg-gray-100 transition duration-300"
-            >
-              <img
-                src={`http://localhost:8000/${category.image}`}
-                alt={category.name}
-                className="w-full h-28 object-cover"
-              />
+            {/* Second set of categories */}
+            <div className="animate-scrollUp space-y-4 absolute top-full w-full">
+              {categories.map((category) => (
+                <div
+                  key={`${category.id}-duplicate`}
+                  onClick={() => handleCategoryClick(category.id)}
+                  className="bg-white shadow-md cursor-pointer p-2 hover:bg-gray-100 transition duration-300"
+                >
+                  <img
+                    src={`http://localhost:8000/${category.image}`}
+                    alt={category.name}
+                    className="w-full h-28 object-cover"
+                  />
+                </div>
+              ))}
             </div>
-          ))}
         </div>
-      </div>
 
       <style jsx>{`
         @keyframes scrollUp {

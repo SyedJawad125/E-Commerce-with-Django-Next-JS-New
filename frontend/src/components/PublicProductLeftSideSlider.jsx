@@ -38,12 +38,12 @@ const PublicProductLeftSideSlider = () => {
       <div className="h-full overflow-hidden relative space-y-2">
 
         {/* First set of categories */}
-        <div className="animate-scrollUp space-y-4">
+        <div className="animate-scrollUp space-y-2">
           {categories.map((category) => (
             <div
               key={category.id}
               onClick={() => handleCategoryClick(category.id)}
-              className="bg-white shadow-md cursor-pointer p-2 hover:bg-gray-100 transition duration-300"
+              className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
             >
               <img
                 src={`http://localhost:8000/${category.image}`}
