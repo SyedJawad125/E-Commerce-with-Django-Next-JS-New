@@ -7,30 +7,30 @@ import { useRouter } from 'next/navigation';
 const PublicProductLeftSideSlider = () => {
     const router = useRouter();
 
-    const [categories, setCategories] = useState([]);
+    const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        const fetchCategories = async () => {
+        const fetchProducts = async () => {
             try {
-                const res = await AxiosInstance.get('/ecommerce/publiccategory');
+                const res = await AxiosInstance.get('/ecommerce/publicproduct');
                 if (res && res.data) {
-                    setCategories(res.data.data.data);
+                    setProducts(res.data.data.data);
                 }
             } catch (error) {
-                console.log('Error fetching categories', error);
+                console.log('Error fetching products', error);
             }
         };
 
-        fetchCategories();
+        fetchProducts();
     }, []);
 
     // Calculate total height needed for seamless looping
     const itemHeight = 112; // Approximate height of each item (h-24 + padding)
-    const totalHeight = categories.length * itemHeight;
+    const totalHeight = products.length * itemHeight;
 
-    const handleCategoryClick = (categoryId) => {
+    const handleProductClick = (ProductId) => {
     // Correctly pass categoryId in query parameters
-    router.push(`/categorywiseproductpage?categoryId=${categoryId}`);
+    router.push(`/productdetailpage?ProductId=${ProductId}`);
 
   };
     return (
@@ -39,15 +39,15 @@ const PublicProductLeftSideSlider = () => {
 
         {/* First set of categories */}
         <div className="animate-scrollUp space-y-4">
-          {categories.map((category) => (
+          {products.map((product) => (
             <div
-              key={category.id}
-              onClick={() => handleCategoryClick(category.id)}
+              key={product.id}
+              onClick={() => handleProductClick(product.id)}
               className="bg-white shadow-md cursor-pointer p-2 hover:bg-gray-100 transition duration-300"
             >
               <img
-                src={`http://localhost:8000/${category.image}`}
-                alt={category.name}
+                src={`http://localhost:8000/${product.image}`}
+                alt={product.name}
                 className="w-full h-28 object-cover"
               />
             </div>
@@ -56,15 +56,15 @@ const PublicProductLeftSideSlider = () => {
 
         {/* Second set of categories */}
         <div className="animate-scrollUp space-y-4 absolute top-full w-full">
-          {categories.map((category) => (
+          {categories.map((product) => (
             <div
-              key={`${category.id}-duplicate`}
-              onClick={() => handleCategoryClick(category.id)}
+              key={`${product.id}-duplicate`}
+              onClick={() => handleProductClick(product.id)}
               className="bg-white shadow-md cursor-pointer p-2 hover:bg-gray-100 transition duration-300"
             >
               <img
-                src={`http://localhost:8000/${category.image}`}
-                alt={category.name}
+                src={`http://localhost:8000/${product.image}`}
+                alt={product.name}
                 className="w-full h-28 object-cover"
               />
             </div>
@@ -78,11 +78,11 @@ const PublicProductLeftSideSlider = () => {
             transform: translateY(0);
           }
           100% {
-            transform: translateY(-${categories.length * 100}px); // Adjust to your card height
+            transform: translateY(-${products.length * 100}px); // Adjust to your card height
           }
         }
         .animate-scrollUp {
-          animation: scrollUp ${categories.length * 4}s linear infinite;
+          animation: scrollUp ${products.length * 4}s linear infinite;
         }
       `}</style>
     </div>
