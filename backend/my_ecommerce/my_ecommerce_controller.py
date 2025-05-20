@@ -15,34 +15,95 @@ from datetime import date, timedelta
 # from e_commerce.settings import EMAIL_HOST_USER
 # from django.core.mail import send_mail
 
-
-
+from django.core.files.storage import default_storage
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.core.files.uploadedfile import UploadedFile
+import uuid
+import json
 class ProductController:
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
+    parser_classes = [MultiPartParser, FormParser]  # Ensure file upload support
 
- 
     def create(self, request):
+        def get_unique_filename(filename):
+            import uuid
+            ext = filename.split('.')[-1]
+            return f"{uuid.uuid4().hex}.{ext}"
+
         try:
-            request.POST._mutable = True
-            request.data["created_by"] = request.user.guid
-            request.POST._mutable = False
+            # Debug request data
+            print("Request content type:", request.content_type)
+            print("Files in request:", request.FILES)
+            print("Data in request:", request.data)
 
-            # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
-            validated_data = ProductSerializer(data=request.data)
-            if validated_data.is_valid():
-                response = validated_data.save()
-                response_data = ProductSerializer(response).data
-                return Response({'data': response_data}, 200)
+            data = request.data.copy()
+            data["created_by"] = str(request.user.guid)
+
+            # Handle single image - NEW FIXED VERSION
+            if 'image' in request.FILES:
+                img_file = request.FILES['image']
+                print("Image file received:", img_file.name, img_file.size)  # Debug
+                unique_name = get_unique_filename(img_file.name)
+                data['image'] = default_storage.save(f'product_images/{unique_name}', img_file)
+            elif 'image' in data and data['image'] == 'undefined':
+                data['image'] = None
             else:
-                error_message = get_first_error_message(validated_data.errors, "UNSUCCESSFUL")
-                return Response({'data': error_message}, 400)
-            # else:
-            #     return Response({'data': "Permission Denaied"}, 400)
-        except Exception as e:
-            return Response({'error': str(e)}, 500)
+                data['image'] = None  # Explicitly set to None if not provided
 
-    # mydata = Member.objects.filter(firstname__endswith='s').values()
+            # Handle multiple images (working correctly now)
+            if 'images' in request.FILES:
+                image_list = []
+                for img in request.FILES.getlist('images'):
+                    unique_name = get_unique_filename(img.name)
+                    path = default_storage.save(f'product_images/{unique_name}', img)
+                    image_list.append(path)
+                data['images'] = json.dumps(image_list)
+            else:
+                data['images'] = json.dumps([])
+
+            serializer = self.serializer_class(data=data)
+            if serializer.is_valid():
+                product = serializer.save()
+                return Response({
+                    'status_code': 200,
+                    'message': 'SUCCESSFUL',
+                    'data': self.serializer_class(product).data
+                }, status=200)
+                
+            return Response({
+                'status_code': 400,
+                'message': 'VALIDATION_ERROR',
+                'data': serializer.errors
+            }, status=400)
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return Response({
+                'status_code': 500,
+                'message': 'SERVER_ERROR',
+                'error': str(e)
+            }, status=500)
+     # def create(self, request):
+    #     try:
+    #         request.POST._mutable = True
+    #         request.data["created_by"] = request.user.guid
+    #         request.POST._mutable = False
+
+    #         # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
+    #         validated_data = ProductSerializer(data=request.data)
+    #         if validated_data.is_valid():
+    #             response = validated_data.save()
+    #             response_data = ProductSerializer(response).data
+    #             return Response({'data': response_data}, 200)
+    #         else:
+    #             error_message = get_first_error_message(validated_data.errors, "UNSUCCESSFUL")
+    #             return Response({'data': error_message}, 400)
+    #         # else:
+    #         #     return Response({'data': "Permission Denaied"}, 400)
+    #     except Exception as e:
+    #         return Response({'error': str(e)}, 500)
     def get_product(self, request):
         try:
 
