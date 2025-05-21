@@ -6,6 +6,9 @@ import TopNavbarCom from "@/components/TopNavbarCom";
 import FooterCom from "@/components/FooterCom";
 import BannerSliderHomeCom from "@/components/BannerSliderHomeCom";
 import LeftSideSliderCom from "@/components/LeftSideSliderCom";
+import NewArrivalsCom from "@/components/NewArrivalsCom";
+import PublicCategoriesCom from "@/components/PublicCategoriesCom";
+import PublicProductsCom from "@/components/PublicProductsCom";
 import ContentpageHome from "@/components/ContentpageHome";
 import AdModal from "@/components/AdModal";
 
@@ -18,7 +21,11 @@ export default function Home() {
     <NavbarCom />
     <BannerSliderHomeCom />
     {/* <LeftSideSliderCom /> */}
-    <ContentpageHome/>
+    <NewArrivalsCom />
+    <PublicCategoriesCom />
+    <PublicProductsCom />
+
+    {/* <ContentpageHome/> */}
     <FooterCom />
   </>
   );

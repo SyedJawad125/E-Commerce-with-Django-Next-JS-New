@@ -43,7 +43,7 @@ const PublicProducts = () => {
 
     return (
         <div className="container mx-auto my-4 ml-8 mr-2 w-[calc(100%-6rem)]">
-        <h2 className="text-2xl font-bold mb-4">List Of Products</h2>
+        <h2 className="text-2xl font-bold mb-4">New Arrival</h2>
         <br />
         <br />
         {data && data.data ? <p>Total: {data.data.count}</p> : <p>Total: 0</p>}
