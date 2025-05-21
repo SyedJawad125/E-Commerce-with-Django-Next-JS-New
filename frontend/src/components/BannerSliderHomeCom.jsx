@@ -94,31 +94,10 @@ import ad3 from '../../public/images/banner1.jpg';
 
 const HomePage = () => {
   const categories = [
-    "Claws",
-    "Cup",
-    "Bicycle",
-    "Laptop",
-    "Glasses",
-    "Makeup",
-    "Suits",
-    "Claws",
-    "Cup",
-    "Bicycle",
-    "Laptop",
-    "Glasses",
-    "Makeup",
-    "Suits",
-    "Claws",
-    "Cup",
-    "Bicycle",
-    "Laptop",
-    "Glasses",
-    "Makeup",
-    "Suits", 
-    "Laptop",
-    "Glasses",
-    "Makeup",
-    "Suits"
+    "Claws", "Cup", "Bicycle", "Laptop", "Glasses", "Makeup", "Suits",
+    "Claws", "Cup", "Bicycle", "Laptop", "Glasses", "Makeup", "Suits",
+    "Claws", "Cup", "Bicycle", "Laptop", "Glasses", "Makeup", "Suits",
+    "Laptop", "Glasses", "Makeup", "Suits", 
   ];
 
   // Split categories into 3 columns
@@ -127,125 +106,126 @@ const HomePage = () => {
   const column3 = categories.slice(17);
 
   return (
-    <div className="container mx-auto px-4 py-4">
-      {/* Main Content Section */}
-      <div className="flex flex-col md:flex-row gap-6 mb-0">
-        {/* Categories Section - Left Side */}
-        <div className="w-full md:w-1/4 bg-gray-200 p-6 rounded-lg shadow">
-          <h2 className="text-xl font-bold mb-4 text-gray-900">Category</h2>
-          <div className="grid grid-cols-3 gap-4">
-            {/* Column 1 */}
-            <ul className="space-y-3">
-              {column1.map((category, index) => (
-                <li key={index} className="hover:text-blue-600 text-gray-900 cursor-pointer transition-colors">
-                  {category}
-                </li>
-              ))}
-            </ul>
-            
-            {/* Column 2 */}
-            <ul className="space-y-3">
-              {column2.map((category, index) => (
-                <li key={index+3} className="hover:text-blue-600 text-gray-900 cursor-pointer transition-colors">
-                  {category}
-                </li>
-              ))}
-            </ul>
-            
-            {/* Column 3 */}
-            <ul className="space-y-3">
-              {column3.map((category, index) => (
-                <li key={index+5} className="hover:text-blue-600 text-gray-900 cursor-pointer transition-colors">
-                  {category}
-                </li>
-              ))}
-            </ul>
+    <div className="mx-8"> {/* Added left and right margins here */}
+      <div className="container mx-auto px-4 py-4">
+        {/* Main Content Section */}
+        <div className="flex flex-col md:flex-row gap-6 mb-0">
+          {/* Categories Section - Left Side */}
+          <div className="w-full md:w-1/4 bg-gray-200 p-6 rounded-lg shadow h-[50vh] overflow-y-auto"> {/* Added fixed height and scroll */}
+            <h2 className="text-xl font-bold mb-4 text-gray-900 sticky top-0 bg-gray-200">Category</h2>
+            <div className="grid grid-cols-3 gap-4">
+              {/* Column 1 */}
+              <ul className="space-y-3">
+                {column1.map((category, index) => (
+                  <li key={index} className="hover:text-blue-600 text-gray-900 cursor-pointer transition-colors">
+                    {category}
+                  </li>
+                ))}
+              </ul>
+              
+              {/* Column 2 */}
+              <ul className="space-y-3">
+                {column2.map((category, index) => (
+                  <li key={index+3} className="hover:text-blue-600 text-gray-900 cursor-pointer transition-colors">
+                    {category}
+                  </li>
+                ))}
+              </ul>
+              
+              {/* Column 3 */}
+              <ul className="space-y-3">
+                {column3.map((category, index) => (
+                  <li key={index+5} className="hover:text-blue-600 text-gray-900 cursor-pointer transition-colors">
+                    {category}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Image Slider - Right Side */}
+          <div className="w-full md:w-3/4 h-[50vh]"> {/* Added fixed height */}
+            <Carousel 
+              showThumbs={false} 
+              autoPlay 
+              infiniteLoop 
+              interval={3000}
+              showStatus={false}
+              className="rounded-lg overflow-hidden shadow h-full"
+            >
+              <div className="h-full">
+                <Image
+                  src={banner1}
+                  alt="image1"
+                  className="w-full h-full object-cover"
+                  priority
+                />
+              </div>
+              <div className="h-full">
+                <Image
+                  src={banner2}
+                  alt="image2"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="h-full">
+                <Image
+                  src={banner3}
+                  alt="image3"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="h-full">
+                <Image
+                  src={banner4}
+                  alt="image4"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="h-full">
+                <Image
+                  src={banner5}
+                  alt="image5"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </Carousel>
           </div>
         </div>
 
-        {/* Image Slider - Right Side */}
-        <div className="w-full md:w-3/4">
+        {/* Ads Slider Section */}
+        <div className="mb-8 mt-6"> {/* Added margin-top */}
           <Carousel 
             showThumbs={false} 
             autoPlay 
             infiniteLoop 
-            interval={3000}
+            interval={2500}
             showStatus={false}
             className="rounded-lg overflow-hidden shadow"
           >
             <div>
               <Image
-                src={banner1}
-                alt="image1"
-                className="w-full h-[50vh] object-cover"
-                priority
+                src={ad1}
+                alt="ad1"
+                className="w-full h-[30vh] object-cover"
               />
             </div>
             <div>
               <Image
-                src={banner2}
-                alt="image2"
-                className="w-full h-[50vh] object-cover"
+                src={ad2}
+                alt="ad2"
+                className="w-full h-[30vh] object-cover"
               />
             </div>
             <div>
               <Image
-                src={banner3}
-                alt="image3"
-                className="w-full h-[50vh] object-cover"
-              />
-            </div>
-            <div>
-              <Image
-                src={banner4}
-                alt="image4"
-                className="w-full h-[50vh] object-cover"
-              />
-            </div>
-            <div>
-              <Image
-                src={banner5}
-                alt="image5"
-                className="w-full h-[50vh] object-cover"
+                src={ad3}
+                alt="ad3"
+                className="w-full h-[30vh] object-cover"
               />
             </div>
           </Carousel>
         </div>
-      </div>
-
-      {/* Ads Slider Section */}
-      <div className="mb-8">
-        <h2 className="text-xl font-bold mb-4"></h2>
-        <Carousel 
-          showThumbs={false} 
-          autoPlay 
-          infiniteLoop 
-          interval={2500}
-          showStatus={false}
-          className="rounded-lg overflow-hidden shadow"
-        >
-          <div>
-            <Image
-              src={ad1}
-              alt="ad1"
-              className="w-full h-[30vh] object-cover"
-            />
-          </div>
-          <div>
-            <Image
-              src={ad2}
-              alt="ad2"
-              className="w-full h-[30vh] object-cover"
-            />
-          </div>
-          <div>
-            <Image
-              src={ad3}
-              alt="ad3"
-              className="w-full h-[30vh] object-cover"
-            />
-          </div>
-        </Carousel>
       </div>
     </div>
   );
