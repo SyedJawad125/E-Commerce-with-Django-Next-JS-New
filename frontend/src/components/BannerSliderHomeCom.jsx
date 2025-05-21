@@ -89,8 +89,10 @@ import banner3 from '../../public/images/banner3.jpg';
 import banner4 from '../../public/images/banner4.jpg';
 import banner5 from '../../public/images/banner5.jpg';
 import ad1 from '../../public/images/banner1.jpg';
-import ad2 from '../../public/images/banner1.jpg';
-import ad3 from '../../public/images/banner1.jpg';
+import ad2 from '../../public/images/banner2.jpg';
+import ad3 from '../../public/images/banner3.jpg';
+import ad4 from '../../public/images/banner4.jpg';
+import ad5 from '../../public/images/banner5.jpg';
 
 const HomePage = () => {
   const categories = [
@@ -112,7 +114,7 @@ const HomePage = () => {
         <div className="flex flex-col md:flex-row gap-6 mb-0">
           {/* Categories Section - Left Side */}
           <div className="w-full md:w-1/4 bg-gray-200 p-6 rounded-lg shadow h-[50vh] overflow-y-auto"> {/* Added fixed height and scroll */}
-            <h2 className="text-xl font-bold mb-4 text-gray-900 sticky top-0 bg-gray-200">Category</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-900 sticky top-0 bg-gray-200">Categories</h2>
             <div className="grid grid-cols-3 gap-4">
               {/* Column 1 */}
               <ul className="space-y-3">
@@ -207,21 +209,35 @@ const HomePage = () => {
               <Image
                 src={ad1}
                 alt="ad1"
-                className="w-full h-[30vh] object-cover"
+                className="w-full h-[24vh] object-cover"
               />
             </div>
             <div>
               <Image
                 src={ad2}
                 alt="ad2"
-                className="w-full h-[30vh] object-cover"
+                className="w-full h-[24vh] object-cover"
               />
             </div>
             <div>
               <Image
                 src={ad3}
                 alt="ad3"
-                className="w-full h-[30vh] object-cover"
+                className="w-full h-[24vh] object-cover"
+              />
+            </div>
+            <div>
+              <Image
+                src={ad4}
+                alt="ad3"
+                className="w-full h-[24vh] object-cover"
+              />
+            </div>
+            <div>
+              <Image
+                src={ad5}
+                alt="ad3"
+                className="w-full h-[24vh] object-cover"
               />
             </div>
           </Carousel>
