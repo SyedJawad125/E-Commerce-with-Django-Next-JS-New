@@ -88,7 +88,7 @@ import banner2 from '../../public/images/banner2.jpg';
 import banner3 from '../../public/images/banner3.jpg';
 import banner4 from '../../public/images/banner4.jpg';
 import banner5 from '../../public/images/banner5.jpg';
-import ad1 from '../../public/images/banner1.jpg'; // Replace with your actual ad images
+import ad1 from '../../public/images/banner1.jpg';
 import ad2 from '../../public/images/banner1.jpg';
 import ad3 from '../../public/images/banner1.jpg';
 
@@ -101,10 +101,30 @@ const HomePage = () => {
     "Glasses",
     "Makeup",
     "Suits",
-    
-   
-   
+    "Claws",
+    "Cup",
+    "Bicycle",
+    "Laptop",
+    "Glasses",
+    "Makeup",
+    "Suits",
+    "Claws",
+    "Cup",
+    "Bicycle",
+    "Laptop",
+    "Glasses",
+    "Makeup",
+    "Suits", 
+    "Laptop",
+    "Glasses",
+    "Makeup",
+    "Suits"
   ];
+
+  // Split categories into 3 columns
+  const column1 = categories.slice(0, 8);
+  const column2 = categories.slice(8, 16);
+  const column3 = categories.slice(17);
 
   return (
     <div className="container mx-auto px-4 py-4">
@@ -113,13 +133,34 @@ const HomePage = () => {
         {/* Categories Section - Left Side */}
         <div className="w-full md:w-1/4 bg-gray-200 p-6 rounded-lg shadow">
           <h2 className="text-xl font-bold mb-4 text-gray-900">Category</h2>
-          <ul className="space-y-3">
-            {categories.map((category, index) => (
-              <li key={index} className="hover:text-blue-600 text-gray-900 cursor-pointer transition-colors">
-                {category}
-              </li>
-            ))}
-          </ul>
+          <div className="grid grid-cols-3 gap-4">
+            {/* Column 1 */}
+            <ul className="space-y-3">
+              {column1.map((category, index) => (
+                <li key={index} className="hover:text-blue-600 text-gray-900 cursor-pointer transition-colors">
+                  {category}
+                </li>
+              ))}
+            </ul>
+            
+            {/* Column 2 */}
+            <ul className="space-y-3">
+              {column2.map((category, index) => (
+                <li key={index+3} className="hover:text-blue-600 text-gray-900 cursor-pointer transition-colors">
+                  {category}
+                </li>
+              ))}
+            </ul>
+            
+            {/* Column 3 */}
+            <ul className="space-y-3">
+              {column3.map((category, index) => (
+                <li key={index+5} className="hover:text-blue-600 text-gray-900 cursor-pointer transition-colors">
+                  {category}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {/* Image Slider - Right Side */}
