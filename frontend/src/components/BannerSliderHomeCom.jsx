@@ -108,12 +108,12 @@ const HomePage = () => {
   const column3 = categories.slice(17);
 
   return (
-    <div className="mx-8"> {/* Added left and right margins here */}
+    <div className="mx-10"> {/* Added left and right margins here */}
       <div className="container mx-auto px-4 py-4">
         {/* Main Content Section */}
         <div className="flex flex-col md:flex-row gap-6 mb-0">
           {/* Categories Section - Left Side */}
-          <div className="w-full md:w-1/4 bg-gray-200 p-6 rounded-lg shadow h-[50vh] overflow-y-auto"> {/* Added fixed height and scroll */}
+          <div className="w-full md:w-1/4 bg-gray-200 p-6 shadow h-[50vh] overflow-y-auto"> {/* Added fixed height and scroll */}
             <h2 className="text-xl font-bold mb-4 text-gray-900 sticky top-0 ">Categories</h2>
             <div className="grid grid-cols-3 gap-4">
               {/* Column 1 */}
@@ -153,7 +153,7 @@ const HomePage = () => {
               infiniteLoop 
               interval={3000}
               showStatus={false}
-              className="rounded-lg overflow-hidden shadow h-full"
+              className="overflow-hidden shadow h-full"
             >
               <div className="h-full">
                 <Image
@@ -203,7 +203,7 @@ const HomePage = () => {
             infiniteLoop 
             interval={2500}
             showStatus={false}
-            className="rounded-lg overflow-hidden shadow"
+            className="overflow-hidden shadow"
           >
             <div>
               <Image
