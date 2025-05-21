@@ -52,47 +52,24 @@ class PublicproductSerializer(ModelSerializer):
         }
 
     def validate_image(self, value):
-        """Accept both file objects and path strings"""
-        if value is None:
+        """Modified to handle edge cases"""
+        if value is None or value == 'undefined':
             return None
-        if isinstance(value, str):  # Already processed path
-            return value
-        if hasattr(value, 'file'):  # File object
-            return value
-        raise serializers.ValidationError("Invalid image format")
-
-    def validate_images(self, value):
-        """Accept both JSON string and list"""
-        if value is None:
-            return []
-        if isinstance(value, str):
-            try:
-                return json.loads(value)
-            except json.JSONDecodeError:
-                return [value]  # Single path as string
-        if isinstance(value, list):
-            return value
-        raise serializers.ValidationError("Images must be a valid JSON array or file list")
-
-    def to_internal_value(self, data):
-        """Convert incoming data to internal format"""
-        ret = super().to_internal_value(data)
-        
-        # Handle image field conversion
-        if 'image' in ret and isinstance(ret['image'], str):
-            ret['image'] = ret['image']
             
-        # Handle images field conversion
-        if 'images' in ret:
-            if isinstance(ret['images'], str):
-                try:
-                    ret['images'] = json.loads(ret['images'])
-                except json.JSONDecodeError:
-                    ret['images'] = [ret['images']] if ret['images'] else []
-            elif not isinstance(ret['images'], list):
-                ret['images'] = []
+        # Handle case where Django might have already processed it
+        if hasattr(value, 'file'):
+            return value
+            
+        # Handle case where it might come as a path string
+        if isinstance(value, str):
+            if value.startswith('product_images/'):
+                return value
+            if '.' in value:  # Has file extension
+                return value
                 
-        return ret
+        raise serializers.ValidationError(
+            "Invalid image format. Must be a file upload or valid path string"
+        )
 
 
     def to_representation(self, instance):
@@ -113,48 +90,24 @@ class SliderproductSerializer(ModelSerializer):
         }
 
     def validate_image(self, value):
-        """Accept both file objects and path strings"""
-        if value is None:
+        """Modified to handle edge cases"""
+        if value is None or value == 'undefined':
             return None
-        if isinstance(value, str):  # Already processed path
-            return value
-        if hasattr(value, 'file'):  # File object
-            return value
-        raise serializers.ValidationError("Invalid image format")
-
-    def validate_images(self, value):
-        """Accept both JSON string and list"""
-        if value is None:
-            return []
-        if isinstance(value, str):
-            try:
-                return json.loads(value)
-            except json.JSONDecodeError:
-                return [value]  # Single path as string
-        if isinstance(value, list):
-            return value
-        raise serializers.ValidationError("Images must be a valid JSON array or file list")
-
-    def to_internal_value(self, data):
-        """Convert incoming data to internal format"""
-        ret = super().to_internal_value(data)
-        
-        # Handle image field conversion
-        if 'image' in ret and isinstance(ret['image'], str):
-            ret['image'] = ret['image']
             
-        # Handle images field conversion
-        if 'images' in ret:
-            if isinstance(ret['images'], str):
-                try:
-                    ret['images'] = json.loads(ret['images'])
-                except json.JSONDecodeError:
-                    ret['images'] = [ret['images']] if ret['images'] else []
-            elif not isinstance(ret['images'], list):
-                ret['images'] = []
+        # Handle case where Django might have already processed it
+        if hasattr(value, 'file'):
+            return value
+            
+        # Handle case where it might come as a path string
+        if isinstance(value, str):
+            if value.startswith('product_images/'):
+                return value
+            if '.' in value:  # Has file extension
+                return value
                 
-        return ret
-
+        raise serializers.ValidationError(
+            "Invalid image format. Must be a file upload or valid path string"
+        )
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
