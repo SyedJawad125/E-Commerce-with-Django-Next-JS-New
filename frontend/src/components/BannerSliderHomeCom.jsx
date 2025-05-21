@@ -96,9 +96,9 @@ import ad5 from '../../public/images/banner5.jpg';
 
 const HomePage = () => {
   const categories = [
-    "Claws", "Cup", "Bicycle", "Laptop", "Glasses", "Makeup", "Suits",
-    "Claws", "Cup", "Bicycle", "Laptop", "Glasses", "Makeup", "Suits",
-    "Claws", "Cup", "Bicycle", "Laptop", "Glasses", "Makeup", "Suits",
+    "Mobile", "Cup", "Bicycle", "Laptop", "Glasses", "Makeup", "Suits",
+    "Mobile", "Cup", "Bicycle", "Laptop", "Glasses", "Makeup", "Suits",
+    "Mobile", "Cup", "Bicycle", "Laptop", "Glasses", "Makeup", "Suits",
     "Laptop", "Glasses", "Makeup", "Suits", 
   ];
 
@@ -114,7 +114,7 @@ const HomePage = () => {
         <div className="flex flex-col md:flex-row gap-6 mb-0">
           {/* Categories Section - Left Side */}
           <div className="w-full md:w-1/4 bg-gray-200 p-6 rounded-lg shadow h-[50vh] overflow-y-auto"> {/* Added fixed height and scroll */}
-            <h2 className="text-xl font-bold mb-4 text-gray-900 sticky top-0 bg-gray-200">Categories</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-900 sticky top-0 ">Categories</h2>
             <div className="grid grid-cols-3 gap-4">
               {/* Column 1 */}
               <ul className="space-y-3">
