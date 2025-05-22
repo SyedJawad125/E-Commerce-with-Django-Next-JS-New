@@ -5,7 +5,6 @@ import NavbarCom from "@/components/NavbarCom";
 import TopNavbarCom from "@/components/TopNavbarCom";
 import FooterCom from "@/components/FooterCom";
 import BannerSliderHomeCom from "@/components/BannerSliderHomeCom";
-import LeftSideSliderCom from "@/components/LeftSideSliderCom";
 import PublicSalesProductsOnHome from "@/components/PublicSalesProductsOnHome";
 import NewArrivalOnHome from "@/components/NewArrivalOnHome";
 import PublicCategoriesOnHome from "@/components/PublicCategoriesOnHome";
@@ -21,13 +20,10 @@ export default function Home() {
     <TopNavbarCom />
     <NavbarCom />
     <BannerSliderHomeCom />
-    {/* <LeftSideSliderCom /> */}
     <PublicSalesProductsOnHome />
     <NewArrivalOnHome />
     <PublicCategoriesOnHome />
     <PublicProductsOnHome />
-
-    {/* <ContentpageHome/> */}
     <FooterCom />
   </>
   );
