@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CategoryViews, ContactViews, EmployeeViews, ProductViews, OrderViews, PublicproductViews, PubliccategoryViews, \
+from .views import CategoryViews, ContactViews, EmployeeViews, ProductViews, OrderViews, PublicSalesProductViews, PublicproductViews, PubliccategoryViews, SalesProductViews, \
     SlidercategoryViews, SliderproductViews,EmployeeViews
 
 urlpatterns = [
@@ -11,6 +11,13 @@ urlpatterns = [
     path('publicproduct', PublicproductViews.as_view({"get": "get_publicproduct"})),
 
     path('sliderproduct', SliderproductViews.as_view({"get": "get_sliderproduct"})),
+
+    path('salesproduct', SalesProductViews.as_view({"get": "get_salesproduct",
+                                          "post": "post_salesproduct",
+                                          "patch": "update_salesproduct",
+                                          "delete": "delete_salesproduct"})),
+
+    path('publicsalesproduct', PublicSalesProductViews.as_view({"get": "get_publicsalesproduct"})),
 
     path('category', CategoryViews.as_view({"get": "get_category",
                                                 "post": "post_category",

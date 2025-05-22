@@ -6,15 +6,17 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 #from .blog_serializer import BlogSerializer
 from utils.base_authentication import JWTAuthentication
-from .my_ecommerce_controller import CategoryController, ContactController, EmployeeController, ProductController, OrderController, \
-    PublicproductController, PubliccategoryController, SlidercategoryController, SliderproductController
+from .my_ecommerce_controller import CategoryController, ContactController, EmployeeController, ProductController, OrderController, PublicSalesproductController, \
+    PublicproductController, PubliccategoryController, SalesProductController, SlidercategoryController, SliderproductController
 
 # from rest_framework.permissions import IsAdminUser
 # Create your views here.
 
 
 product_controller = ProductController()
+salesproduct_controller = SalesProductController()
 publicproduct_controller = PublicproductController()
+publicsalesproduct_controller = PublicSalesproductController()
 sliderproduct_controller = SliderproductController()
 category_controller = CategoryController()
 publiccategory_controller = PubliccategoryController()
@@ -55,6 +57,34 @@ class SliderproductViews(ModelViewSet):
     # authentication_classes = [JWTAuthentication]
     def get_sliderproduct(self, request):
         return sliderproduct_controller.get_sliderproduct(request)
+
+
+class SalesProductViews(ModelViewSet):
+
+    authentication_classes = [JWTAuthentication]
+    
+    # @permission_required(['create_saleproduct'])
+    def post_salesproduct(self, request):
+        return salesproduct_controller.create(request)
+    
+    # @permission_required(['read_saleproduct'])
+    def get_salesproduct(self, request):
+        return salesproduct_controller.get_salesproduct(request)
+    
+    # @permission_required(['update_saleproduct'])
+    def update_salesproduct(self, request):
+        return salesproduct_controller.update_salesproduct(request)
+    
+    # @permission_required(['delete_saleproduct'])
+    def delete_salesproduct(self, request):
+        return salesproduct_controller.delete_salesproduct(request)
+
+
+class PublicSalesProductViews(ModelViewSet):
+    # authentication_classes = [JWTAuthentication]
+    def get_publicsalesproduct(self, request):
+        return publicsalesproduct_controller.get_publicsalesproduct(request)
+    
 
 
 class CategoryViews(ModelViewSet):

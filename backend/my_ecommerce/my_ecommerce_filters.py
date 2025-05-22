@@ -52,8 +52,30 @@ class SliderproductFilter(FilterSet):
         model = Product
         exclude = ['image', 'images']
         
+class SalesProductFilter(FilterSet):
+    id = CharFilter(field_name='id')
+    date_from = DateFilter(field_name='created_at', lookup_expr='gte')
+    date_to = DateFilter(field_name='created_at', lookup_expr='lte')
+    name = CharFilter(field_name='name', lookup_expr='icontains')
+    price = CharFilter(field_name='price')
+    discount_price = CharFilter(field_name='discount_price')
+    description = CharFilter(field_name='description', lookup_expr='icontains')
 
+    class Meta:
+        model = SalesProduct
+        exclude = ['image']
+class PublicSalesProductFilter(FilterSet):
+    id = CharFilter(field_name='id')
+    date_from = DateFilter(field_name='created_at', lookup_expr='gte')
+    date_to = DateFilter(field_name='created_at', lookup_expr='lte')
+    name = CharFilter(field_name='name', lookup_expr='icontains')
+    price = CharFilter(field_name='price')
+    discount_price = CharFilter(field_name='discount_price')
+    description = CharFilter(field_name='description', lookup_expr='icontains')
 
+    class Meta:
+        model = SalesProduct
+        exclude = ['image']
 
 class CategoryFilter(FilterSet):
     id = CharFilter(field_name='id')

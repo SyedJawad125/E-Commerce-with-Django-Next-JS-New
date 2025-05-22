@@ -1,6 +1,6 @@
 import json
 from rest_framework import serializers
-from .models import Contact, Employee, Product, Order, OrderDetail, Category
+from .models import Contact, Employee, Product, Order, OrderDetail, Category, SalesProduct
 from rest_framework.serializers import ModelSerializer
 from user_auth.user_serializer import UserListingSerializer
 
@@ -117,6 +117,32 @@ class SliderproductSerializer(ModelSerializer):
         data['category_name'] = instance.prod_has_category.name if instance.prod_has_category else None
         return data
 
+
+
+class SalesProductSerializer(ModelSerializer):
+    class Meta:
+        model = SalesProduct
+        fields='__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
+        data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
+        data['category_name'] = instance.salesprod_has_category.name if instance.salesprod_has_category else None
+        return data
+    
+class PublicSalesProductSerializer(ModelSerializer):
+    class Meta:
+        model = SalesProduct
+        fields='__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
+        data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
+        data['category_name'] = instance.salesprod_has_category.name if instance.salesprod_has_category else None
+        return data
+    
 class CategorySerializer(ModelSerializer):
     class Meta:
         model = Category
