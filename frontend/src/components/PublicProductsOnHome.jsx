@@ -40,7 +40,7 @@ const PublicProductsOnHome = () => {
     };
 
     return (
-    <div className="mx-8"> {/* Added left and right margins here */}
+    <div className="mx-8 mb-28"> {/* Added left and right margins here */}
 
         <div className="container mx-auto my-4 ml-8 mr-2 w-[calc(100%-6rem)] mt-16">
             <h2 className="text-1xl mb-2">Products</h2>
