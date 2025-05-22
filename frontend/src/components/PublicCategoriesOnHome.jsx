@@ -42,7 +42,9 @@ const PublicCategoriesOnHome = () => {
   };
 
   return ( 
-    <div className="container mx-auto my-4 ml-8 mr-2 w-[calc(100%-6rem)] mt-10">
+    <div className="mx-8"> {/* Added left and right margins here */}
+    
+    <div className="container mx-auto my-4 ml-8 mr-2 w-[calc(100%-6rem)] mt-16">
         <h2 className="text-1xl mb-2">Categories</h2>
       <br />
       <br />
@@ -75,6 +77,8 @@ const PublicCategoriesOnHome = () => {
       </div>
       <ToastContainer />
     </div>
+    </div>
+
   );
 };
 
