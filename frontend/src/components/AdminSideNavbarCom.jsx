@@ -146,6 +146,11 @@ const Sidebar = () => {
                     AdminProducts
                   </div>
                 </Link>
+                <Link href="/salesproductpage">
+                  <div className={`block py-2.5 px-4 rounded ${isActive('/salesproductpage') ? 'bg-gray-700' : 'hover:text-red-500 px-3 py-2'}`}>
+                    AdminSalesProducts
+                  </div>
+                </Link>
                 <Link href="/categories">
                   <div className={`block py-2.5 px-4 rounded ${isActive('/categories') ? 'bg-gray-700' : 'hover:text-red-500 px-3 py-2'}`}>
                     AdminCategories

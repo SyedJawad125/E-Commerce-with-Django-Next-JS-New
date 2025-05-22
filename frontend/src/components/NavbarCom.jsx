@@ -29,7 +29,8 @@ const NavbarCom = () => {
           {[
             { name: 'Home', path: '/' },
             { name: 'About', path: '/about' },
-            { name: 'Services', path: '/services' },
+            // { name: 'Services', path: '/services' },
+            { name: 'Sales', path: '/publicsalesproductpage' },
             { name: 'New In', path: '/newarrivalspage' },
             { name: 'Products', path: '/publicproducts' },
             { name: 'Categories', path: '/publiccategories' },
