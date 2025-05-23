@@ -216,7 +216,7 @@ const ProductDetailsCom = () => {
             Back to Products
           </button>
       </div>
-      <div className="max-w-5xl mx-auto -mt-6">
+      <div className="max-w-5xl mx-auto -mt-10">
         
 
         {products.length ? (

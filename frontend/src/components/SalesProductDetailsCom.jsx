@@ -89,7 +89,7 @@ const SalesProductDetailsCom = () => {
             Back to Sale
           </button>
       </div>
-      <div className="max-w-5xl mx-auto -mt-6">
+      <div className="max-w-5xl mx-auto -mt-10">
         
 
         {products.length ? (
@@ -138,26 +138,26 @@ const SalesProductDetailsCom = () => {
                 <p className="text-gray-700 mb-6">{products[0].description}</p>
 
                 <div className="mb-8">
-          <h3 className="text-sm font-medium text-gray-900">Pricing</h3>
-          <div className="mt-2">
-            {products[0].discount_price ? (
-              <>
-                <p className="text-sm text-gray-600">
-                  <span className="font-semibold">Original Price:</span> 
-                  <span className="line-through ml-1">${products[0].price}</span>
-                </p>
-                <p className="text-sm text-gray-600">
-                  <span className="font-semibold">Discount Price:</span> 
-                  <span className="text-red-600 font-bold ml-1">${products[0].discount_price}</span>
-                </p>
-              </>
-            ) : (
-              <p className="text-sm text-gray-600">
-                <span className="font-semibold">Price:</span> ${products[0].price}
-              </p>
-            )}
-          </div>
-          </div>
+                  {/* <h3 className="text-sm font-medium text-gray-900">Pricing</h3> */}
+                  <div className="mt-2">
+                    {products[0].discount_percent > 0 ? (
+                      <>
+                        <p className="text-sm text-gray-600">
+                          <span className="font-semibold">Old Price:</span> 
+                          <span className="line-through ml-1">${products[0].original_price}</span>
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          <span className="font-semibold">Price:</span> 
+                          <span className="text-red-600 ml-1">${products[0].final_price}</span>
+                        </p>
+                      </>
+                    ) : (
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold">Price:</span> ${products[0].final_price}
+                      </p>
+                    )}
+                  </div>
+                </div>
 
                 <div className="mb-8">
                   <h3 className="text-sm font-medium text-gray-900">Details</h3>

@@ -40,7 +40,7 @@ class SalesProduct(models.Model):
     )
     discount_percent = models.DecimalField(
         max_digits=5, 
-        decimal_places=2, 
+        decimal_places=0, 
         default=0,
         help_text="Discount percentage (e.g., 10 for 10%)"
     )
