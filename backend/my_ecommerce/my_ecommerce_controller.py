@@ -20,6 +20,9 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.files.uploadedfile import UploadedFile
 import uuid
 import json
+from rest_framework import status
+
+
 class ProductController:
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
@@ -232,24 +235,39 @@ class SalesProductController:
 
     def create(self, request):
         try:
-            request.POST._mutable = True
+            # Ensure required fields are present
+            if 'original_price' not in request.data:
+                return Response(
+                    {"error": "original_price field is required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            request.data._mutable = True
             request.data["created_by"] = request.user.guid
             request.POST._mutable = False
 
-            # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
-            validated_data = SalesProductSerializer(data=request.data)
-            if validated_data.is_valid():
-                response = validated_data.save()
-                response_data = SalesProductSerializer(response).data
-                return Response({'data': response_data}, 200)
-            else:
-                error_message = get_first_error_message(validated_data.errors, "UNSUCCESSFUL")
-                return Response({'data': error_message}, 400)
-            # else:
-            #     return Response({'data': "Permission Denaied"}, 400)
+            serializer = SalesProductSerializer(data=request.data)
+            if serializer.is_valid():
+                instance = serializer.save()
+                return Response(
+                    {
+                        "success": True,
+                        "data": SalesProductSerializer(instance).data
+                    },
+                    status=status.HTTP_201_CREATED
+                )
+            return Response(
+                {
+                    "error": "Validation failed",
+                    "details": serializer.errors
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
         except Exception as e:
-            return Response({'error': str(e)}, 500)
-
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
     # mydata = Member.objects.filter(firstname__endswith='s').values()
     def get_salesproduct(self, request):
         try:

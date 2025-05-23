@@ -119,10 +119,11 @@ class SliderproductSerializer(ModelSerializer):
 
 
 
-class SalesProductSerializer(ModelSerializer):
+class SalesProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalesProduct
-        fields='__all__'
+        fields = ['id','name', 'description', 'original_price', 'discount_percent','final_price', 'image','created_by','updated_by','salesprod_has_category']
+        read_only_fields = ['final_price', 'id']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -134,8 +135,8 @@ class SalesProductSerializer(ModelSerializer):
 class PublicSalesProductSerializer(ModelSerializer):
     class Meta:
         model = SalesProduct
-        fields='__all__'
-
+        fields = ['id','name', 'description', 'original_price', 'discount_percent','final_price', 'image','created_by','updated_by','salesprod_has_category']
+        read_only_fields = ['final_price', 'id']
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None

@@ -2,6 +2,9 @@ from django.db import models
 from django.forms import ValidationError
 from user_auth.models import User
 
+from django.core.exceptions import ValidationError
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 # Create your models here.
 
 class Category(models.Model):
@@ -30,8 +33,23 @@ class Product(models.Model):
 class SalesProduct(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    discount_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    original_price = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2,
+        help_text="Original price before any discounts"
+    )
+    discount_percent = models.DecimalField(
+        max_digits=5, 
+        decimal_places=2, 
+        default=0,
+        help_text="Discount percentage (e.g., 10 for 10%)"
+    )
+    final_price = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        editable=False,
+        help_text="Final price after discount (auto-calculated)", null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     image = models.FileField(upload_to='saleproduct_images/', blank=True, null=True)
@@ -40,15 +58,47 @@ class SalesProduct(models.Model):
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='saleproduct_updated_by', null=True, blank=True)
     
     class Meta:
-            verbose_name = "Sales Product"
-            verbose_name_plural = "Sales Products"
+        verbose_name = "Sales Product"
+        verbose_name_plural = "Sales Products"
 
     def __str__(self):
         return self.name
 
     def clean(self):
-        if self.discount_price and self.discount_price >= self.price:
-            raise ValidationError("Discount price must be less than regular price")
+        # Validate discount percentage
+        if self.discount_percent < 0 or self.discount_percent > 100:
+            raise ValidationError("Discount percentage must be between 0 and 100")
+        
+        # Calculate final price
+        self.calculate_final_price()
+
+    def calculate_final_price(self):
+        """Calculate and set the final price based on original price and discount"""
+        if self.discount_percent > 0:
+            discount_amount = self.original_price * (self.discount_percent / 100)
+            self.final_price = self.original_price - discount_amount
+        else:
+            self.final_price = self.original_price
+
+    def save(self, *args, **kwargs):
+        # Ensure clean() is called to calculate final_price
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    @property
+    def has_discount(self):
+        """Check if product has any discount"""
+        return self.discount_percent > 0
+
+    @property
+    def discount_amount(self):
+        """Returns the actual discount amount"""
+        return self.original_price - self.final_price if self.has_discount else 0
+
+# Signal to ensure final_price is always calculated
+@receiver(pre_save, sender=SalesProduct)
+def calculate_final_price(sender, instance, **kwargs):
+    instance.calculate_final_price()
     
 class Order(models.Model):
 
