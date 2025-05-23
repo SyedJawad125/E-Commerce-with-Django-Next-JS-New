@@ -120,8 +120,9 @@ const SalesProductsCom = () => {
                   <div className="card-body">
                     <h5 className="card-title text-lg font-bold">Name: {item.name}</h5>
                     <p className="card-text">Description: {item.description}</p>
-                    <p className="card-text">Price: {item.price}</p>
-                    <p className="card-text">Discount Price: {item.discount_price}</p>
+                    <p className="card-text">Old Price: {item.original_price}</p>
+                    <p className="card-text">Discount: {item.discount_percent}</p>
+                    <p className="card-text">Price: {item.final_price}</p>
                     <p className="card-text">Category: {item.category_name}</p>
                     <div className="flex">
                     {permissions.delete_product && (

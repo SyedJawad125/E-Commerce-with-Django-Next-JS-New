@@ -5,7 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AxiosInstance from "@/components/AxiosInstance";
 
-const PublicSalesProductsOnHome = () => {
+const PublicSalesProductsCom = () => {
     const router = useRouter();
     const [records, setRecords] = useState([]);
     const [data, setData] = useState([]);
@@ -40,8 +40,7 @@ const PublicSalesProductsOnHome = () => {
     };
 
     return (
-    <div className="mx-8"> {/* Added left and right margins here */}
-
+        <div className="mx-8 ">
         <div className="container mx-auto my-4 ml-8 mr-2 w-[calc(100%-6rem)] mt-16">
             <h2 className="text-1xl mb-4">SALES</h2>
             <br />
@@ -53,24 +52,37 @@ const PublicSalesProductsOnHome = () => {
                     records.map((item) => (
                         <div
                             key={item.id}
-                            className="card-5 cursor-pointer"
+                            className="card-5 cursor-pointer relative" // Added relative here
                             onClick={() => handleProductClick(item.id)}
                         >
-                            <img
-                                src={`http://localhost:8000/${item.image}`}
-                                className="card-image5 clickable-image w-full h-40 object-cover transform 
-                                transition-transform duration-300 hover:scale-105"
-                                alt={item.name}
-                            />
+                            {/* Discount Badge */}
+                            {item.discount_percent > 0 && (
+                                <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-md z-10">
+                                    {item.discount_percent}% OFF
+                                </div>
+                            )}
+                            
+                            <div className="relative">
+                                <img
+                                    src={`http://localhost:8000/${item.image}`}
+                                    className="card-image5 clickable-image w-full h-40 object-cover transform 
+                                    transition-transform duration-300 hover:scale-105"
+                                    alt={item.name}
+                                />
+                            </div>
+                            
                             <div className="card-body5 p-4">
                                 <h5 className="card-title text-sm font-medium -m-6 p-3">{item.name}</h5>
                                 <p className="card-text text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
-                                <p className="card-text text-xs mt-1 font-semibold -m-6 p-3">Price: {item.price}</p>
-                                <p className="card-text text-xs mt-1 font-semibold -m-6 p-3">Discount Price: {item.discount_price}</p>
-                                {/* <p className="card-text text-xs mt-1 -m-6 p-3">Category: {item.category_name}</p> */}
+                                <div className="flex items-center gap-2 -m-6 p-3">
+                                    <p className="card-text text-xs mt-1 font-semibold">Old Price: 
+                                        <span className="line-through ml-1">${item.original_price}</span>
+                                    </p>
+                                </div>
+                                <p className="card-text text-xs mt-1 font-semibold -m-6 p-3">Price: 
+                                    <span className="text-red-600 ml-1">${item.final_price}</span>
+                                </p>
                             </div>
-
-
                         </div>
                     ))
                 ) : (
@@ -79,9 +91,8 @@ const PublicSalesProductsOnHome = () => {
             </div>
             <ToastContainer />
         </div>
-    </div>
-
+        </div>
     );
 };
 
-export default PublicSalesProductsOnHome;
+export default PublicSalesProductsCom;

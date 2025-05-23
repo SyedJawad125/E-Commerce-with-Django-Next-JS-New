@@ -108,12 +108,14 @@ const SalesProductDetailsCom = () => {
                     <span>No image available</span>
                   </div>
                 )}
-                {/* <div className="absolute bottom-4 right-4 bg-gray-900 bg-opacity-80 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
-                  ${products[0].price}
-                </div> */}
+                {products[0].discount_percent > 0 && (
+                  <div className="absolute top-4 left-4 bg-red-600 text-white text-sm font-bold px-3 py-1 rounded-md z-10">
+                    {products[0].discount_percent}% OFF
+                  </div>
+                )}
                 {products[0].discount_price && (
                   <div className="absolute bottom-4 left-4 bg-red-600 bg-opacity-80 px-3 py-1 rounded-full text-sm font-medium text-white shadow-sm">
-                    Discount: ${products[0].discount_price}
+                    Save ${(products[0].price - products[0].discount_price).toFixed(2)}
                   </div>
                 )}
               </div>
