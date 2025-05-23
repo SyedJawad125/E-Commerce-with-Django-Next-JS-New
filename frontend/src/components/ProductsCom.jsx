@@ -19,7 +19,7 @@ const ProductsCom = () => {
   useEffect(() => {
     const receiveData = async () => {
       try {
-        const res = await AxiosInstance.get('/ecommerce/salesproduct');
+        const res = await AxiosInstance.get('/ecommerce/product');
         if (res && res.data && res.data.data && res.data.data.data) {
           setRecords(res.data.data.data);
           setFilteredRecords(res.data.data.data); // Initialize filteredRecords with all records
@@ -36,7 +36,7 @@ const ProductsCom = () => {
 
   const deleteRecord = async (id) => {
     try {
-      const res = await AxiosInstance.delete(`/ecommerce/salesproduct?id=${id}`);
+      const res = await AxiosInstance.delete(`/ecommerce/product?id=${id}`);
       if (res) {
         setFilteredRecords(filteredRecords.filter(record => record.id !== id));
         toast.success('Product deleted successfully!');
@@ -78,7 +78,7 @@ const ProductsCom = () => {
 
   return (
     <div className="container mx-auto my-4 w-full bg-black ml-5">
-      <h2 className="text-2xl font-bold mb-4">Sales Products</h2>
+      <h2 className="text-2xl font-bold mb-4">PRODUCTS</h2>
 
        {/* Conditionally render the Add Employee button based on user permissions */}
        {permissions.create_product && (

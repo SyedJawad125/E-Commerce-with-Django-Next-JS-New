@@ -79,7 +79,7 @@ const SalesProductsCom = () => {
 
   return (
     <div className="container mx-auto my-4 w-full bg-black ml-5">
-      <h2 className="text-2xl font-bold mb-4">Sales Product</h2>
+      <h2 className="text-2xl font-bold mb-4">SALES</h2>
 
        {/* Conditionally render the Add Employee button based on user permissions */}
        {permissions.create_product && (
