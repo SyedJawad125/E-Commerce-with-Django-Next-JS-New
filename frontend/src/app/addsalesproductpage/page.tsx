@@ -15,8 +15,8 @@ const AddProduct = () => {
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [discount_price, setDiscount_price] = useState('');
+  const [original_price, setOriginal_price] = useState('');
+  const [discount_percent, setDiscount_percent] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [salesprodHasCategory, setsalesprodHasCategory] = useState('');
   const [categoryRecords, setCategoryRecords] = useState<Category[]>([]);
@@ -64,8 +64,8 @@ const AddProduct = () => {
       const formData = new FormData();
       formData.append('name', name);
       formData.append('description', description);
-      formData.append('price', price);
-      formData.append('discount_price', discount_price);
+      formData.append('original_price', original_price);
+      formData.append('discount_percent', discount_percent);
       if (image) formData.append('image', image);
       formData.append('salesprod_has_category', salesprodHasCategory);
 
@@ -76,7 +76,7 @@ const AddProduct = () => {
       });
       if (response) {
         console.log('Response:', response.data);
-        router.push('/salesproduct');
+        router.push('/salesproductpage');
       }    // , { state: { message: 'Product Added!' } }
       
     } catch (error) {
@@ -123,21 +123,21 @@ const AddProduct = () => {
           id="price"
           className="mt-1 block w-2/4 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm 
           focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md text-gray-900"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
+          value={original_price}
+          onChange={(e) => setOriginal_price(e.target.value)}
         />
       </div>
       <div className="mb-4">
         <label htmlFor="price" className="block text-sm font-medium text-gray-1000">
-          Discount Price
+          Discount Percentage
         </label>
         <input
           type="text"
           id="price"
           className="mt-1 block w-2/4 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm 
           focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md text-gray-900"
-          value={discount_price}
-          onChange={(e) => setDiscount_price(e.target.value)}
+          value={discount_percent}
+          onChange={(e) => setDiscount_percent(e.target.value)}
         />
       </div>
       <div className="mb-4">
