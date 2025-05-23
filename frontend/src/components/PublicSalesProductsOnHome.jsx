@@ -36,7 +36,7 @@ const PublicSalesProductsOnHome = () => {
     }, [flag, router.query?.name]);
 
     const handleProductClick = (ProductId) => {
-        router.push(`/productdetailpage?ProductId=${ProductId}`);
+        router.push(`/salesproductdetailspage?ProductId=${ProductId}`);
     };
 
     return (
