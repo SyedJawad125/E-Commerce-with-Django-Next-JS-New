@@ -108,9 +108,14 @@ const SalesProductDetailsCom = () => {
                     <span>No image available</span>
                   </div>
                 )}
-                <div className="absolute bottom-4 right-4 bg-gray-900 bg-opacity-80 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+                {/* <div className="absolute bottom-4 right-4 bg-gray-900 bg-opacity-80 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
                   ${products[0].price}
-                </div>
+                </div> */}
+                {products[0].discount_price && (
+                  <div className="absolute bottom-4 left-4 bg-red-600 bg-opacity-80 px-3 py-1 rounded-full text-sm font-medium text-white shadow-sm">
+                    Discount: ${products[0].discount_price}
+                  </div>
+                )}
               </div>
 
               {/* Product Details */}
@@ -129,6 +134,28 @@ const SalesProductDetailsCom = () => {
                 </div>
 
                 <p className="text-gray-700 mb-6">{products[0].description}</p>
+
+                <div className="mb-8">
+          <h3 className="text-sm font-medium text-gray-900">Pricing</h3>
+          <div className="mt-2">
+            {products[0].discount_price ? (
+              <>
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold">Original Price:</span> 
+                  <span className="line-through ml-1">${products[0].price}</span>
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold">Discount Price:</span> 
+                  <span className="text-red-600 font-bold ml-1">${products[0].discount_price}</span>
+                </p>
+              </>
+            ) : (
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold">Price:</span> ${products[0].price}
+              </p>
+            )}
+          </div>
+          </div>
 
                 <div className="mb-8">
                   <h3 className="text-sm font-medium text-gray-900">Details</h3>
@@ -185,5 +212,3 @@ const SalesProductDetailsCom = () => {
 };
 
 export default SalesProductDetailsCom;
-
-

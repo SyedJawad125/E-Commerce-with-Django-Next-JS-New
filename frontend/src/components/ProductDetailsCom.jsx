@@ -235,9 +235,9 @@ const ProductDetailsCom = () => {
                     <span>No image available</span>
                   </div>
                 )}
-                <div className="absolute bottom-4 right-4 bg-gray-900 bg-opacity-80 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+                {/* <div className="absolute bottom-4 right-4 bg-gray-900 bg-opacity-80 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
                   ${products[0].price}
-                </div>
+                </div> */}
               </div>
 
               {/* Product Details */}
@@ -256,6 +256,15 @@ const ProductDetailsCom = () => {
                 </div>
 
                 <p className="text-gray-700 mb-6">{products[0].description}</p>
+
+                <div className="mb-8">
+                  <h3 className="text-sm font-medium text-gray-900">Pricing</h3>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600">
+                      <span className="font-semibold">Price:</span> ${products[0].price}
+                    </p>
+                  </div>
+                </div>
 
                 <div className="mb-8">
                   <h3 className="text-sm font-medium text-gray-900">Details</h3>
