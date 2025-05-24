@@ -243,8 +243,11 @@ const EmployeeCom = () => {
     }
   };
 
-  const updateRecord = (item) => {
-    router.push(`/updateemployeepage?id=${item.id}`);
+  // const updateRecord = (empid) => {
+  //   router.push(`/updateemployeepage?empid=${empid}`);
+  // };
+  const updateRecord = (empid) => {
+    router.push(`/updateemployeepage?empid=${empid}`);
   };
 
   const DetailRecord = (employeeId) => {
@@ -385,7 +388,7 @@ const EmployeeCom = () => {
                       
                       {permissions.update_employee && (
                         <button
-                          onClick={() => updateRecord(item)}
+                          onClick={() => updateRecord(item.id)}
                           className="p-2 rounded-full bg-gray-700 text-green-400 hover:bg-gray-600 hover:text-green-300 transition-colors"
                           title="Edit"
                         >

@@ -33,15 +33,15 @@ const TopNavbarCom = () => {
     };
 
     return (
-        <div className={`fixed w-full z-50 transition-all duration-500 ${isScrolled ? 'bg-opacity-90 backdrop-blur-sm py-2 shadow-xl' : 'bg-opacity-100 py-3'} bg-gradient-to-r from-gray-900 to-black text-white`}>
-            <div className="container mx-auto px-6 flex justify-between items-center">
+        <div className={`fixed w-full z-50 transition-all duration-500 ${isScrolled ? 'bg-opacity-90 backdrop-blur-sm py-0 shadow-xl' : 'bg-opacity-100 py-1'} bg-gradient-to-r from-gray-900 to-black text-white`}>
+            <div className="container mx-auto px-6 flex justify-between items-center h-8">
                 {/* Left side - Contact info */}
                 <div className="flex items-center space-x-3">
                     <div className="relative group">
                         <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-amber-300 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
                         <div className="relative flex items-center space-x-2 px-4 py-1 rounded-full bg-gray-900 group-hover:bg-gray-800 transition duration-200">
                             <FontAwesomeIcon icon={faPhone} className="h-3 w-3 text-amber-400" />
-                            <span className="text-sm font-light tracking-wider">(+92) 333 1906382</span>
+                            <span className="text-xs font-light tracking-wider">(+92) 333 1906382</span>
                         </div>
                     </div>
                 </div>
@@ -55,26 +55,26 @@ const TopNavbarCom = () => {
                             className={`relative flex items-center space-x-2 group ${isLoggingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></span>
-                            <FontAwesomeIcon icon={faSignOutAlt} className="text-amber-400 group-hover:text-amber-300 transition duration-200" />
-                            <span className="text-sm font-light tracking-wider">LOGOUT</span>
+                            <FontAwesomeIcon icon={faSignOutAlt} className="h-3 w-3 text-amber-400 group-hover:text-amber-300 transition duration-200" />
+                            <span className="text-xs font-light tracking-wider">LOGOUT</span>
                         </button>
                     ) : (
                         <Link href="/Login" className="relative group">
                             <div className="flex items-center space-x-2">
                                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></span>
-                                <FontAwesomeIcon icon={faSignInAlt} className="text-amber-400 group-hover:text-amber-300 transition duration-200" />
-                                <span className="text-sm font-light tracking-wider">LOGIN</span>
+                                <FontAwesomeIcon icon={faSignInAlt} className="h-3 w-3 text-amber-400 group-hover:text-amber-300 transition duration-200" />
+                                <span className="text-xs font-light tracking-wider">LOGIN</span>
                             </div>
                         </Link>
                     )}
                     
-                    <div className="h-5 w-px bg-gray-600"></div>
+                    <div className="h-4 w-px bg-gray-600"></div>
                     
                     <Link href="/signup" className="relative group">
                         <div className="flex items-center space-x-2">
                             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></span>
-                            <FontAwesomeIcon icon={faUserPlus} className="text-amber-400 group-hover:text-amber-300 transition duration-200" />
-                            <span className="text-sm font-light tracking-wider">SIGN UP</span>
+                            <FontAwesomeIcon icon={faUserPlus} className="h-3 w-3 text-amber-400 group-hover:text-amber-300 transition duration-200" />
+                            <span className="text-xs font-light tracking-wider">SIGN UP</span>
                         </div>
                     </Link>
                 </div>
@@ -84,7 +84,6 @@ const TopNavbarCom = () => {
 };
 
 export default TopNavbarCom;
-
 
 
 // 'use client';

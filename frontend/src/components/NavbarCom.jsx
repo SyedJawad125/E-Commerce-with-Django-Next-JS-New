@@ -69,14 +69,14 @@ const NavbarCom = () => {
   return (
     <>
       {/* Top Contact Bar */}
-      <div className={`fixed w-full z-50 transition-all duration-500 transform ${isVisible ? 'translate-y-3' : '-translate-y-full'} bg-gradient-to-r from-gray-900 to-black text-white`}>
-        <div className="container mx-auto px-6 flex justify-between items-center py-0">
+      <div className={`fixed w-full z-40 transition-all duration-500 transform ${isVisible ? 'translate-y-0' : '-translate-y-full'} bg-gradient-to-r from-gray-900 to-black text-white`}>
+        <div className="container mx-auto px-6 flex justify-between items-center h-4">
           <div className="flex items-center space-x-3">
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-amber-300 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
               <div className="relative flex items-center space-x-2 px-4 py-1 rounded-full bg-gray-900 group-hover:bg-gray-800 transition duration-200">
                 <FontAwesomeIcon icon={faPhone} className="h-3 w-3 text-amber-400" />
-                <span className="text-sm font-light tracking-wider">(+92) 333 1906382</span>
+                <span className="text-xs font-light tracking-wider">(+92) 333 1906382</span>
               </div>
             </div>
           </div>
@@ -89,26 +89,26 @@ const NavbarCom = () => {
                 className={`relative flex items-center space-x-2 group ${isLoggingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></span>
-                <FontAwesomeIcon icon={faSignOutAlt} className="text-amber-400 group-hover:text-amber-300 transition duration-200" />
-                <span className="text-sm font-light tracking-wider">LOGOUT</span>
+                <FontAwesomeIcon icon={faSignOutAlt} className="h-3 w-3 text-amber-400 group-hover:text-amber-300 transition duration-200" />
+                <span className="text-xs font-light tracking-wider">LOGOUT</span>
               </button>
             ) : (
               <Link href="/Login" className="relative group">
                 <div className="flex items-center space-x-2">
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></span>
-                  <FontAwesomeIcon icon={faSignInAlt} className="text-amber-400 group-hover:text-amber-300 transition duration-200" />
-                  <span className="text-sm font-light tracking-wider">LOGIN</span>
+                  <FontAwesomeIcon icon={faSignInAlt} className="h-3 w-3 text-amber-400 group-hover:text-amber-300 transition duration-200" />
+                  <span className="text-xs font-light tracking-wider">LOGIN</span>
                 </div>
               </Link>
             )}
             
-            <div className="h-5 w-px bg-gray-600"></div>
+            <div className="h-4 w-px bg-gray-600"></div>
             
             <Link href="/signup" className="relative group">
               <div className="flex items-center space-x-2">
                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></span>
-                <FontAwesomeIcon icon={faUserPlus} className="text-amber-400 group-hover:text-amber-300 transition duration-200" />
-                <span className="text-sm font-light tracking-wider">SIGN UP</span>
+                <FontAwesomeIcon icon={faUserPlus} className="h-3 w-3 text-amber-400 group-hover:text-amber-300 transition duration-200" />
+                <span className="text-xs font-light tracking-wider">SIGN UP</span>
               </div>
             </Link>
           </div>
@@ -117,18 +117,18 @@ const NavbarCom = () => {
 
       {/* Main Navigation Bar */}
       <div className={`fixed w-full z-40 mt-10 transition-all duration-500 transform ${isVisible ? 'translate-y-0' : '-translate-y-full'} bg-white border-b border-gray-100`}>
-        <div className="container mx-auto flex justify-between items-center px-6 py-3">
+        <div className="container mx-auto flex justify-between items-center px-6 py-2 h-10">
           {/* Logo */}
           <div className="text-black">
             <Link href="/">
-              <span className="text-2xl font-light tracking-widest uppercase">
+              <span className="text-xl font-light tracking-widest uppercase">
                 <span className="font-bold">ÉLÉGANCE</span>
               </span>
             </Link>
           </div>
 
           {/* Main Navigation */}
-          <ul className="hidden md:flex space-x-8 items-center">
+          <ul className="hidden md:flex space-x-6 items-center">
             {[
               { name: 'Home', path: '/' },
               { name: 'About', path: '/about' },
@@ -151,7 +151,7 @@ const NavbarCom = () => {
                 <Link href={item.path}>
                   <div className={`
                     px-1 py-1 
-                    text-sm 
+                    text-xs 
                     font-medium 
                     tracking-wide
                     uppercase
@@ -172,16 +172,16 @@ const NavbarCom = () => {
           </ul>
 
           {/* Right Side Icons */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-5">
             <button className="text-gray-600 hover:text-black transition-colors">
-              <FontAwesomeIcon icon={faSearch} className="text-lg" />
+              <FontAwesomeIcon icon={faSearch} className="text-md" />
             </button>
             
             <Link href="/addtocartpage" className="relative">
               <div className="text-gray-600 hover:text-black transition-colors">
-                <FontAwesomeIcon icon={faShoppingCart} className="text-lg" />
+                <FontAwesomeIcon icon={faShoppingCart} className="text-md" />
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                     {cartItemCount}
                   </span>
                 )}
@@ -192,7 +192,7 @@ const NavbarCom = () => {
       </div>
 
       {/* Spacer to prevent content from being hidden under fixed nav */}
-      <div className="h-24"></div>
+      <div className="h-20"></div>
     </>
   );
 };
