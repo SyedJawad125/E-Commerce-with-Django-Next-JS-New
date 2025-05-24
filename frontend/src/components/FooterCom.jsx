@@ -83,269 +83,194 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import logo from '../../public/images/logo5.jpg'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt, faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import { FaFacebookF, FaTwitter, FaInstagram, FaWhatsapp, FaLinkedinIn, FaYoutube, FaPinterestP } from 'react-icons/fa';
+import { faMapMarkerAlt, faPhone, faEnvelope, faGem } from '@fortawesome/free-solid-svg-icons';
+import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaPinterestP, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 
 const Footer = () => {
+    // Define all links in a structured way
+    const footerLinks = {
+        support: [
+            { name: 'FAQ', path: '/faq' },
+            { name: 'Contact Us', path: '/contact' },
+            { name: 'Returns', path: '/returns' },
+            { name: 'Shipping Info', path: '/shipping-info' },
+            { name: 'Size Guide', path: '/size-guide' }
+        ],
+        quickLinks: [
+            { name: 'Home', path: '/' },
+            { name: 'About Us', path: '/about' },
+            { name: 'Shop', path: '/publicproducts' },
+            { name: 'Collections', path: '/publiccategories' },
+            { name: 'Sales', path: '/publicsalesproductpage' }
+        ],
+        services: [
+            { name: 'Gift Cards', path: '/gift-cards' },
+            { name: 'Personal Styling', path: '/personal-styling' },
+            { name: 'VIP Members', path: '/vip-members' },
+            { name: 'Store Locator', path: '/store-locator' },
+            { name: 'Bespoke Services', path: '/bespoke-services' }
+        ],
+        legal: [
+            { name: 'Privacy Policy', path: '/privacy-policy' },
+            { name: 'Terms of Service', path: '/terms-of-service' },
+            { name: 'Cookies', path: '/cookies' }
+        ],
+        social: [
+            { icon: FaFacebookF, url: 'https://facebook.com/yourpage' },
+            { icon: FaInstagram, url: 'https://instagram.com/yourpage' },
+            { icon: FaTwitter, url: 'https://twitter.com/yourpage' },
+            { icon: FaPinterestP, url: 'https://pinterest.com/yourpage' },
+            { icon: FaLinkedinIn, url: 'https://linkedin.com/company/yourpage' },
+            { icon: FaYoutube, url: 'https://youtube.com/yourchannel' },
+            { icon: FaWhatsapp, url: 'https://wa.me/923331906382' }
+        ]
+    };
+
     return (
-        <footer id="footer" className="bg-gradient-to-r from-gray-900 to-gray-800 text-white pt-16 pb-8">
-            <div className="container mx-auto px-4">
+        <footer id="footer" className="bg-black text-white pt-20 pb-12 border-t border-gold-500">
+            <div className="max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
                     {/* Logo Section */}
                     <div className="flex flex-col items-center md:items-start">
-                        <a href="/" className="mb-6 transition-transform hover:scale-105 duration-300">
-                            <Image 
-                                src={logo} 
-                                alt="Logo" 
-                                width={180} 
-                                height={90} 
-                                className="footer-logo object-contain"
-                            />
-                        </a>
-                        <p className="text-gray-400 text-sm mb-6">
-                            Luxury redefined. Discover our exquisite collection of premium products crafted for the discerning customer.
+                        <Link href="/" className="mb-8 transition-transform hover:scale-105 duration-500">
+                            <div className="relative">
+                                <Image 
+                                    src={logo} 
+                                    alt="Luxury Brand Logo" 
+                                    width={200} 
+                                    height={100} 
+                                    className="footer-logo object-contain filter brightness-110"
+                                    priority
+                                />
+                                <div className="absolute inset-0 border border-gold-500 opacity-20 pointer-events-none"></div>
+                            </div>
+                        </Link>
+                        <p className="text-gray-400 text-sm mb-8 leading-relaxed text-center md:text-left">
+                            Elevating everyday experiences through exquisite craftsmanship and timeless design. 
+                            Our collections embody the pinnacle of luxury living.
                         </p>
-                        <div className="flex space-x-5">
-                            <a 
-                                href="https://facebook.com/yourpage" 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="bg-gray-800 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1"
-                                aria-label="Facebook"
-                            >
-                                <FaFacebookF className="text-lg text-white" />
-                            </a>
-                            <a 
-                                href="https://instagram.com/yourpage" 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="bg-gray-800 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1"
-                                aria-label="Instagram"
-                            >
-                                <FaInstagram className="text-lg text-white" />
-                            </a>
-                            <a 
-                                href="https://twitter.com/yourpage" 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="bg-gray-800 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1"
-                                aria-label="Twitter"
-                            >
-                                <FaTwitter className="text-lg text-white" />
-                            </a>
-                            <a 
-                                href="https://pinterest.com/yourpage" 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="bg-gray-800 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1"
-                                aria-label="Pinterest"
-                            >
-                                <FaPinterestP className="text-lg text-white" />
-                            </a>
-                            <a 
-                                href="https://youtube.com/yourchannel" 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="bg-gray-800 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1"
-                                aria-label="YouTube"
-                            >
-                                <FaYoutube className="text-lg text-white" />
-                            </a>
+                        <div className="flex flex-wrap gap-3">
+                            {footerLinks.social.map((social, index) => (
+                                <a 
+                                    key={index}
+                                    href={social.url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="bg-gray-900 hover:bg-gold-600 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1 border border-gray-700 hover:border-gold-500"
+                                    aria-label={social.icon.name}
+                                >
+                                    <social.icon className="text-lg text-gold-400 hover:text-white" />
+                                </a>
+                            ))}
                         </div>
                     </div>
 
                     {/* Support Links */}
                     <div className="flex flex-col">
-                        <h2 className="text-xl font-playfair font-semibold mb-6 pb-2 border-b border-gray-700">SUPPORT</h2>
+                        <h2 className="text-xl font-serif font-medium mb-6 pb-3 border-b border-gold-500/30 flex items-center">
+                            <FontAwesomeIcon icon={faGem} className="text-gold-500 mr-2 text-sm" />
+                            SUPPORT
+                        </h2>
                         <ul className="space-y-3">
-                            <li>
-                                <a 
-                                    href="/faq" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>FAQ</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href="/contact" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>Contact Us</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href="/returns" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>Returns</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href="/shipping" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>Shipping Info</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href="/size-guide" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>Size Guide</span>
-                                </a>
-                            </li>
+                            {footerLinks.support.map((link) => (
+                                <li key={link.name}>
+                                    <Link 
+                                        href={link.path} 
+                                        className="text-gray-400 hover:text-gold-400 transition-colors duration-300 flex items-start group"
+                                    >
+                                        <span className="text-gold-600 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">→</span>
+                                        <span>{link.name}</span>
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
                     {/* Quick Links */}
                     <div className="flex flex-col">
-                        <h2 className="text-xl font-playfair font-semibold mb-6 pb-2 border-b border-gray-700">QUICK LINKS</h2>
+                        <h2 className="text-xl font-serif font-medium mb-6 pb-3 border-b border-gold-500/30 flex items-center">
+                            <FontAwesomeIcon icon={faGem} className="text-gold-500 mr-2 text-sm" />
+                            QUICK LINKS
+                        </h2>
                         <ul className="space-y-3">
-                            <li>
-                                <a 
-                                    href="/" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>Home</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href="/about" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>About Us</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href="/publicproducts" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>Shop</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href="/publiccategories" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>Collections</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href="/publicsalesproductpage" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>Sales</span>
-                                </a>
-                            </li>
+                            {footerLinks.quickLinks.map((link) => (
+                                <li key={link.name}>
+                                    <Link 
+                                        href={link.path} 
+                                        className="text-gray-400 hover:text-gold-400 transition-colors duration-300 flex items-start group"
+                                    >
+                                        <span className="text-gold-600 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">→</span>
+                                        <span>{link.name}</span>
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
                     {/* Services */}
                     <div className="flex flex-col">
-                        <h2 className="text-xl font-playfair font-semibold mb-6 pb-2 border-b border-gray-700">OUR SERVICES</h2>
+                        <h2 className="text-xl font-serif font-medium mb-6 pb-3 border-b border-gold-500/30 flex items-center">
+                            <FontAwesomeIcon icon={faGem} className="text-gold-500 mr-2 text-sm" />
+                            SERVICES
+                        </h2>
                         <ul className="space-y-3">
-                            <li>
-                                <a 
-                                    href="/gift-cards" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>Gift Cards</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href="/personal-styling" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>Personal Styling</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href="/vip-members" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>VIP Members</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href="/store-locator" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>Store Locator</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href="/careers" 
-                                    className="text-gray-400 hover:text-primary-400 transition-colors duration-300 flex items-start"
-                                >
-                                    <span className="mr-2">•</span>
-                                    <span>Careers</span>
-                                </a>
-                            </li>
+                            {footerLinks.services.map((link) => (
+                                <li key={link.name}>
+                                    <Link 
+                                        href={link.path} 
+                                        className="text-gray-400 hover:text-gold-400 transition-colors duration-300 flex items-start group"
+                                    >
+                                        <span className="text-gold-600 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">→</span>
+                                        <span>{link.name}</span>
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
                     {/* Contact Info */}
                     <div className="flex flex-col">
-                        <h2 className="text-xl font-playfair font-semibold mb-6 pb-2 border-b border-gray-700">CONTACT US</h2>
+                        <h2 className="text-xl font-serif font-medium mb-6 pb-3 border-b border-gold-500/30 flex items-center">
+                            <FontAwesomeIcon icon={faGem} className="text-gold-500 mr-2 text-sm" />
+                            CONTACT
+                        </h2>
                         <ul className="space-y-4">
                             <li className="flex items-start">
-                                <FontAwesomeIcon icon={faMapMarkerAlt} className="mt-1 mr-3 text-primary-400" />
+                                <FontAwesomeIcon icon={faMapMarkerAlt} className="mt-1 mr-3 text-gold-500" />
                                 <span className="text-gray-400">DHA 2, Islamabad Pakistan</span>
                             </li>
                             <li className="flex items-center">
-                                <FontAwesomeIcon icon={faPhone} className="mr-3 text-primary-400" />
-                                <a href="tel:+923331906382" className="text-gray-400 hover:text-primary-400 transition-colors duration-300">(+92) 333 1906382</a>
+                                <FontAwesomeIcon icon={faPhone} className="mr-3 text-gold-500" />
+                                <a href="tel:+923331906382" className="text-gray-400 hover:text-gold-400 transition-colors duration-300">(+92) 333 1906382</a>
                             </li>
                             <li className="flex items-center">
-                                <FontAwesomeIcon icon={faPhone} className="mr-3 text-primary-400" />
-                                <a href="tel:+92510000000" className="text-gray-400 hover:text-primary-400 transition-colors duration-300">(+92) 51 0000000</a>
+                                <FontAwesomeIcon icon={faPhone} className="mr-3 text-gold-500" />
+                                <a href="tel:+92510000000" className="text-gray-400 hover:text-gold-400 transition-colors duration-300">(+92) 51 0000000</a>
                             </li>
                             <li className="flex items-center">
-                                <FontAwesomeIcon icon={faEnvelope} className="mr-3 text-primary-400" />
-                                <a href="mailto:nicenick1992@gmail.com" className="text-gray-400 hover:text-primary-400 transition-colors duration-300">nicenick1992@gmail.com</a>
+                                <FontAwesomeIcon icon={faEnvelope} className="mr-3 text-gold-500" />
+                                <a href="mailto:contact@luxurybrand.com" className="text-gray-400 hover:text-gold-400 transition-colors duration-300">contact@luxurybrand.com</a>
                             </li>
                         </ul>
                         
-                        <h3 className="text-lg font-playfair font-medium mt-8 mb-4">NEWSLETTER</h3>
-                        <form action="/subscribe" method="POST" className="flex">
+                        <h3 className="text-lg font-serif font-medium mt-8 mb-4 flex items-center">
+                            <FontAwesomeIcon icon={faGem} className="text-gold-500 mr-2 text-xs" />
+                            NEWSLETTER
+                        </h3>
+                        <form className="flex flex-col">
                             <input 
                                 type="email" 
                                 name="email"
                                 placeholder="Your email address" 
-                                className="bg-gray-700 text-white px-4 py-2 w-full rounded-l focus:outline-none focus:ring-2 focus:ring-primary-400"
+                                className="bg-gray-900 text-white px-4 py-3 w-full rounded focus:outline-none focus:ring-1 focus:ring-gold-500 border border-gray-700 mb-3 placeholder-gray-500"
                                 required
                             />
                             <button 
                                 type="submit"
-                                className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-r transition-colors duration-300"
+                                className="bg-gradient-to-r from-gold-600 to-gold-700 hover:from-gold-700 hover:to-gold-800 text-white px-6 py-3 rounded transition-all duration-300 font-medium tracking-wider uppercase text-sm"
                             >
                                 Subscribe
                             </button>
@@ -354,14 +279,20 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Footer */}
-                <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-                    <p className="text-gray-500 text-sm mb-4 md:mb-0">
-                        &copy; {new Date().getFullYear()} Luxury E-Commerce. All rights reserved.
+                <div className="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
+                    <p className="text-gray-500 text-xs mb-4 md:mb-0 tracking-widest">
+                        &copy; {new Date().getFullYear()} LUXURY BRAND. ALL RIGHTS RESERVED.
                     </p>
-                    <div className="flex space-x-6">
-                        <a href="/privacy-policy" className="text-gray-500 hover:text-primary-400 transition-colors duration-300 text-sm">Privacy Policy</a>
-                        <a href="/terms-of-service" className="text-gray-500 hover:text-primary-400 transition-colors duration-300 text-sm">Terms of Service</a>
-                        <a href="/cookies" className="text-gray-500 hover:text-primary-400 transition-colors duration-300 text-sm">Cookies</a>
+                    <div className="flex flex-wrap gap-6 justify-center">
+                        {footerLinks.legal.map((link) => (
+                            <Link 
+                                key={link.name}
+                                href={link.path} 
+                                className="text-gray-500 hover:text-gold-400 transition-colors duration-300 text-xs tracking-widest uppercase"
+                            >
+                                {link.name}
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>
