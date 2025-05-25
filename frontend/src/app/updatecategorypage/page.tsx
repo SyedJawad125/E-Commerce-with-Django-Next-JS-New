@@ -47,6 +47,7 @@ const UpdateCategory = () => {
     try {
       const formData = new FormData();
       formData.append('id', data.id);
+  
       formData.append('name', name);
       formData.append('description', description);
       if (image) {
