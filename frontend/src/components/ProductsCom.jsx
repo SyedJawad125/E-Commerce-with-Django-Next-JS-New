@@ -255,8 +255,8 @@ const ProductsCom = () => {
     }
   };
 
-  const updateRecord = async (item) => {
-    router.push(`/updateproductpage?id=${item.id}`);
+  const updateRecord = async (productid) => {
+    router.push(`/updateproductpage?productid=${productid}`);
   };
 
   const handleSearch = (e) => {
@@ -394,7 +394,7 @@ const ProductsCom = () => {
                         <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           {permissions.update_product && (
                             <button
-                              onClick={() => updateRecord(item)}
+                              onClick={() => updateRecord(item.id)}
                               className="p-2 bg-amber-600/90 text-white rounded-full hover:bg-amber-700 transition-colors duration-300"
                               title="Edit"
                             >

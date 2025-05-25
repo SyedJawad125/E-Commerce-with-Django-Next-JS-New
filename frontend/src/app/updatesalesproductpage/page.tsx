@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AxiosInstance from "@/components/AxiosInstance";
+import Image from 'next/image';
 
 interface Category {
   id: number;
@@ -9,35 +10,69 @@ interface Category {
   price: number;
 }
 
+interface SalesProduct {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  discount_price: string;
+  salesprod_has_category: string;
+  image?: string;
+}
+
 const UpdateSalesProduct = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const productId = searchParams.get('id');
+  const productId = searchParams.get('saleproductid');
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    price: '',
-    discount_price: '',
+    original_price: '',
+    discount_percent: '',
     salesprodHasCategory: ''
   });
   const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [categoryRecords, setCategoryRecords] = useState<Category[]>([]);
 
+  // Fetch product data and categories
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const res = await AxiosInstance.get('/ecommerce/category');
-        if (res) {
-          setCategoryRecords(res.data.data.data);
+        // Fetch categories
+        const categoriesRes = await AxiosInstance.get('/ecommerce/category');
+        if (categoriesRes) {
+          setCategoryRecords(categoriesRes.data.data.data);
+        }
+
+        // Fetch product data if productId exists
+        if (productId) {
+          const productRes = await AxiosInstance.get(`/ecommerce/salesproduct?id=${productId}`);
+          const productData = productRes?.data?.data?.data[0];
+          if (productData) {
+            setFormData({
+              name: productData.name,
+              description: productData.description,
+              original_price: productData.original_price,
+              discount_percent: productData.discount_percent,
+              salesprodHasCategory: productData.salesprod_has_category
+            });
+
+            if (productData.image) {
+              const baseUrl = 'http://127.0.0.1:8000/';
+              setImagePreview(`${baseUrl}${productData.image}`);
+            }
+          }
         }
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching data:', error);
       }
     };
-    fetchCategories();
-  }, []);
+
+    fetchData();
+  }, [productId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -47,19 +82,42 @@ const UpdateSalesProduct = () => {
     }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+
+    if (file && !file.type.startsWith("image/")) {
+      alert("Please select a valid image file.");
+      return;
+    }
+
+    setImage(file);
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       const formDataToSend = new FormData();
+      formDataToSend.append('id', productId as string);
       formDataToSend.append('name', formData.name);
       formDataToSend.append('description', formData.description);
-      formDataToSend.append('price', formData.price);
-      formDataToSend.append('discount_price', formData.discount_price);
-      if (image) formDataToSend.append('image', image);
+      formDataToSend.append('original_price', formData.original_price);
+      formDataToSend.append('discount_percent', formData.discount_percent);
       formDataToSend.append('salesprod_has_category', formData.salesprodHasCategory);
 
-      const response = await AxiosInstance.patch(`/ecommerce/salesproduct/?id=${productId}`, formDataToSend, {
+      if (image) formDataToSend.append('image', image);
+
+      const response = await AxiosInstance.patch('/ecommerce/salesproduct', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -136,7 +194,7 @@ const UpdateSalesProduct = () => {
                     step="0.01"
                     className="block w-full pl-7 pr-12 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                     placeholder="0.00"
-                    value={formData.price}
+                    value={formData.original_price}
                     onChange={handleChange}
                     required
                   />
@@ -160,7 +218,7 @@ const UpdateSalesProduct = () => {
                     step="0.01"
                     className="block w-full pl-7 pr-12 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                     placeholder="0.00"
-                    value={formData.discount_price}
+                    value={formData.discount_percent}
                     onChange={handleChange}
                   />
                 </div>
@@ -193,24 +251,35 @@ const UpdateSalesProduct = () => {
                 <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
                   Product Image
                 </label>
-                <div className="mt-1 flex items-center">
+                <div className="mt-1 flex items-center gap-4">
                   <label className="cursor-pointer">
                     <span className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                       <svg className="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
-                      Change Image
+                      {image ? 'Change Image' : 'Upload Image'}
                     </span>
                     <input
                       type="file"
                       id="image"
                       className="sr-only"
-                      onChange={(e) => setImage(e.target.files?.[0] || null)}
+                      onChange={handleImageChange}
                       accept="image/*"
                     />
                   </label>
                   {image && (
-                    <span className="ml-4 text-sm text-gray-600">{image.name}</span>
+                    <span className="text-sm text-gray-600">{image.name}</span>
+                  )}
+                  {imagePreview && (
+                    <div className="w-24 h-24 relative">
+                      <Image 
+                        src={imagePreview}
+                        alt="Product Preview"
+                        fill
+                        className="object-cover rounded-lg"
+                        unoptimized={true}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
