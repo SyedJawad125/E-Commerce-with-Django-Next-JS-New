@@ -148,7 +148,7 @@ type Category = {
   image?: File;
 };
 
-const UpdateProduct = () => {
+const UpdateCategory = () => {
   const router = useRouter();
   
   const [formData, setFormData] = useState({
@@ -288,4 +288,4 @@ const UpdateProduct = () => {
   );
 };
 
-export default UpdateProduct;
+export default UpdateCategory;

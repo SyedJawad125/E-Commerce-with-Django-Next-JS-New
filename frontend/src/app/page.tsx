@@ -16,9 +16,9 @@ import AdModal from "@/components/AdModal";
 export default function Home() {
   return (
     <>
-    <AdModal />
-    <TopNavbarCom />
-    <NavbarCom />
+    {/* <AdModal />
+    <TopNavbarCom /> */}
+    {/* <NavbarCom /> */}
     <BannerSliderHomeCom />
     <PublicSalesProductsOnHome />
     <NewArrivalOnHome />
