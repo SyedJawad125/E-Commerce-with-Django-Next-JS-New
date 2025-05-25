@@ -221,9 +221,9 @@ const CategoryCom = () => {
       console.log(error);
     }
   };
-
+  
   const updateRecord = async (item) => {
-    router.push('/updatecategorypage', { state: { data: item } });
+    router.push(`/updatecategorypage?id=${item.id}`);
   };
 
   const handleSearch = (e) => {
