@@ -222,8 +222,8 @@ const CategoryCom = () => {
     }
   };
   
-  const updateRecord = async (item) => {
-    router.push(`/updatecategorypage?id=${item.id}`);
+  const updateRecord = async (categoryid) => {
+    router.push(`/updatecategorypage?categoryid=${categoryid}`);
   };
 
   const handleSearch = (e) => {
@@ -341,7 +341,7 @@ const CategoryCom = () => {
                       <div className="flex space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         {permissions.update_category && (
                           <button
-                            onClick={() => updateRecord(item)}
+                            onClick={() => updateRecord(item.id)}
                             className="px-4 py-2 bg-amber-600 text-white text-xs font-medium uppercase rounded-full hover:bg-amber-700 transition-colors duration-300"
                           >
                             Edit
