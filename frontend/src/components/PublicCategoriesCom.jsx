@@ -43,7 +43,9 @@ const Publiccategory = () => {
 
   return ( 
     <div className="container mx-auto my-4 ml-8 mr-2 w-[calc(100%-6rem)] bg-gray-50">
-        <h2 className="text-2xl font-bold mb-4">COLLECTIONS</h2>
+        {/* <h2 className="text-2xl font-bold mb-4">COLLECTIONS</h2> */}
+        <h2 className="text-3xl font-serif text-gray-900 font-bold mb-8 text-center -mb-6 mt-10">Collections</h2>
+
       <br />
       <br />
       { data && data.data ? <p>Total: {data.data.count}</p> : <p>Total: 0</p>}
@@ -63,8 +65,8 @@ const Publiccategory = () => {
                 alt={item.name}
               />
               <div className="card-body5 p-4">
-                <h5 className="card-title text-sm font-medium -m-6 p-3">{item.name}</h5>
-                <p className="card-text text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
+                <h5 className="card-title text-black text-sm font-medium -m-6 p-3">{item.name}</h5>
+                <p className="card-text text-black text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
                 
               </div>
             </div>

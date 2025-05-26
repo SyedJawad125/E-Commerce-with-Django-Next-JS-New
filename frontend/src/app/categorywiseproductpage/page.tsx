@@ -6,7 +6,7 @@ import FooterCom from "@/components/FooterCom";
 
 const page = () => {
   return (
-    <div>
+    <div className="bg-gray-50">
         <TopNavbarCom/>
         <NavbarCom/>
         <CategoryWiseProductCom/>

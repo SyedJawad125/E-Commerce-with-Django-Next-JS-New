@@ -67,9 +67,9 @@ const NewArrivalOnHome = () => {
                             alt={item.name}
                         />
                         <div className="card-body5 p-4">
-                                <h5 className="card-title text-sm font-medium -m-6 p-3">{item.name}</h5>
-                                <p className="card-text text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
-                                <p className="card-text text-xs mt-1 font-semibold -m-6 p-3">Price: {item.price}</p>
+                                <h5 className="card-title text-black text-sm font-medium -m-6 p-3">{item.name}</h5>
+                                <p className="card-text text-black text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
+                                <p className="card-text text-black text-xs mt-1 font-semibold -m-6 p-3">Price: {item.price}</p>
                                 {/* <p className="card-text text-xs mt-1 -m-6 p-3">Category: {item.category_name}</p> */}
                         </div>
                     </div>

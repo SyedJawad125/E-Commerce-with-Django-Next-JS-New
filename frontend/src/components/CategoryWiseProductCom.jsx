@@ -6,23 +6,23 @@ import AxiosInstance from "@/components/AxiosInstance";
 const CategoryWiseProductCom = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const [products, setProducts] = useState([]);
+  const [categoryName, setCategoryName] = useState('');
 
   useEffect(() => {
-    const categoryId = searchParams.get('categoryId'); // Safely retrieve categoryId from query params
+    const categoryId = searchParams.get('categoryId');
+    const catName = searchParams.get('categoryName');
 
-    console.log('Category ID:', categoryId); // Debugging: Log the categoryId
+    if (catName) {
+      setCategoryName(decodeURIComponent(catName));
+    }
 
     if (categoryId) {
       const fetchProduct = async () => {
         try {
           const res = await AxiosInstance.get(`/ecommerce/publicproduct?category=${categoryId}`);
-          console.log('API Response:', res.data); // Debugging: Log the API response
           if (res && res.data && res.data.data && Array.isArray(res.data.data.data)) {
             setProducts(res.data.data.data);
-          } else {
-            console.error('Unexpected API response structure:', res.data);
           }
         } catch (error) {
           console.error('Error fetching products:', error);
@@ -35,48 +35,92 @@ const CategoryWiseProductCom = () => {
   const handleBackButton = () => {
     router.push('/publiccategories');
   };
+
   const handleProductClick = (ProductId) => {
     router.push(`/productdetailpage?ProductId=${ProductId}`);
-};
+  };
 
   return (
-<div className="container mx-auto mt-4 mb-24 ml-52">
-  <div className="row mb-12">
-    <div className="col-12">
-      <button
-        type="button"
-        className="btn btn-secondary top-right-button"
-        onClick={handleBackButton}
-      >
-        Go Back
-      </button>
-    </div>
-  </div>
-  <h2 className="text-2xl font-bold mb-6">Products</h2>
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 w-3/4">
-    {products.length ? (
-      products.map((product) => (
-        <div key={product.id} className="bg-black shadow-lg rounded-lg p-4" onClick={() => handleProductClick(product.id)}>
-          <div className="card hover:scale-105">
-            <img
-              src={`http://localhost:8000/${product.image}`}
-              className="card-img-top w-full h-64 object-cover "
-              alt={product.name}
-            />
-            <div className="card-body bg-gray-800" >
-              <h5 className="card-title text-lg font-bold text-white">{product.name}</h5>
-              <p className="card-text text-white">{product.description}</p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8 -mt-16">
+      <div className="max-w-7xl mx-auto">
+        {/* Header with Back Button */}
+        <div className="flex justify-between items-center mb-12">
+          <button
+            onClick={handleBackButton}
+            className="flex items-center text-gray-600 hover:text-amber-700 transition-colors duration-300 mt-10"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 mt-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Collections
+          </button>
         </div>
-      ))
-    ) : (
-      <p>No products found for this category.</p>
-    )}
-  </div>
-</div>
 
+        {/* Category Title */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-serif font-light text-gray-900 mb-4 tracking-wide">
+            {categoryName || 'Our Collection'}
+          </h1>
+          <div className="w-24 h-0.5 bg-amber-600 mx-auto"></div>
+        </div>
 
+        {/* Products Grid */}
+        {products.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+            {products.map((product) => (
+              <div 
+                key={product.id} 
+                className="group relative bg-white shadow-md hover:shadow-xl transition-all duration-500 rounded-lg overflow-hidden cursor-pointer"
+                onClick={() => handleProductClick(product.id)}
+              >
+                {/* Product Image */}
+                <div className="relative overflow-hidden aspect-square">
+                  <img
+                    src={`http://localhost:8000/${product.image}`}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    alt={product.name}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+
+                {/* Product Info */}
+                <div className="p-6">
+                  <h3 className="text-xl font-serif font-medium text-gray-900 mb-2 group-hover:text-amber-700 transition-colors">
+                    {product.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    {product.description}
+                  </p>
+                  
+                  {/* Price and Action */}
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-medium text-amber-800">
+                      Rs. {product.price}
+                      {product.price > product.price && (
+                        <span className="ml-2 text-sm text-gray-400 line-through">{product.price}</span>
+                      )}
+                    </span>
+                    <button className="text-gray-400 hover:text-amber-700 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 className="text-xl font-light text-gray-600 mb-2">No products found</h3>
+            <p className="text-gray-500">We couldn't find any products in this collection</p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

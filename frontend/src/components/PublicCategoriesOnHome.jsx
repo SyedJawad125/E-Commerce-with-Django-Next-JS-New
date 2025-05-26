@@ -66,8 +66,8 @@ const PublicCategoriesOnHome = () => {
                 alt={item.name}
               />
               <div className="card-body5 p-4">
-                <h5 className="card-title text-sm font-medium -m-6 p-3">{item.name}</h5>
-                <p className="card-text text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
+                <h5 className="card-title text-black text-sm font-medium -m-6 p-3">{item.name}</h5>
+                <p className="card-text text-black text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
                 
               </div>
             </div>

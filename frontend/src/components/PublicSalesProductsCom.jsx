@@ -40,56 +40,94 @@ const PublicSalesProductsCom = () => {
     };
 
     return (
-        <div className="container mx-auto bg-gray-50 my-4 ml-8 mr-2 w-[calc(100%-6rem)]">
-            <h2 className="text-2xl font-bold mb-4">Sales Product</h2>
-            <br />
-            <br />
-            {data && data.data ? <p>Total: {data.data.count}</p> : <p>Total: 0</p>}
-            <br/>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-2">
-                {records.length > 0 ? (
-                    records.map((item) => (
-                        <div
-                            key={item.id}
-                            className="card-5 cursor-pointer relative" // Added relative here
-                            onClick={() => handleProductClick(item.id)}
-                        >
-                            {/* Discount Badge */}
-                            {item.discount_percent > 0 && (
-                                <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-md z-10">
-                                    {item.discount_percent}% OFF
-                                </div>
-                            )}
-                            
-                            <div className="relative">
-                                <img
-                                    src={`http://localhost:8000/${item.image}`}
-                                    className="card-image5 clickable-image w-full h-40 object-cover transform 
-                                    transition-transform duration-300 hover:scale-105 border border-black"
-                                    alt={item.name}
-                                />
-                            </div>
-                            
-                            <div className="card-body5 p-4">
-                                <h5 className="card-title text-sm font-medium -m-6 p-3">{item.name}</h5>
-                                <p className="card-text text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
-                                <div className="flex items-center gap-2 -m-6 p-3">
-                                    <p className="card-text text-xs mt-1 font-semibold">Old Price: 
-                                        <span className="line-through ml-1">${item.original_price}</span>
-                                    </p>
-                                </div>
-                                <p className="card-text text-xs mt-1 font-semibold -m-6 p-3">Price: 
-                                    <span className="text-red-600 ml-1">${item.final_price}</span>
+        <div className="container mx-auto my-8 px-4 w-[calc(100%-6rem)]">
+    {/* Header Section */}
+    <div className="text-center mb-12">
+        <h2 className="text-4xl font-serif text-gray-900 font-bold mb-16 mt-10 tracking-wider">EXCLUSIVE SALES</h2>
+        {/* <div className="w-24 h-1 bg-gradient-to-r from-amber-500 to-amber-800 mx-auto mb-6"></div>
+        {data && data.data ? (
+            <p className="text-sm text-gray-600 font-light">CURATED SELECTION: {data.data.count} LUXURY ITEMS</p>
+        ) : (
+            <p className="text-sm text-gray-600 font-light">CURATED SELECTION: 0 ITEMS</p>
+        )} */}
+    </div>
+
+    {/* Products Grid */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        {records.length > 0 ? (
+            records.map((item) => (
+                <div
+                    key={item.id}
+                    className="group relative overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-500 rounded-lg cursor-pointer"
+                    onClick={() => handleProductClick(item.id)}
+                >
+                    {/* Discount Ribbon */}
+                    {item.discount_percent > 0 && (
+                        <div className="absolute top-4 right-0 bg-gradient-to-r from-amber-500 to-amber-800 text-white text-xs font-bold px-3 py-1 shadow-md z-10 transform rotate-12 origin-left">
+                            {item.discount_percent}% OFF
+                        </div>
+                    )}
+                    
+                    {/* Image Container */}
+                    <div className="relative overflow-hidden">
+                        <div className="aspect-w-1 aspect-h-1">
+                            <img
+                                src={`http://localhost:8000/${item.image}`}
+                                className="w-full h-64 object-cover transition-all duration-700 group-hover:scale-110"
+                                alt={item.name}
+                            />
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    </div>
+                    
+                    {/* Product Details */}
+                    <div className="p-5">
+                        <h5 className="text-lg font-serif font-medium text-gray-900 mb-2 group-hover:text-amber-700 transition-colors">{item.name}</h5>
+                        <p className="text-xs text-gray-500 font-light mb-4 line-clamp-2">{item.description}</p>
+                        
+                        <div className="flex items-baseline justify-between">
+                            <div>
+                                {item.discount_percent > 0 && (
+                                    <p className="text-xs text-gray-400 line-through">${item.original_price}</p>
+                                )}
+                                <p className="text-lg font-bold text-amber-800">
+                                    ${item.final_price}
+                                    {item.discount_percent > 0 && (
+                                        <span className="text-xs text-green-600 ml-2">You save ${(item.original_price - item.final_price).toFixed(2)}</span>
+                                    )}
                                 </p>
                             </div>
+                            <button className="text-amber-800 hover:text-amber-900 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                </svg>
+                            </button>
                         </div>
-                    ))
-                ) : (
-                    <p>Loading....</p>
-                )}
+                    </div>
+                </div>
+            ))
+        ) : (
+            <div className="col-span-full text-center py-16">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-700 mb-4"></div>
+                <p className="text-gray-600 font-light">LOADING EXCLUSIVE OFFERS...</p>
             </div>
-            <ToastContainer />
-        </div>
+        )}
+    </div>
+
+    <ToastContainer 
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastClassName="bg-white text-gray-800 shadow-xl rounded-lg"
+        progressClassName="bg-gradient-to-r from-amber-500 to-amber-800"
+    />
+</div>
     );
 };
 

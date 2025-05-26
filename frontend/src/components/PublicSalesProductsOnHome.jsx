@@ -75,15 +75,15 @@ const PublicSalesProductsCom = () => {
                             </div>
                             
                             <div className="card-body5 p-4">
-                                <h5 className="card-title text-sm font-medium -m-6 p-3">{item.name}</h5>
-                                <p className="card-text text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
-                                <div className="flex items-center gap-2 -m-6 p-3">
+                                <h5 className="card-title text-black text-sm font-medium -m-6 p-3">{item.name}</h5>
+                                <p className="card-text text-black text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
+                                <div className="flex items-center text-black gap-2 -m-6 p-3">
                                     <p className="card-text text-xs mt-1 font-semibold">Old Price: 
-                                        <span className="line-through ml-1">${item.original_price}</span>
+                                        <span className="line-through ml-1">{item.original_price}</span>
                                     </p>
                                 </div>
-                                <p className="card-text text-xs mt-1 font-semibold -m-6 p-3">Price: 
-                                    <span className="text-red-600 ml-1">${item.final_price}</span>
+                                <p className="card-text text-black text-xs mt-1 font-semibold -m-6 p-3">Price: 
+                                    <span className="text-red-600 ml-1">{item.final_price}</span>
                                 </p>
                             </div>
                         </div>

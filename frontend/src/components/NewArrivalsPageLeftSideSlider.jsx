@@ -34,7 +34,7 @@ const NewArrivalsPageLeftSideSlider = () => {
 
   };
     return (
-        <div className="h-full bg-gray-900 p-5 shadow-lg">
+        <div className="h-full bg-gray-100 p-5 shadow-lg">
           <div className="h-full overflow-hidden relative space-y-2">
 
             {/* First set of categories */}
