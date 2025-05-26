@@ -7,7 +7,7 @@ import img6 from '../../public/images/6.jpg'
 
 const AboutPage = () => {
   return (
-    <div className="container mx-auto p-4 ml-56 w-3/4">
+    <div className="container mx-auto p-4 ml-56 w-3/4 bg-gray-50">
   <div className="aboutservicesection text-center">
     <h1 className="text-4xl font-bold mb-4">About Us</h1>
     <p className="mb-2">Some text about who we are and what we do.</p>

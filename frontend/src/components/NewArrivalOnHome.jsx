@@ -42,7 +42,7 @@ const NewArrivalOnHome = () => {
     };
 
     return (
-    <div className="mx-8"> {/* Added left and right margins here */}
+    <div className="mx-8 bg-gray-50"> {/* Added left and right margins here */}
 
         <div className="container mx-auto my-4 ml-8 mr-2 w-[calc(100%-6rem)] mt-16">
         <h2 className="text-1xl mb-4">NEW ARRIVALS</h2>

@@ -343,7 +343,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-16">
@@ -351,7 +351,7 @@ const Contact = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-4xl md:text-5xl font-serif font-light text-white mb-4"
+            className="text-4xl md:text-5xl font-serif font-light text-black mb-4"
           >
             Get In Touch
           </motion.h1>
@@ -359,7 +359,7 @@ const Contact = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-lg text-gray-300 max-w-2xl mx-auto"
+            className="text-lg text-black max-w-2xl mx-auto"
           >
             Our concierge team is available to assist you with any inquiries. 
             Reach out and we'll respond promptly.
@@ -374,59 +374,59 @@ const Contact = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="space-y-8"
           >
-            <div className="bg-gray-800 bg-opacity-50 rounded-xl p-8 border border-gray-700">
-              <h2 className="text-2xl font-serif font-light text-white mb-6">Contact Information</h2>
+            <div className="bg-gray-100 rounded-xl p-8 border border-gray-300">
+              <h2 className="text-2xl font-serif font-light text-black mb-6">Contact Information</h2>
               
               <div className="space-y-6">
                 <div className="flex items-start">
-                  <div className="bg-black p-3 rounded-full mr-4">
-                    <FaPhoneAlt className="text-gold-500 text-lg" />
+                  <div className="bg-gray-200 p-3 rounded-full mr-4">
+                    <FaPhoneAlt className="text-gray-700 text-lg" />
                   </div>
                   <div>
-                    <h3 className="text-gray-300 text-sm uppercase tracking-wider mb-1">Phone</h3>
-                    <p className="text-white text-lg">(+92) 333 1906382</p>
-                    <p className="text-white text-lg">(+92) 51 0000000</p>
+                    <h3 className="text-gray-700 text-sm uppercase tracking-wider mb-1">Phone</h3>
+                    <p className="text-black text-lg">(+92) 333 1906382</p>
+                    <p className="text-black text-lg">(+92) 51 0000000</p>
                   </div>
                 </div>
 
                 <div className="flex items-start">
-                  <div className="bg-black p-3 rounded-full mr-4">
-                    <FaEnvelope className="text-gold-500 text-lg" />
+                  <div className="bg-gray-200 p-3 rounded-full mr-4">
+                    <FaEnvelope className="text-gray-700 text-lg" />
                   </div>
                   <div>
-                    <h3 className="text-gray-300 text-sm uppercase tracking-wider mb-1">Email</h3>
-                    <p className="text-white text-lg">contact@luxurybrand.com</p>
-                    <p className="text-white text-lg">support@luxurybrand.com</p>
+                    <h3 className="text-gray-700 text-sm uppercase tracking-wider mb-1">Email</h3>
+                    <p className="text-black text-lg">contact@luxurybrand.com</p>
+                    <p className="text-black text-lg">support@luxurybrand.com</p>
                   </div>
                 </div>
 
                 <div className="flex items-start">
-                  <div className="bg-black p-3 rounded-full mr-4">
-                    <FaMapMarkerAlt className="text-gold-500 text-lg" />
+                  <div className="bg-gray-200 p-3 rounded-full mr-4">
+                    <FaMapMarkerAlt className="text-gray-700 text-lg" />
                   </div>
                   <div>
-                    <h3 className="text-gray-300 text-sm uppercase tracking-wider mb-1">Address</h3>
-                    <p className="text-white text-lg">DHA 2, Islamabad</p>
-                    <p className="text-white text-lg">Pakistan</p>
+                    <h3 className="text-gray-700 text-sm uppercase tracking-wider mb-1">Address</h3>
+                    <p className="text-black text-lg">DHA 2, Islamabad</p>
+                    <p className="text-black text-lg">Pakistan</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-800 bg-opacity-50 rounded-xl p-8 border border-gray-700">
-              <h2 className="text-2xl font-serif font-light text-white mb-6">Business Hours</h2>
+            <div className="bg-gray-50 rounded-xl p-8 border border-gray-300">
+              <h2 className="text-2xl font-serif font-light text-black mb-6">Business Hours</h2>
               <div className="space-y-4">
-                <div className="flex justify-between border-b border-gray-700 pb-2">
-                  <span className="text-gray-300">Monday - Friday</span>
-                  <span className="text-white">9:00 AM - 6:00 PM</span>
+                <div className="flex justify-between border-b border-gray-300 pb-2">
+                  <span className="text-gray-700">Monday - Friday</span>
+                  <span className="text-black">9:00 AM - 6:00 PM</span>
                 </div>
-                <div className="flex justify-between border-b border-gray-700 pb-2">
-                  <span className="text-gray-300">Saturday</span>
-                  <span className="text-white">10:00 AM - 4:00 PM</span>
+                <div className="flex justify-between border-b border-gray-300 pb-2">
+                  <span className="text-gray-700">Saturday</span>
+                  <span className="text-black">10:00 AM - 4:00 PM</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-300">Sunday</span>
-                  <span className="text-white">Closed</span>
+                  <span className="text-gray-700">Sunday</span>
+                  <span className="text-black">Closed</span>
                 </div>
               </div>
             </div>
@@ -437,19 +437,19 @@ const Contact = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="bg-gray-800 bg-opacity-50 rounded-xl p-8 border border-gray-700"
+            className="bg-gray-100 rounded-xl p-8 border border-gray-300"
           >
-            <h2 className="text-2xl font-serif font-light text-white mb-6">Send Us a Message</h2>
+            <h2 className="text-2xl font-serif font-light text-black mb-6">Send Us a Message</h2>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                 <input
                   id="name"
                   name="name"
                   type="text"
                   required
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-md text-black focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
                   placeholder="Enter your name"
                   value={formData.name}
                   onChange={handleChange}
@@ -458,13 +458,13 @@ const Contact = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                   <input
                     id="email"
                     name="email"
                     type="email"
                     required
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-md text-black focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
                     placeholder="your@email.com"
                     value={formData.email}
                     onChange={handleChange}
@@ -472,14 +472,14 @@ const Contact = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="phone_number" className="block text-sm font-medium text-gray-300 mb-1">Phone Number</label>
+                  <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
                   <input
                     id="phone_number"
                     name="phone_number"
                     type="tel"
                     required
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500"
-                    placeholder="+92 333 1906382"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-md text-black focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
+                    placeholder="0300 0000000"
                     value={formData.phone_number}
                     onChange={handleChange}
                   />
@@ -487,13 +487,13 @@ const Contact = () => {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">Your Message</label>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
                 <textarea
                   id="message"
                   name="message"
                   rows="5"
                   required
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-md text-black focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
                   placeholder="How can we assist you?"
                   value={formData.message}
                   onChange={handleChange}
@@ -504,7 +504,7 @@ const Contact = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-gold-600 to-gold-700 text-white rounded-md hover:from-gold-700 hover:to-gold-800 transition-all duration-300 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`w-full flex items-center justify-center px-6 py-4 bg-gray-700 text-white rounded-md hover:bg-gray-800 transition-all duration-300 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
                   <FaPaperPlane className="mr-2" />
                   {isSubmitting ? 'Sending...' : 'Send Message'}

@@ -1,86 +1,5 @@
 // import React from 'react';
 // import Image from 'next/image';
-// import Slider from 'react-slick';
-// import "slick-carousel/slick/slick.css"; 
-// import "slick-carousel/slick/slick-theme.css";
-// import banner1 from '../../public/images/banner1.jpg'
-// import banner2 from '../../public/images/banner2.jpg'
-// import banner3 from '../../public/images/banner3.jpg'
-// import banner4 from '../../public/images/banner4.jpg'
-// import banner5 from '../../public/images/banner5.jpg'
-// import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
-// import { Carousel } from "react-responsive-carousel";
-
-
-
-// const NextJsCarousel = () => {
-//   return (
-//       // <div className="max-w-screen-lg mx-auto">
-
-//       <div className="w-full">
-          
-//           <Carousel 
-//               showThumbs={false} 
-//               autoPlay 
-//               infiniteLoop 
-//               interval={3000}
-//               showStatus={false}
-//           >
-//               <div>
-//                   <Image
-//                       src={banner1}
-//                       alt="image1"
-//                       className="w-full h-[87vh] object-cover"
-//                   />
-//                   {/* <p className="legend">Image 1</p> */}
-//               </div>
-//               <div>
-//                   <Image
-//                       src={banner2}
-//                       alt="image2"
-//                       className="w-full h-[87vh] object-cover"
-//                   />
-//                   {/* <p className="legend">Image 2</p> */}
-//               </div>
-//               <div>
-//                   <Image
-//                       src={banner3}
-//                       alt="image3"
-//                       className="w-full h-[87vh] object-cover"
-//                   />
-//                   {/* <p className="legend">Image 3</p> */}
-//               </div>
-//               <div>
-//                   <Image
-//                       src={banner4}
-//                       alt="image4"
-//                       className="w-full h-[87vh] object-cover"
-//                   />
-//                   {/* <p className="legend">Image 4</p> */}
-//               </div>
-//               <div>
-//                   <Image
-//                       src={banner5}
-//                       alt="image5"
-//                       className="w-full h-[87vh] object-cover"
-//                   />
-//                   {/* <p className="legend">Image 5</p> */}
-//               </div>
-//           </Carousel>
-//       </div>
-//   );
-// };
-
-// export default NextJsCarousel;
-
-
-
-
-
-
-
-// import React from 'react';
-// import Image from 'next/image';
 // import { Carousel } from "react-responsive-carousel";
 // import "react-responsive-carousel/lib/styles/carousel.min.css";
 // import banner1 from '../../public/images/banner1.jpg';
@@ -312,7 +231,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Luxury Header */}
-      <header className="bg-black text-white py-4 px-6 shadow-md">
+      {/* <header className="bg-black text-white py-4 px-6 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-8">
             <button 
@@ -327,10 +246,12 @@ const HomePage = () => {
           
           <div className="hidden md:flex items-center space-x-8">
             <nav className="flex space-x-6">
-              <a href="#" className="hover:text-gray-300 transition">New Arrivals</a>
-              <a href="#" className="hover:text-gray-300 transition">Collections</a>
-              <a href="#" className="hover:text-gray-300 transition">Brands</a>
-              <a href="#" className="hover:text-gray-300 transition">Private Clients</a>
+              <a href="/" className="hover:text-gray-300 transition">Home</a>
+              <a href="publicsalesproductpage" className="hover:text-gray-300 transition">Sale</a>
+              <a href="newarrivalspage" className="hover:text-gray-300 transition">New Arrivals</a>
+              <a href="publiccategories" className="hover:text-gray-300 transition">Collections</a>
+              <a href="publicproducts" className="hover:text-gray-300 transition">Shop</a>
+              <a href="contact" className="hover:text-gray-300 transition">Contact</a>
             </nav>
           </div>
           
@@ -356,7 +277,7 @@ const HomePage = () => {
             </button>
           </div>
         </div>
-      </header>
+      </header> */}
 
       {/* Mobile Menu */}
       {isMenuOpen && (
@@ -373,8 +294,8 @@ const HomePage = () => {
             <nav className="flex flex-col space-y-3">
               <a href="#" className="hover:text-gray-300 transition">New Arrivals</a>
               <a href="#" className="hover:text-gray-300 transition">Collections</a>
-              <a href="#" className="hover:text-gray-300 transition">Brands</a>
-              <a href="#" className="hover:text-gray-300 transition">Private Clients</a>
+              <a href="#" className="hover:text-gray-300 transition">Shop</a>
+              <a href="#" className="hover:text-gray-300 transition">Contact</a>
             </nav>
           </div>
         </div>
@@ -418,7 +339,7 @@ const HomePage = () => {
 
         {/* Luxury Categories */}
         <section className="mb-16">
-          <h2 className="text-3xl font-serif font-bold mb-8 text-center">Our Luxury Categories</h2>
+          <h2 className="text-3xl font-serif text-gray-900 font-bold mb-8 text-center">Our Luxury Categories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {luxuryCategories.map((category, index) => (
               <div key={index} className="group relative overflow-hidden rounded-lg shadow-lg h-64">
@@ -478,34 +399,10 @@ const HomePage = () => {
         </section>
 
         {/* Luxury Experience Section */}
-        <section className="mb-16 bg-black text-white rounded-lg overflow-hidden">
-          <div className="relative h-96">
-            <div className="absolute inset-0 bg-gray-800">
-              {/* Replace with your luxury experience image */}
-              <div className="w-full h-full bg-gray-700"></div>
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent opacity-80"></div>
-            <div className="relative z-10 h-full flex items-center px-8 md:px-16">
-              <div className="max-w-xl">
-                <h2 className="text-4xl font-serif font-bold mb-4">The Luxe Experience</h2>
-                <p className="text-lg mb-6">
-                  Enjoy white-glove service, private shopping appointments, and exclusive access to limited edition pieces.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <button className="bg-white text-black px-8 py-3 font-medium hover:bg-opacity-90 transition">
-                    BOOK PRIVATE APPOINTMENT
-                  </button>
-                  <button className="border border-white text-white px-8 py-3 font-medium hover:bg-white hover:bg-opacity-10 transition">
-                    LEARN MORE
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        
 
         {/* Newsletter */}
-        <section className="bg-gray-100 rounded-lg p-8 md:p-12 text-center">
+        {/* <section className="bg-gray-100 rounded-lg p-8 md:p-12 text-center">
           <h2 className="text-2xl font-serif font-bold mb-2">Join Our Exclusive List</h2>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
             Receive early access to new collections, private sales, and luxury insights.
@@ -520,10 +417,10 @@ const HomePage = () => {
               SUBSCRIBE
             </button>
           </div>
-        </section>
+        </section> */}
       </main>
 
-      {/* Luxury Footer */}
+      {/* Luxury Footer
       <footer className="bg-black text-white py-12 px-6">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -565,7 +462,7 @@ const HomePage = () => {
             <p>© {new Date().getFullYear()} LUXE. All rights reserved.</p>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 };
