@@ -15,7 +15,7 @@ import AdModal from "@/components/AdModal";
 
 export default function Home() {
   return (
-    <>
+    <div className="bg-gray-50">
     <AdModal />
     <TopNavbarCom />
     <NavbarCom />
@@ -25,7 +25,7 @@ export default function Home() {
     <PublicCategoriesOnHome />
     <PublicProductsOnHome />
     <FooterCom />
-  </>
+  </div>
   );
 }
 

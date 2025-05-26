@@ -130,7 +130,7 @@ const Footer = () => {
     };
 
     return (
-        <footer id="footer" className="bg-black text-white pt-20 pb-12 border-t border-gold-500">
+        <footer id="footer" className="bg-gray-700 text-white pt-20 pb-12 border-t border-gold-500">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
                     {/* Logo Section */}
