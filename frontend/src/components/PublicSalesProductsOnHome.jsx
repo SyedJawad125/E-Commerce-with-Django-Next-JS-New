@@ -43,7 +43,7 @@ const PublicSalesProductsCom = () => {
         <div className="mx-8 bg-gray-50">
         <div className="container mx-auto my-4 ml-8 mr-2 w-[calc(100%-6rem)] mt-16">
             {/* <h2 className="text-1xl mb-4">SALES</h2> */}
-            <h2 className="text-3xl font-serif text-gray-900 font-bold mb-8 text-center">Sales</h2>
+            <h2 className="text-4xl font-serif text-gray-900 font-bold mb-4 tracking-wider text-center">Sales</h2>
             <br />
             <br />
             {/* {data && data.data ? <p>Total: {data.data.count}</p> : <p>Total: 0</p>} */}
