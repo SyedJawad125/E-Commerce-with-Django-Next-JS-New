@@ -130,7 +130,7 @@ const Footer = () => {
     };
 
     return (
-        <footer id="footer" className="bg-gray-700 text-white pt-20 pb-12 border-t border-gold-500">
+        <footer id="footer" className="bg-gray-700 text-white pt-16 pb-12 border-t border-gold-500">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
                     {/* Logo Section */}
@@ -279,8 +279,8 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Footer */}
-                <div className="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
-                    <p className="text-gray-500 text-xs mb-4 md:mb-0 tracking-widest">
+                <div className="border-t border-gray-800 mt-10 pt-8 flex flex-col md:flex-row justify-between items-center">
+                    <p className="text-gray-500 text-xs mb-0 md:mb-0 tracking-widest">
                         &copy; {new Date().getFullYear()} LUXURY BRAND. ALL RIGHTS RESERVED.
                     </p>
                     <div className="flex flex-wrap gap-6 justify-center">
