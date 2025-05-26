@@ -9,7 +9,7 @@ import PublicCategoryLeftSideSlider from "@/components/PublicCategoryLeftSideSli
 
 const page = () => {
   return (
-    <div>
+    <div className="bg-gray-50">
       <TopNavbarCom/>
       <NavbarCom/>
       {/* <PublicCategoriesCom/> */}

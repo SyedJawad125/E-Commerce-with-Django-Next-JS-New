@@ -8,7 +8,7 @@ import PublicProductLeftSideSlider from "@/components/PublicProductLeftSideSlide
 
 const page = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       {/* Top navbars */}
       <TopNavbarCom />
       <NavbarCom />
