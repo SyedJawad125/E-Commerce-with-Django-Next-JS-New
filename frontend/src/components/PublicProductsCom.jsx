@@ -42,7 +42,7 @@ const PublicProducts = () => {
     return (
         <div className="container mx-auto my-4 ml-8 mr-2 w-[calc(100%-6rem)] bg-gray-50">
             {/* <h2 className="text-2xl font-bold mb-4">SHOP</h2> */}
-           <h2 className="text-3xl font-serif text-gray-900 font-bold mb-8 text-center -mb-6 mt-10">Products</h2>
+           <h2 className="text-4xl font-serif text-gray-900 font-bold -mb-10 mt-10 text-center tracking-wider">Products</h2>
 
             <br />
             <br />
