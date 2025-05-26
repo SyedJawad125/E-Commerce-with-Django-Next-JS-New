@@ -115,7 +115,7 @@ const SalesProductDetailsCom = () => {
                 )}
                 {products[0].discount_price && (
                   <div className="absolute bottom-4 left-4 bg-red-600 bg-opacity-80 px-3 py-1 rounded-full text-sm font-medium text-white shadow-sm">
-                    Save ${(products[0].price - products[0].discount_price).toFixed(2)}
+                    Save {(products[0].price - products[0].discount_price).toFixed(2)}
                   </div>
                 )}
               </div>
@@ -144,16 +144,16 @@ const SalesProductDetailsCom = () => {
                       <>
                         <p className="text-sm text-gray-600">
                           <span className="font-semibold">Old Price:</span> 
-                          <span className="line-through ml-1">${products[0].original_price}</span>
+                          <span className="line-through ml-1">{products[0].original_price}</span>
                         </p>
                         <p className="text-sm text-gray-600">
                           <span className="font-semibold">Price:</span> 
-                          <span className="text-red-600 ml-1">${products[0].final_price}</span>
+                          <span className="text-red-600 ml-1">{products[0].final_price}</span>
                         </p>
                       </>
                     ) : (
                       <p className="text-sm text-gray-600">
-                        <span className="font-semibold">Price:</span> ${products[0].final_price}
+                        <span className="font-semibold">Price:</span> {products[0].final_price}
                       </p>
                     )}
                   </div>

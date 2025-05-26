@@ -88,12 +88,14 @@ const PublicSalesProductsCom = () => {
                         <div className="flex items-baseline justify-between">
                             <div>
                                 {item.discount_percent > 0 && (
-                                    <p className="text-xs text-gray-400 line-through">${item.original_price}</p>
+                                    <p className="text-ms text-gray-400 line-through">Rs. {item.original_price}</p>
                                 )}
                                 <p className="text-lg font-bold text-amber-800">
-                                    ${item.final_price}
+                                    Rs. {item.final_price}
+                                    </p>
+                                    <p>
                                     {item.discount_percent > 0 && (
-                                        <span className="text-xs text-green-600 ml-2">You save ${(item.original_price - item.final_price).toFixed(2)}</span>
+                                        <span className="text-xs text-green-600 ml-2">You save Rs.{(item.original_price - item.final_price).toFixed(2)}</span>
                                     )}
                                 </p>
                             </div>
