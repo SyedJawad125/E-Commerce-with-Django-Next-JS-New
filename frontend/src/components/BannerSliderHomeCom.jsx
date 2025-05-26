@@ -177,6 +177,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FiSearch, FiHeart, FiShoppingBag, FiUser, FiMenu, FiChevronRight } from 'react-icons/fi';
 import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
+import Link from 'next/link';
 
 // Replace these with your actual luxury product images
 import banner1 from '../../public/images/banner1.jpg';
@@ -327,9 +328,11 @@ const HomePage = () => {
                   <div className="text-center text-white px-8 max-w-2xl">
                     <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4">Exclusive Collection {index + 1}</h2>
                     <p className="text-xl mb-6">Discover unparalleled craftsmanship and timeless elegance</p>
-                    <button className="bg-white text-black px-8 py-3 font-medium hover:bg-opacity-90 transition">
-                      SHOP NOW
-                    </button>
+                    <Link href="/publicproducts">
+                      <button className="bg-white text-black px-8 py-3 font-medium hover:bg-opacity-90 transition">
+                        SHOP NOW
+                      </button>
+                    </Link>
                   </div>
                 </div>
               </div>
