@@ -16,12 +16,12 @@ const page = () => {
       {/* Main content area with slider and products */}
       <div className="flex flex-1">
         {/* Left slider taking 15% width */}
-        <div className="w-[12%]">
-          <PublicProductLeftSideSlider />
+        <div className="w-[0%]">
+          {/* <PublicProductLeftSideSlider /> */}
         </div>
 
         {/* Right product section taking remaining 85% */}
-        <div className="w-[88%] ">
+        <div className="w-[100%] ">
           <PublicProductsCom />
         </div>
       </div>
