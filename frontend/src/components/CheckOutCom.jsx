@@ -678,17 +678,18 @@ const CheckoutPage = () => {
         });
     };
 
+    const getUnitPrice = (item) => {
+        return item.final_price !== undefined ? Number(item.final_price) : Number(item.price) || 0;
+    };
+
     const getItemPrice = (item) => {
-        const hasSalePrice = item.salePrice !== undefined && item.salePrice !== null;
-        const regularPrice = Number(item.price) || 0;
-        const salePrice = hasSalePrice ? Number(item.salePrice) : regularPrice;
-        return hasSalePrice && salePrice < regularPrice ? salePrice : regularPrice;
+        const unitPrice = getUnitPrice(item);
+        return unitPrice * (item.quantity || 1);
     };
 
     const getTotalPrice = () => {
         return cartItems.reduce((total, item) => {
-            const price = getItemPrice(item);
-            return total + (price * (item.quantity || 1));
+            return total + getItemPrice(item);
         }, 0);
     };
 
@@ -720,19 +721,19 @@ const CheckoutPage = () => {
         doc.setFontSize(10);
         let yPosition = 140;
         cartItems.forEach((item) => {
-            const price = getItemPrice(item);
+            const unitPrice = getUnitPrice(item);
             const regularPrice = Number(item.price) || 0;
-            const isOnSale = item.salePrice && price < regularPrice;
+            const isOnSale = item.final_price !== undefined && unitPrice < regularPrice;
 
             doc.text(`${item.name}`, 20, yPosition);
             if (isOnSale) {
                 doc.setTextColor(255, 0, 0);
-                doc.text(`PKR ${price.toLocaleString()} x ${item.quantity} (SALE)`, 160, yPosition);
+                doc.text(`PKR ${unitPrice.toLocaleString()} x ${item.quantity} (SALE)`, 160, yPosition);
                 doc.setTextColor(255, 255, 255);
             } else {
-                doc.text(`PKR ${price.toLocaleString()} x ${item.quantity}`, 160, yPosition);
+                doc.text(`PKR ${unitPrice.toLocaleString()} x ${item.quantity}`, 160, yPosition);
             }
-            doc.text(`PKR ${(price * item.quantity).toLocaleString()}`, 190, yPosition);
+            doc.text(`PKR ${(unitPrice * item.quantity).toLocaleString()}`, 190, yPosition);
             yPosition += 10;
         });
         
@@ -810,8 +811,203 @@ const CheckoutPage = () => {
                             </div>
 
                             <form onSubmit={handleSubmit}>
-                                {/* Shipping Information and Payment Method forms remain the same */}
-                                {/* ... */}
+                                {/* Shipping Information */}
+                                <div className="mb-12">
+                                    <h3 className="text-lg font-medium text-gray-900 mb-6 border-b border-gray-100 pb-2">Shipping Information</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                                            <input
+                                                type="text"
+                                                id="firstName"
+                                                name="firstName"
+                                                value={form.firstName}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                                            <input
+                                                type="text"
+                                                id="lastName"
+                                                name="lastName"
+                                                value={form.lastName}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                            <input
+                                                type="text"
+                                                id="address"
+                                                name="address"
+                                                value={form.address}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                            <input
+                                                type="text"
+                                                id="city"
+                                                name="city"
+                                                value={form.city}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                                            <select
+                                                id="country"
+                                                name="country"
+                                                value={form.country}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                required
+                                            >
+                                                <option value="Pakistan">Pakistan</option>
+                                                <option value="United States">United States</option>
+                                                <option value="United Kingdom">United Kingdom</option>
+                                                <option value="Canada">Canada</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                name="email"
+                                                value={form.email}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                            <input
+                                                type="tel"
+                                                id="phone"
+                                                name="phone"
+                                                value={form.phone}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Payment Method */}
+                                <div className="mb-12">
+                                    <h3 className="text-lg font-medium text-gray-900 mb-6 border-b border-gray-100 pb-2">Payment Method</h3>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                id="credit-card"
+                                                name="paymentMethod"
+                                                value="credit-card"
+                                                checked={form.paymentMethod === 'credit-card'}
+                                                onChange={handleChange}
+                                                className="h-4 w-4 text-black focus:ring-black"
+                                            />
+                                            <label htmlFor="credit-card" className="ml-3 block text-sm font-medium text-gray-700">Credit Card</label>
+                                        </div>
+                                        {form.paymentMethod === 'credit-card' && (
+                                            <div className="ml-7 mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="md:col-span-2">
+                                                    <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                                                    <input
+                                                        type="text"
+                                                        id="cardNumber"
+                                                        name="cardNumber"
+                                                        value={form.cardNumber}
+                                                        onChange={handleChange}
+                                                        placeholder="1234 5678 9012 3456"
+                                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label htmlFor="cardExpiry" className="block text-sm font-medium text-gray-700 mb-1">Expiration Date</label>
+                                                    <input
+                                                        type="text"
+                                                        id="cardExpiry"
+                                                        name="cardExpiry"
+                                                        value={form.cardExpiry}
+                                                        onChange={handleChange}
+                                                        placeholder="MM/YY"
+                                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label htmlFor="cardCvc" className="block text-sm font-medium text-gray-700 mb-1">CVC</label>
+                                                    <input
+                                                        type="text"
+                                                        id="cardCvc"
+                                                        name="cardCvc"
+                                                        value={form.cardCvc}
+                                                        onChange={handleChange}
+                                                        placeholder="CVC"
+                                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                id="paypal"
+                                                name="paymentMethod"
+                                                value="paypal"
+                                                checked={form.paymentMethod === 'paypal'}
+                                                onChange={handleChange}
+                                                className="h-4 w-4 text-black focus:ring-black"
+                                            />
+                                            <label htmlFor="paypal" className="ml-3 block text-sm font-medium text-gray-700">PayPal</label>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                id="bank-transfer"
+                                                name="paymentMethod"
+                                                value="bank-transfer"
+                                                checked={form.paymentMethod === 'bank-transfer'}
+                                                onChange={handleChange}
+                                                className="h-4 w-4 text-black focus:ring-black"
+                                            />
+                                            <label htmlFor="bank-transfer" className="ml-3 block text-sm font-medium text-gray-700">Bank Transfer</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Save Info and Submit */}
+                                <div className="flex items-center mb-6">
+                                    <input
+                                        type="checkbox"
+                                        id="saveInfo"
+                                        name="saveInfo"
+                                        checked={form.saveInfo}
+                                        onChange={handleChange}
+                                        className="h-4 w-4 text-black focus:ring-black"
+                                    />
+                                    <label htmlFor="saveInfo" className="ml-3 block text-sm text-gray-700">Save this information for next time</label>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full bg-black text-white py-3 px-4 rounded-md hover:bg-gray-800 transition-colors duration-300"
+                                >
+                                    Complete Order
+                                </button>
                             </form>
                         </div>
                     </div>
@@ -825,9 +1021,9 @@ const CheckoutPage = () => {
                                 <>
                                     <div className="space-y-4 mb-6">
                                         {cartItems.map((item) => {
-                                            const price = getItemPrice(item);
+                                            const unitPrice = getUnitPrice(item);
                                             const regularPrice = Number(item.price) || 0;
-                                            const isOnSale = item.salePrice && price < regularPrice;
+                                            const isOnSale = item.final_price !== undefined && unitPrice < regularPrice;
 
                                             return (
                                                 <div key={item.id} className="flex justify-between items-start">
@@ -851,15 +1047,18 @@ const CheckoutPage = () => {
                                                                     PKR {regularPrice.toLocaleString()}
                                                                 </p>
                                                                 <p className="font-medium text-red-600">
-                                                                    PKR {price.toLocaleString()}
+                                                                    PKR {unitPrice.toLocaleString()} × {item.quantity || 1}
                                                                 </p>
                                                             </>
                                                         )}
                                                         {!isOnSale && (
                                                             <p className="font-medium text-gray-900">
-                                                                PKR {price.toLocaleString()}
+                                                                PKR {unitPrice.toLocaleString()} × {item.quantity || 1}
                                                             </p>
                                                         )}
+                                                        <p className="font-medium text-gray-900">
+                                                            PKR {(unitPrice * (item.quantity || 1)).toLocaleString()}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             );
