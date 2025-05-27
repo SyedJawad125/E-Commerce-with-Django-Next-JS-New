@@ -772,7 +772,7 @@ const CheckoutPage = () => {
     };
 
     const handleContinueShopping = () => {
-        router.push('/collections');
+        router.push('/publicproducts');
     };
 
     const totalProducts = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
@@ -1057,7 +1057,7 @@ const CheckoutPage = () => {
                                                             </p>
                                                         )}
                                                         <p className="font-medium text-gray-900">
-                                                            PKR {(unitPrice * (item.quantity || 1)).toLocaleString()}
+                                                            PKR {(unitPrice * (item.quantity || 1)).toLocaleString()}/-
                                                         </p>
                                                     </div>
                                                 </div>
@@ -1068,7 +1068,7 @@ const CheckoutPage = () => {
                                     <div className="space-y-4 border-t border-gray-100 pt-4 mb-6">
                                         <div className="flex justify-between">
                                             <span className="text-gray-900">Subtotal</span>
-                                            <span className="font-medium text-gray-900">PKR {getTotalPrice().toLocaleString()}</span>
+                                            <span className="font-medium text-gray-900">PKR {getTotalPrice().toLocaleString()}/-</span>
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-900">Shipping</span>
@@ -1080,9 +1080,9 @@ const CheckoutPage = () => {
                                         </div>
                                     </div>
 
-                                    <div className="flex justify-between border-t border-gray-100 pt-4 mb-6">
-                                        <span className="text-lg font-medium">Total</span>
-                                        <span className="text-lg font-medium">PKR {getTotalPrice().toLocaleString()}</span>
+                                    <div className="flex justify-between border-t border-gray-900 pt-4 mb-6">
+                                        <span className="text-lg font-medium text-gray-900">Total</span>
+                                        <span className="text-lg font-medium text-gray-900">PKR {getTotalPrice().toLocaleString()}/-</span>
                                     </div>
                                 </>
                             ) : (
