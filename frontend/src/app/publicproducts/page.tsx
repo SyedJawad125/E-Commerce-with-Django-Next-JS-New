@@ -13,19 +13,18 @@ const page = () => {
       <TopNavbarCom />
       <NavbarCom />
 
-      {/* Main content area with slider and products */}
-      <div className="flex flex-1">
-        {/* Left slider taking 15% width */}
+      
+      {/* <div className="flex flex-1">
         <div className="w-[0%]">
-          {/* <PublicProductLeftSideSlider /> */}
+          <PublicProductLeftSideSlider />
         </div>
-
-        {/* Right product section taking remaining 85% */}
         <div className="w-[100%] ">
           <PublicProductsCom />
         </div>
-      </div>
+      </div> */}
 
+      
+       <PublicProductsCom />
       {/* Footer at the bottom */}
       <FooterCom />
     </div>
