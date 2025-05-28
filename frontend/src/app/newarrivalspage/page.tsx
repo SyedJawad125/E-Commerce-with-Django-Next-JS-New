@@ -11,19 +11,15 @@ const page = () => {
     <div className="bg-gray-50">
       <TopNavbarCom/>
       <NavbarCom/>
-      {/* <NewArrivalsCom/> */}
-      {/* Main content area with slider and products */}
-      <div className="flex flex-1">
-        {/* Left slider taking 12% width */}
+      <NewArrivalsCom/>
+      {/* <div className="flex flex-1">   
         <div className="w-[12%]">
           <NewArrivalsPageLeftSideSlider />
         </div>
-
-        {/* Right product section taking remaining 88% */}
         <div className="w-[88%] ">
           <NewArrivalsCom />
         </div>
-      </div>
+      </div> */}
       <FooterCom />
     </div>
   )
