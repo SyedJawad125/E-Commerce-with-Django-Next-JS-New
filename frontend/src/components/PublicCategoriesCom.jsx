@@ -91,7 +91,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AxiosInstance from "@/components/AxiosInstance";
 
-const PublicProducts = () => {
+const PublicCategory = () => {
     const router = useRouter();
     const [records, setRecords] = useState([]);
     const [data, setData] = useState([]);
@@ -99,6 +99,7 @@ const PublicProducts = () => {
     const [categories, setCategories] = useState([]);
     const [sliderHeight, setSliderHeight] = useState('auto');
     const productsRef = useRef(null);
+    const resizeObserverRef = useRef(null);
 
     // Fetch products and categories
     useEffect(() => {
@@ -112,17 +113,17 @@ const PublicProducts = () => {
 
         const fetchData = async () => {
             try {
-                // Fetch products
-                const productsRes = await AxiosInstance.get('/ecommerce/publiccategory');
-                if (productsRes) {
-                    setRecords(productsRes.data.data.data);
-                    setData(productsRes.data);
+                // Fetch categories (main content)
+                const categoriesRes = await AxiosInstance.get('/ecommerce/publiccategory');
+                if (categoriesRes) {
+                    setRecords(categoriesRes.data.data.data);
+                    setData(categoriesRes.data);
                 }
 
-                // Fetch categories
-                const categoriesRes = await AxiosInstance.get('/ecommerce/publicproduct');
-                if (categoriesRes && categoriesRes.data) {
-                    setCategories(categoriesRes.data.data.data);
+                // Fetch products (for the slider)
+                const productsRes = await AxiosInstance.get('/ecommerce/publicproduct');
+                if (productsRes && productsRes.data) {
+                    setCategories(productsRes.data.data.data);
                 }
             } catch (error) {
                 console.log('Error occurred', error);
@@ -132,68 +133,85 @@ const PublicProducts = () => {
         fetchData();
     }, [flag, router.query?.name]);
 
-    // Update slider height when records change
+    // Update slider height when records change or window resizes
     useEffect(() => {
-        if (productsRef.current) {
-            const productsHeight = productsRef.current.offsetHeight;
-            setSliderHeight(`${productsHeight}px`);
+        const updateSliderHeight = () => {
+            if (productsRef.current) {
+                const productsHeight = productsRef.current.offsetHeight;
+                setSliderHeight(`${productsHeight}px`);
+            }
+        };
+
+        // Initialize ResizeObserver to track content changes
+        if (!resizeObserverRef.current && productsRef.current) {
+            resizeObserverRef.current = new ResizeObserver(updateSliderHeight);
+            resizeObserverRef.current.observe(productsRef.current);
         }
+
+        // Initial height calculation
+        updateSliderHeight();
+
+        // Cleanup
+        return () => {
+            if (resizeObserverRef.current) {
+                resizeObserverRef.current.disconnect();
+            }
+        };
     }, [records]);
 
     const handleCategoryClick = (categoryId) => {
         router.push(`/categorywiseproductpage?categoryId=${categoryId}`);
     };
+
     const handleProductClick = (ProductId) => {
         router.push(`/productdetailpage?ProductId=${ProductId}`);
     };
 
     return (
         <div className="flex min-h-screen bg-gray-50">
-            {/* Left Side - Categories Slider */}
+            {/* Left Side - Products Slider */}
             <div className="w-1/7 bg-gray-100 p-4 shadow-lg" style={{ height: sliderHeight }}>
                 <div className="h-full overflow-hidden relative space-y-2">
-                    <h3 className="text-lg font-semibold mb-4">Categories</h3>
-                    {/* First set of categories */}
+                    {/* <h3 className="text-lg font-semibold mb-4">Products</h3> */}
+                    {/* First set of products */}
                     <div className="animate-scrollUp space-y-2">
-                        {categories.map((category) => (
+                        {categories.map((product) => (
                             <div
-                                key={category.id}
-                                onClick={() => handleProductClick(category.id)}
+                                key={product.id}
+                                onClick={() => handleProductClick(product.id)}
                                 className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
                             >
                                 <img
-                                    src={`http://localhost:8000/${category.image}`}
-                                    alt={category.name}
+                                    src={`http://localhost:8000/${product.image}`}
+                                    alt={product.name}
                                     className="w-full h-28 object-cover"
                                 />
-                                {/* <p className="text-center mt-1">{category.name}</p> */}
                             </div>
                         ))}
                     </div>
 
-                    {/* Second set of categories (for seamless looping) */}
+                    {/* Second set of products (for seamless looping) */}
                     <div className="animate-scrollUp space-y-2 absolute top-full w-full">
-                        {categories.map((category) => (
+                        {categories.map((product) => (
                             <div
-                                key={`${category.id}-duplicate`}
-                                onClick={() => handleProductClick(category.id)}
+                                key={`${product.id}-duplicate`}
+                                onClick={() => handleProductClick(product.id)}
                                 className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
                             >
                                 <img
-                                    src={`http://localhost:8000/${category.image}`}
-                                    alt={category.name}
+                                    src={`http://localhost:8000/${product.image}`}
+                                    alt={product.name}
                                     className="w-full h-28 object-cover"
                                 />
-                                {/* <p className="text-center mt-1">{category.name}</p> */}
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
 
-            {/* Right Side - Products */}
+            {/* Right Side - Categories */}
             <div className="w-6/7 p-8" ref={productsRef}>
-                <h2 className="text-4xl font-serif text-gray-900 font-bold -mb-10 mt-10 text-center tracking-wider">Collections</h2>
+                {/* <h2 className="text-4xl font-serif text-gray-900 font-bold -mb-10 mt-10 text-center tracking-wider">Collections</h2> */}
                 
                 <br />
                 <br />
@@ -249,4 +267,4 @@ const PublicProducts = () => {
     );
 };
 
-export default PublicProducts;
+export default PublicCategory;

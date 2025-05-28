@@ -102,6 +102,7 @@ const PublicNewArrivals = () => {
     const [categories, setCategories] = useState([]);
     const [sliderHeight, setSliderHeight] = useState('auto');
     const productsRef = useRef(null);
+    const resizeObserverRef = useRef(null);
 
     // Fetch products and categories
     useEffect(() => {
@@ -135,12 +136,30 @@ const PublicNewArrivals = () => {
         fetchData();
     }, [flag, router.query?.name]);
 
-    // Update slider height when records change
+    // Update slider height when records change or window resizes
     useEffect(() => {
-        if (productsRef.current) {
-            const productsHeight = productsRef.current.offsetHeight;
-            setSliderHeight(`${productsHeight}px`);
+        const updateSliderHeight = () => {
+            if (productsRef.current) {
+                const productsHeight = productsRef.current.offsetHeight;
+                setSliderHeight(`${productsHeight}px`);
+            }
+        };
+
+        // Initialize ResizeObserver to track content changes
+        if (!resizeObserverRef.current && productsRef.current) {
+            resizeObserverRef.current = new ResizeObserver(updateSliderHeight);
+            resizeObserverRef.current.observe(productsRef.current);
         }
+
+        // Initial height calculation
+        updateSliderHeight();
+
+        // Cleanup
+        return () => {
+            if (resizeObserverRef.current) {
+                resizeObserverRef.current.disconnect();
+            }
+        };
     }, [records]);
 
     const handleProductClick = (ProductId) => {
@@ -156,7 +175,7 @@ const PublicNewArrivals = () => {
             {/* Left Side - Categories Slider */}
             <div className="w-1/7 bg-gray-100 p-4 shadow-lg" style={{ height: sliderHeight }}>
                 <div className="h-full overflow-hidden relative space-y-2">
-                    <h3 className="text-lg font-semibold mb-4">Categories</h3>
+                    {/* <h3 className="text-lg font-semibold mb-4">Categories</h3> */}
                     {/* First set of categories */}
                     <div className="animate-scrollUp space-y-2">
                         {categories.map((category) => (
