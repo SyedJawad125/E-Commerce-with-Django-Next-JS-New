@@ -169,23 +169,24 @@ const PublicCategory = () => {
 
     return (
         <div className="flex min-h-screen bg-gray-50">
-            {/* Left Side - Products Slider */}
+            {/* Left Side - Products Slider (styled like first code) */}
             <div className="w-1/7 bg-gray-100 p-4 shadow-lg" style={{ height: sliderHeight }}>
                 <div className="h-full overflow-hidden relative space-y-2">
-                    {/* <h3 className="text-lg font-semibold mb-4">Products</h3> */}
                     {/* First set of products */}
                     <div className="animate-scrollUp space-y-2">
                         {categories.map((product) => (
                             <div
                                 key={product.id}
                                 onClick={() => handleProductClick(product.id)}
-                                className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
+                                className="card-5 cursor-pointer"
                             >
                                 <img
                                     src={`http://localhost:8000/${product.image}`}
+                                    className="card-image5 clickable-image w-full h-40 object-cover transform 
+                                    transition-transform duration-300 hover:scale-105 border border-black"
                                     alt={product.name}
-                                    className="w-full h-28 object-cover"
                                 />
+                                
                             </div>
                         ))}
                     </div>
@@ -196,13 +197,15 @@ const PublicCategory = () => {
                             <div
                                 key={`${product.id}-duplicate`}
                                 onClick={() => handleProductClick(product.id)}
-                                className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
+                                className="card-5 cursor-pointer"
                             >
                                 <img
                                     src={`http://localhost:8000/${product.image}`}
+                                    className="card-image5 clickable-image w-full h-40 object-cover transform 
+                                    transition-transform duration-300 hover:scale-105 border border-black"
                                     alt={product.name}
-                                    className="w-full h-28 object-cover"
                                 />
+                                
                             </div>
                         ))}
                     </div>
@@ -211,8 +214,6 @@ const PublicCategory = () => {
 
             {/* Right Side - Categories */}
             <div className="w-6/7 p-8" ref={productsRef}>
-                {/* <h2 className="text-4xl font-serif text-gray-900 font-bold -mb-10 mt-10 text-center tracking-wider">Collections</h2> */}
-                
                 <br />
                 <br />
                 {data && data.data ? <p>Total: {data.data.count}</p> : <p>Total: 0</p>}
