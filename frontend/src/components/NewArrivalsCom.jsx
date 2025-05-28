@@ -94,7 +94,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AxiosInstance from "@/components/AxiosInstance";
 
-const PublicProducts = () => {
+const PublicNewArrivals = () => {
     const router = useRouter();
     const [records, setRecords] = useState([]);
     const [data, setData] = useState([]);
@@ -253,4 +253,4 @@ const PublicProducts = () => {
     );
 };
 
-export default PublicProducts;
+export default PublicNewArrivals;
