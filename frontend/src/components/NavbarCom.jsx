@@ -9,7 +9,8 @@ import {
   faPhone,
   faSignInAlt,
   faUserPlus,
-  faSignOutAlt
+  faSignOutAlt,
+  faTimes
 } from '@fortawesome/free-solid-svg-icons';
 import { useCart } from '@/components/CartContext';
 import HoverBox from '@/components/HoverBox';
@@ -22,6 +23,9 @@ const NavbarCom = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { cartItems } = useCart();
 
   useEffect(() => {
@@ -52,17 +56,44 @@ const NavbarCom = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
+  // Sample products for search - replace with your actual products data
+  const sampleProducts = [
+    { id: 1, img1: 'images/7.jpg', name: 'Leather Bag', slug: 'leather-bag', price: 99.99 },
+    { id: 2, img2: 'images/8.jpg', name: 'Pent Coat', slug: 'pent-coat', price: 129.99 },
+  ];
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setSearchResults([]);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setIsLoading(true);
+      // Simulate search through products
+      const results = sampleProducts.filter(product =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setSearchResults(results);
+      setIsLoading(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const logout = () => {
     setIsLoggingOut(true);
     localStorage.removeItem('token');
     setIsAuthenticated(false);
     router.push('/');
   };
-
-  const sampleProducts = [
-    { id: 1, img1: 'images/7.jpg', name: 'Leather Bag' },
-    { id: 2, img2: 'images/8.jpg', name: 'Pent Coat' },
-  ];
 
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
@@ -122,7 +153,7 @@ const NavbarCom = () => {
           <div className="text-black">
             <Link href="/">
               <span className="text-xl font-light tracking-widest uppercase">
-                <span className="font-bold">ÉLÉGANCE</span>
+                <span className="font-bold">GOHAR'S SHOP</span>
               </span>
             </Link>
           </div>
@@ -172,10 +203,47 @@ const NavbarCom = () => {
           </ul>
 
           {/* Right Side Icons */}
-          <div className="flex items-center space-x-5">
-            <button className="text-gray-600 hover:text-black transition-colors">
-              <FontAwesomeIcon icon={faSearch} className="text-md" />
-            </button>
+          <div className="flex items-center space-x-7">
+            <div className="relative">
+              <form onSubmit={handleSearch} className="flex items-center">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products..."
+                  className="px-3 py-1 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-80 text-sm text-black"
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  className="px-3 py-1 bg-black text-white rounded-r-md hover:bg-gray-800 transition-colors"
+                >
+                  <FontAwesomeIcon icon={faSearch} className="text-sm" />
+                </button>
+              </form>
+
+              {/* Search results dropdown */}
+              {searchQuery && (
+                <div className="absolute left-0 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-y-auto">
+                  {isLoading ? (
+                    <div className="p-3 text-center text-gray-500 text-sm">Loading...</div>
+                  ) : searchResults.length > 0 ? (
+                    searchResults.map((product) => (
+                      <Link
+                        key={product.id}
+                        href={`/products/${product.slug}`}
+                        className="block p-3 hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                      >
+                        <div className="font-medium text-sm text-black">{product.name}</div>
+                        <div className="text-xs text-gray-500">${product.price.toFixed(2)}</div>
+                      </Link>
+                    ))
+                  ) : searchQuery ? (
+                    <div className="p-3 text-center text-gray-500 text-sm">No products found</div>
+                  ) : null}
+                </div>
+              )}
+            </div>
             
             <Link href="/addtocartpage" className="relative">
               <div className="text-gray-600 hover:text-black transition-colors">
