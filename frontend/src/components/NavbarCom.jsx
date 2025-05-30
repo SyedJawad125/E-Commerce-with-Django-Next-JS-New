@@ -100,23 +100,25 @@ const NavbarCom = () => {
   };
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
+  e.preventDefault();
+  if (!searchQuery.trim()) return;
 
-    setShowSearchResults(false);
-    
-    // Check if we have exact category match in results
-    const exactCategoryMatch = searchResults.find(
-      result => result.type === 'category' && 
-      result.name.toLowerCase() === searchQuery.toLowerCase()
-    );
+  setShowSearchResults(false);
+  
+  // Check if we have any category matches in results (not just exact matches)
+  const categoryMatches = searchResults.filter(
+    result => result.type === 'category' && 
+    result.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-    if (exactCategoryMatch) {
-      router.push(`/categorywiseproduct?categoryId=${exactCategoryMatch.id}&categoryName=${encodeURIComponent(exactCategoryMatch.name)}`);
-    } else {
-      router.push(`/publicproducts?search=${encodeURIComponent(searchQuery)}`);
-    }
-  };
+  // If we have category matches, go to the first one
+  if (categoryMatches.length > 0) {
+    router.push(`/categorywiseproduct?categoryId=${categoryMatches[0].id}&categoryName=${encodeURIComponent(categoryMatches[0].name)}`);
+  } else {
+    // Otherwise go to regular product search
+    router.push(`/publicproducts?search=${encodeURIComponent(searchQuery)}`);
+  }
+};
 
   const handleSearchFocus = () => {
     if (searchQuery.trim() !== '') {
@@ -292,11 +294,17 @@ const NavbarCom = () => {
                         <div className="border-b border-gray-100">
                           <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50">CATEGORIES</div>
                           {searchResults.filter(item => item.type === 'category').map(category => (
-                            <Link
-                              key={`cat-${category.id}`}
-                              href={`/categorywiseproduct?categoryId=${category.id}&categoryName=${encodeURIComponent(category.name)}`}
-                              className="flex items-center p-3 hover:bg-gray-50 transition-colors"
-                            >
+                                <Link
+                                  key={`cat-${category.id}`}
+                                  href={`/categorywiseproduct?categoryId=${category.id}&categoryName=${encodeURIComponent(category.name)}`}
+                                  className="flex items-center p-3 hover:bg-gray-50 transition-colors"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setSearchQuery('');
+                                    setShowSearchResults(false);
+                                    router.push(`/categorywiseproduct?categoryId=${category.id}&categoryName=${encodeURIComponent(category.name)}`);
+                                  }}
+                                >
                               <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
