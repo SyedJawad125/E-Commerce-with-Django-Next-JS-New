@@ -73,12 +73,24 @@ const NavbarCom = () => {
   }, []);
 
   const fetchSearchResults = async (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
     try {
       setIsLoading(true);
       const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
       if (!response.ok) throw new Error('Network response was not ok');
       const data = await response.json();
-      setSearchResults(data);
+      
+      // Format results to distinguish between products and categories
+      const formattedResults = data.map(item => ({
+        ...item,
+        type: item.price !== undefined ? 'product' : 'category'
+      }));
+      
+      setSearchResults(formattedResults);
     } catch (error) {
       console.error('Error fetching search results:', error);
       setSearchResults([]);
@@ -89,26 +101,22 @@ const NavbarCom = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      setShowSearchResults(false);
+    if (!searchQuery.trim()) return;
+
+    setShowSearchResults(false);
+    
+    // Check if we have exact category match in results
+    const exactCategoryMatch = searchResults.find(
+      result => result.type === 'category' && 
+      result.name.toLowerCase() === searchQuery.toLowerCase()
+    );
+
+    if (exactCategoryMatch) {
+      router.push(`/categorywiseproduct?categoryId=${exactCategoryMatch.id}&categoryName=${encodeURIComponent(exactCategoryMatch.name)}`);
+    } else {
       router.push(`/publicproducts?search=${encodeURIComponent(searchQuery)}`);
     }
   };
-
-  useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setSearchResults([]);
-      setShowSearchResults(false);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      fetchSearchResults(searchQuery);
-      setShowSearchResults(true);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
 
   const handleSearchFocus = () => {
     if (searchQuery.trim() !== '') {
@@ -121,6 +129,21 @@ const NavbarCom = () => {
       setShowSearchResults(false);
     }, 200);
   };
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      fetchSearchResults(searchQuery);
+      setShowSearchResults(true);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const logout = () => {
     setIsLoggingOut(true);
@@ -246,7 +269,7 @@ const NavbarCom = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={handleSearchFocus}
                   onBlur={handleSearchBlur}
-                  placeholder="Search products..."
+                  placeholder="Search products or categories..."
                   className="px-3 py-1 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-80 text-sm text-black"
                 />
                 <button
@@ -257,34 +280,66 @@ const NavbarCom = () => {
                 </button>
               </form>
 
-              {/* Search results dropdown */}
+              {/* Enhanced Search Results Dropdown */}
               {showSearchResults && searchQuery && (
                 <div className="absolute left-0 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-y-auto">
                   {isLoading ? (
-                    <div className="p-3 text-center text-gray-500 text-sm">Loading...</div>
+                    <div className="p-3 text-center text-gray-500 text-sm">Searching...</div>
                   ) : searchResults.length > 0 ? (
                     <>
-                      {searchResults.map((product) => (
-                        <Link
-                          key={product.id}
-                          href={`/productdetailpage?ProductId=${product.id}`}
-                          className="flex items-center p-3 hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
-                        >
-                          <img 
-                            src={`http://localhost:8000/${product.image}`} 
-                            alt={product.name}
-                            className="w-10 h-10 object-cover mr-3"
-                            onError={(e) => {
-                              e.target.src = '/images/placeholder-product.jpg';
-                            }}
-                          />
-                          <div>
-                            <div className="font-medium text-sm text-black">{product.name}</div>
-                            <div className="text-xs text-gray-500">${product.price.toFixed(2)}</div>
-                          </div>
-                        </Link>
-                      ))}
-                      <div className="p-2 text-center border-t border-gray-100">
+                      {/* Categories Section */}
+                      {searchResults.some(item => item.type === 'category') && (
+                        <div className="border-b border-gray-100">
+                          <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50">CATEGORIES</div>
+                          {searchResults.filter(item => item.type === 'category').map(category => (
+                            <Link
+                              key={`cat-${category.id}`}
+                              href={`/categorywiseproduct?categoryId=${category.id}&categoryName=${encodeURIComponent(category.name)}`}
+                              className="flex items-center p-3 hover:bg-gray-50 transition-colors"
+                            >
+                              <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                </svg>
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">{category.name}</div>
+                                <div className="text-xs text-gray-500">{category.productCount || 0} items</div>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Products Section */}
+                      {searchResults.some(item => item.type === 'product') && (
+                        <div>
+                          <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50">PRODUCTS</div>
+                          {searchResults.filter(item => item.type === 'product').map(product => (
+                            <Link
+                              key={`prod-${product.id}`}
+                              href={`/productdetailpage?ProductId=${product.id}`}
+                              className="flex items-center p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                            >
+                              <img 
+                                src={`http://localhost:8000/${product.image}`} 
+                                alt={product.name}
+                                className="w-10 h-10 object-cover rounded mr-3"
+                                onError={(e) => {
+                                  e.target.src = '/images/placeholder-product.jpg';
+                                }}
+                              />
+                              <div className="flex-1">
+                                <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                                <div className="text-xs text-gray-500">Rs. {product.price.toFixed(2)}</div>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* View All Results */}
+                      <div className="p-2 text-center border-t border-gray-100 bg-gray-50">
                         <Link 
                           href={`/publicproducts?search=${encodeURIComponent(searchQuery)}`}
                           className="text-sm text-blue-600 hover:underline"
@@ -294,7 +349,9 @@ const NavbarCom = () => {
                       </div>
                     </>
                   ) : (
-                    <div className="p-3 text-center text-gray-500 text-sm">No products found</div>
+                    <div className="p-3 text-center text-gray-500 text-sm">
+                      No results found for "{searchQuery}"
+                    </div>
                   )}
                 </div>
               )}

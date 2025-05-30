@@ -41,10 +41,10 @@ const CategoryWiseProductCom = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8 -mt-16">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-10 px-4 sm:px-6 lg:px-8 -mt-16">
       <div className="max-w-7xl mx-auto">
         {/* Header with Back Button */}
-        <div className="flex justify-between items-center mb-12">
+        <div className="flex justify-between items-center mb-16">
           <button
             onClick={handleBackButton}
             className="flex items-center text-gray-600 hover:text-amber-700 transition-colors duration-300 mt-10"
@@ -57,16 +57,16 @@ const CategoryWiseProductCom = () => {
         </div>
 
         {/* Category Title */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-serif font-light text-gray-900 mb-4 tracking-wide">
-            {categoryName || 'Our Collection'}
+        <div className="text-center mb-16 mt-2">
+          <h1 className="text-2xl md:text-3xl font-serif font-light text-gray-900 mb-4 tracking-wide">
+            {categoryName || 'Our Collections'}
           </h1>
           <div className="w-24 h-0.5 bg-amber-600 mx-auto"></div>
         </div>
 
         {/* Products Grid */}
         {products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-10 -mt-4">
             {products.map((product) => (
               <div 
                 key={product.id} 
