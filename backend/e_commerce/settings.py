@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'user_auth',
     'permissions',
     'my_ecommerce',
+    'images_app'
 ]
 
 
