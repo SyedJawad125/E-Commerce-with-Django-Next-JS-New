@@ -181,8 +181,7 @@ class SlidercategorySerializer(ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        exclude = ['updated_at']
-
+        fields = ['product', 'unit_price', 'quantity', 'total_price']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -194,6 +193,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderDetail
         fields = '__all__'
+        read_only_fields = ['bill', 'status', 'created_at', 'updated_at']
 
     
 

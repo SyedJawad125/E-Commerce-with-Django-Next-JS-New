@@ -538,7 +538,7 @@ class OrderController:
             request.data['status'] = 'booked'
             request.POST._mutable = False
 
-            if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
+            if request.user.role in ['admin', 'manager'] or request.user.is_superuser:
                 serialized_data = self.serializer_class(data=request.data)
                 if serialized_data.is_valid():
                     with transaction.atomic():
@@ -562,10 +562,85 @@ class OrderController:
                 else:
                     return create_response({}, get_first_error_message(serialized_data.errors,UNSUCCESSFUL), 400)
             else:
-                return Response({'data': "Permission Denaied"}, 400)
+                return Response({'data': "Permission Denied"}, 400)
         except Exception as e:
             return create_response({'error':str(e)}, UNSUCCESSFUL, 500)
         
+    def checkout(self, request):
+        """Handle checkout functionality"""
+        try:
+            cart_items = request.data.get('cart_items', [])
+            user = request.user
+            
+            order_data = {
+                'customer': user.guid,
+                'customer_name': request.data.get('name'),
+                'customer_email': request.data.get('email'),
+                'customer_phone': request.data.get('phone'),
+                'delivery_address': request.data.get('address'),
+                'payment_method': request.data.get('payment_method'),
+                'payment_status': request.data.get('payment_status', False),
+                'status': 'booked'
+            }
+            
+            # Calculate delivery date
+            today = date.today()
+            if today.weekday() in [3,4]:
+                delivery_days = timedelta(4)
+            elif today.weekday() == 5:
+                delivery_days = timedelta(3)
+            else:
+                delivery_days = timedelta(2)
+            order_data['delivery_date'] = today + delivery_days
+            
+            # Validate and create order
+            serialized_data = self.serializer_class(data=order_data)
+            if not serialized_data.is_valid():
+                return create_response({}, get_first_error_message(serialized_data.errors, UNSUCCESSFUL), 400)
+            
+            with transaction.atomic():
+                order = serialized_data.save()
+                order_total = 0
+                
+                for item in cart_items:
+                    try:
+                        product = Product.objects.get(id=item['product_id'])
+                        total_price = product.price * item['quantity']
+                        
+                        order_detail_data = {
+                            'order': order.id,
+                            'product': product.id,
+                            'unit_price': product.price,
+                            'quantity': item['quantity'],
+                            'total_price': total_price
+                        }
+                        
+                        serialized_detail = self.order_detail_serializer(data=order_detail_data)
+                        if not serialized_detail.is_valid():
+                            transaction.set_rollback(True)
+                            return create_response({}, get_first_error_message(serialized_detail.errors, UNSUCCESSFUL), 400)
+                            
+                        serialized_detail.save()
+                        order_total += total_price
+                    except Product.DoesNotExist:
+                        transaction.set_rollback(True)
+                        return create_response({}, f"Product with id {item['product_id']} not found", 400)
+                
+                order.bill = order_total
+                order.save()
+                
+                response_data = {
+                    'status': 'success',
+                    'order_id': order.id,
+                    'bill_number': order.bill,
+                    'total_amount': order_total
+                }
+                
+                return create_response(response_data, SUCCESSFUL, 201)
+                
+        except Exception as e:
+            return create_response({'error': str(e)}, UNSUCCESSFUL, 500)
+
     def get_order(self, request):
         try:
             instances = self.serializer_class.Meta.model.objects.all()
@@ -578,7 +653,6 @@ class OrderController:
                 "data": serialized_data,
             }
             return create_response(response_data, "SUCCESSFUL", 200)
-
         except Exception as e:
             return Response({'error': str(e)}, 500)
 
@@ -586,7 +660,6 @@ class OrderController:
         try:
             if 'id' in request.data:
                 instance = Order.objects.filter(id=request.data['id']).first()
-
                 if instance:
                     request.POST._mutable = True
                     order_details = request.data.pop('OrderDetail') if "OrderDetail" in request.data else None
@@ -598,7 +671,6 @@ class OrderController:
                         response_data = serialized_data.save()
                         bill = 0
 
-# if order_details === if order_details is not None
                         if order_details:
                             for i in order_details:
                                 i['order'] = response_data.id
@@ -615,7 +687,6 @@ class OrderController:
 
                         if delete_order_details:
                             od = instance.order_detail_order.filter(id__in=delete_order_details)
-                            # od = OrderDetails.objects.filter(id__in=delete_order_details)
                             if od:
                                 od.delete()
                         return create_response(self.serializer_class(response_data).data, SUCCESSFUL, 200)
@@ -634,15 +705,13 @@ class OrderController:
                 instance = Order.objects.filter(id=request.query_params['id']).first()
                 if instance:
                     instance.delete()
-                    return Response({"data": "SUCESSFULL"}, 200)
+                    return Response({"data": "SUCCESSFUL"}, 200)
                 else:
                     return Response({"data": "RECORD NOT FOUND"}, 404)
             else:
                 return Response({"data": "ID NOT PROVIDED"}, 400)
-
         except Exception as e:
             return Response({'error': str(e)}, 500)
-
 
 
 class ContactController:

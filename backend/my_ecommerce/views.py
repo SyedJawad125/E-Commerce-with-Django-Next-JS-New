@@ -118,10 +118,14 @@ class SlidercategoryViews(ModelViewSet):
     def get_slidercategory(self, request):
         return slidercategory_controller.get_slidercategory(request)
     
+    
 class OrderViews(ModelViewSet):
     authentication_classes = [JWTAuthentication]
 
     def post_order(self, request):
+        # Check if this is a checkout request
+        if 'cart_items' in request.data:
+            return order_controller.checkout(request)
         return order_controller.create(request)
 
     def get_order(self, request):
