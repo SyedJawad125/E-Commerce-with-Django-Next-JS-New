@@ -6,7 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 #from .blog_serializer import BlogSerializer
 from utils.base_authentication import JWTAuthentication
-from .my_ecommerce_controller import CategoryController, ContactController, EmployeeController, ProductController, OrderController, PublicSalesproductController, \
+from .my_ecommerce_controller import CategoryController, ContactController, EmployeeController, ProductController, OrderController, PublicOrderController, PublicSalesproductController, \
     PublicproductController, PubliccategoryController, SalesProductController, SlidercategoryController, SliderproductController
 
 # from rest_framework.permissions import IsAdminUser
@@ -22,6 +22,7 @@ category_controller = CategoryController()
 publiccategory_controller = PubliccategoryController()
 slidercategory_controller = SlidercategoryController()
 order_controller = OrderController()
+publicorder_controller = PublicOrderController()
 contact_controller = ContactController()
 employee_controller = EmployeeController()
 
@@ -137,6 +138,13 @@ class OrderViews(ModelViewSet):
     def delete_order(self, request):
         return order_controller.delete_order(request)
     
+class PublicOrderViews(ModelViewSet):
+
+    def post_publicorder(self, request):
+        # Check if this is a checkout request
+        if 'cart_items' in request.data:
+            return publicorder_controller.checkout(request)
+        return publicorder_controller.create(request)
 
 
 class ContactViews(ModelViewSet):

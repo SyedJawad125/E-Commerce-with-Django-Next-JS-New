@@ -183,13 +183,23 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = '__all__'
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['created_at_date'] = instance.created_at.date()
+        data['order_details'] = OrderDetailSerializer(instance.order_details.all(), many=True).data if instance.order_details else None
+        return data
+    
+class PublicOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['created_at_date'] = instance.created_at.date()
         data['order_details'] = OrderDetailSerializer(instance.order_details.all(), many=True).data if instance.order_details else None
         return data
-
+    
 class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderDetail

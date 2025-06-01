@@ -123,6 +123,19 @@ class OrderFilter(FilterSet):
         model = Order
         fields ='__all__'
 
+class PublicOrderFilter(FilterSet):
+    id = CharFilter(field_name='id')
+    # dept_updated_by_user= CharFilter(field_name='id')
+    # dept_added_by_user= CharFilter(field_name='id')
+    date_from = DateFilter(field_name='created_at', lookup_expr='gte' )
+    date_to = DateFilter(field_name='created_at', lookup_expr='lte' )
+    delivery_address = CharFilter(field_name='delivery_address', lookup_expr='icontains')
+    bill = CharFilter(field_name='bill')
+
+    class Meta:
+        model = Order
+        fields ='__all__'
+
 
 class ContactFilter(FilterSet):
     id = CharFilter(field_name='id')
