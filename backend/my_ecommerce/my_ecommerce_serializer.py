@@ -181,12 +181,13 @@ class SlidercategorySerializer(ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['product', 'unit_price', 'quantity', 'total_price']
+        fields = '__all__'
+
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['created_at_date'] = instance.created_at.date()
-        data['order_details'] = OrderDetailSerializer(instance.order_detail_order.all(), many=True).data if instance.order_detail_order else None
+        data['order_details'] = OrderDetailSerializer(instance.order_details.all(), many=True).data if instance.order_details else None
         return data
 
 class OrderDetailSerializer(serializers.ModelSerializer):
@@ -195,6 +196,14 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['bill', 'status', 'created_at', 'updated_at']
 
+    def to_representation(self, instance):
+        try:
+            return super().to_representation(instance)
+        except Exception as e:
+            import traceback
+            print("ERROR in OrderDetailSerializer:")  # Console log
+            traceback.print_exc()  # Full error trace
+            raise
     
 
 class ContactSerializer(ModelSerializer):

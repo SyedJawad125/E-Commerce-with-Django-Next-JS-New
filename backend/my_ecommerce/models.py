@@ -132,11 +132,7 @@ class Order(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
     # Other fields remain the same...
 
-    def save(self, *args, **kwargs):
-        if not self.bill:
-            # Generate a unique bill number when order is created
-            self.bill = int(time.time())  # Or use a better bill generation logic
-        super().save(*args, **kwargs)
+
    
 
 

@@ -517,54 +517,75 @@ class SlidercategoryController:
             return Response({'error': str(e)}, 500)
 
 
+from datetime import date, timedelta
+
 class OrderController:
     serializer_class = OrderSerializer
     order_detail_serializer = OrderDetailSerializer
     filterset_class = OrderFilter
 
+    def _calculate_delivery_date(self):
+        """Calculate delivery date based on current day"""
+        today = date.today()
+        if today.weekday() in [3, 4]:  # Thursday, Friday
+            return today + timedelta(days=4)
+        elif today.weekday() == 5:  # Saturday
+            return today + timedelta(days=3)
+        return today + timedelta(days=2)
+
     def create(self, request):
         try:
             request.POST._mutable = True
-            order_details = request.data.pop('OrderDetail') if 'OrderDetail' in request.data else None
+            order_details = request.data.pop('OrderDetail', [])
             request.data['customer'] = request.user.guid
-            today = date.today()
-            if today.weekday() in [3,4]:
-                delivery_days = timedelta(4)
-            elif today.weekday() == 5:
-                delivery_days = timedelta(3)
-            else:
-                delivery_days = timedelta(2)
-            request.data['delivery_date'] = today + delivery_days
+            request.data['delivery_date'] = self._calculate_delivery_date()
             request.data['status'] = 'booked'
             request.POST._mutable = False
 
-            if request.user.role in ['admin', 'manager'] or request.user.is_superuser:
-                serialized_data = self.serializer_class(data=request.data)
-                if serialized_data.is_valid():
-                    with transaction.atomic():
-                        response_data = serialized_data.save()
-                        bill = 0
-                        if order_details:
-                            for i in order_details:
-                                i['order'] = response_data.id
-                                i['total_price'] = i['quantity'] * i['unit_price']
-                                bill += i['total_price']
-                                serialized_detail = self.order_detail_serializer(data=i)
-                                if serialized_detail.is_valid():
-                                    serialized_detail.save()
-                                else:
-                                    transaction.set_rollback(True)
-                                    return create_response({}, get_first_error_message(serialized_detail.errors, UNSUCCESSFUL),400)
-                            response_data.bill = bill
-                            response_data.save()
-            
-                    return create_response(self.serializer_class(response_data).data, SUCCESSFUL, 200)
-                else:
-                    return create_response({}, get_first_error_message(serialized_data.errors,UNSUCCESSFUL), 400)
-            else:
-                return Response({'data': "Permission Denied"}, 400)
+            if not (request.user.role in ['admin', 'manager'] or request.user.is_superuser):
+                return Response({'data': "Permission Denied"}, status=400)
+
+            serialized_data = self.serializer_class(data=request.data)
+            if not serialized_data.is_valid():
+                return create_response(
+                    {}, 
+                    get_first_error_message(serialized_data.errors, UNSUCCESSFUL),
+                    400
+                )
+
+            with transaction.atomic():
+                response_data = serialized_data.save()
+                bill = 0
+                
+                for item in order_details:
+                    item['order'] = response_data.id
+                    item['total_price'] = item['quantity'] * item['unit_price']
+                    bill += item['total_price']
+                    
+                    serialized_detail = self.order_detail_serializer(data=item)
+                    if not serialized_detail.is_valid():
+                        return create_response(
+                            {},
+                            get_first_error_message(serialized_detail.errors, UNSUCCESSFUL),
+                            400
+                        )
+                    serialized_detail.save()
+                
+                response_data.bill = bill
+                response_data.save()
+
+            return create_response(
+                self.serializer_class(response_data).data,
+                SUCCESSFUL,
+                200
+            )
+
         except Exception as e:
-            return create_response({'error':str(e)}, UNSUCCESSFUL, 500)
+            return create_response(
+                {'error': str(e)},
+                UNSUCCESSFUL,
+                500
+            )
         
     def checkout(self, request):
         """Handle checkout functionality"""
@@ -580,23 +601,18 @@ class OrderController:
                 'delivery_address': request.data.get('address'),
                 'payment_method': request.data.get('payment_method'),
                 'payment_status': request.data.get('payment_status', False),
-                'status': 'booked'
+                'status': 'booked',
+                'delivery_date': self._calculate_delivery_date()
             }
-            
-            # Calculate delivery date
-            today = date.today()
-            if today.weekday() in [3,4]:
-                delivery_days = timedelta(4)
-            elif today.weekday() == 5:
-                delivery_days = timedelta(3)
-            else:
-                delivery_days = timedelta(2)
-            order_data['delivery_date'] = today + delivery_days
             
             # Validate and create order
             serialized_data = self.serializer_class(data=order_data)
             if not serialized_data.is_valid():
-                return create_response({}, get_first_error_message(serialized_data.errors, UNSUCCESSFUL), 400)
+                return create_response(
+                    {},
+                    get_first_error_message(serialized_data.errors, UNSUCCESSFUL),
+                    400
+                )
             
             with transaction.atomic():
                 order = serialized_data.save()
@@ -618,13 +634,21 @@ class OrderController:
                         serialized_detail = self.order_detail_serializer(data=order_detail_data)
                         if not serialized_detail.is_valid():
                             transaction.set_rollback(True)
-                            return create_response({}, get_first_error_message(serialized_detail.errors, UNSUCCESSFUL), 400)
+                            return create_response(
+                                {},
+                                get_first_error_message(serialized_detail.errors, UNSUCCESSFUL),
+                                400
+                            )
                             
                         serialized_detail.save()
                         order_total += total_price
                     except Product.DoesNotExist:
                         transaction.set_rollback(True)
-                        return create_response({}, f"Product with id {item['product_id']} not found", 400)
+                        return create_response(
+                            {},
+                            f"Product with id {item['product_id']} not found",
+                            400
+                        )
                 
                 order.bill = order_total
                 order.save()
@@ -639,8 +663,11 @@ class OrderController:
                 return create_response(response_data, SUCCESSFUL, 201)
                 
         except Exception as e:
-            return create_response({'error': str(e)}, UNSUCCESSFUL, 500)
-
+            return create_response(
+                {'error': str(e)},
+                UNSUCCESSFUL,
+                500
+            )
     def get_order(self, request):
         try:
             instances = self.serializer_class.Meta.model.objects.all()
