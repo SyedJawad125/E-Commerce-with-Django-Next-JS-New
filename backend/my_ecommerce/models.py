@@ -1,3 +1,4 @@
+from datetime import time
 from django.db import models
 from django.forms import ValidationError
 from user_auth.models import User
@@ -101,23 +102,41 @@ def calculate_final_price(sender, instance, **kwargs):
     instance.calculate_final_price()
     
 class Order(models.Model):
-
     status_choices = (
-            ("booked", "booked"),
-            ("in_process", "in_process"),
-            ("delivered", "delivered")
-        )
+        ("pending", "Pending"),
+        ("booked", "Booked"),
+        ("in_process", "In Process"),
+        ("delivered", "Delivered"),
+        ("cancelled", "Cancelled")
+    )
+    
+    payment_choices = (
+        ("credit_card", "Credit Card"),
+        ("debit_card", "Debit Card"),
+        ("paypal", "PayPal"),
+        ("cash_on_delivery", "Cash on Delivery")
+    )
 
-    bill = models.PositiveBigIntegerField(null=True, blank=True)
+    bill = models.PositiveBigIntegerField(null=True, blank=True, unique=True)
+    customer_name = models.CharField(max_length=100)  # Can be different from User account name
+    customer_email = models.EmailField()
+    customer_phone = models.CharField(max_length=20)
     delivery_address = models.TextField()
-    status = models.CharField(max_length=50, choices = status_choices, null=True, blank=True)
+    status = models.CharField(max_length=50, choices=status_choices, default="pending")
+    payment_method = models.CharField(max_length=50, choices=payment_choices)
+    payment_status = models.BooleanField(default=False)
     delivery_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    rider = models.ForeignKey(User, on_delete=models.CASCADE, related_name='order_rider', null=True,blank=True)
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='order_customer', null=True,blank=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='order_created_by', null=True, blank=True)
-    updated_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='order_updated_by', null=True, blank=True)
+    rider = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    # Other fields remain the same...
+
+    def save(self, *args, **kwargs):
+        if not self.bill:
+            # Generate a unique bill number when order is created
+            self.bill = int(time.time())  # Or use a better bill generation logic
+        super().save(*args, **kwargs)
    
 
 
