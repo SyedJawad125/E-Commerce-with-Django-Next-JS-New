@@ -122,6 +122,7 @@ class Order(models.Model):
     customer_email = models.EmailField()
     customer_phone = models.CharField(max_length=20)
     delivery_address = models.TextField()
+    city = models.CharField(max_length=100, null=True, blank=True)  
     status = models.CharField(max_length=50, choices=status_choices, default="pending")
     payment_method = models.CharField(max_length=50, choices=payment_choices)
     payment_status = models.BooleanField(default=False)
