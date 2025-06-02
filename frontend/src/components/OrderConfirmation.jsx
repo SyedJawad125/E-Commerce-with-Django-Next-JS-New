@@ -144,14 +144,14 @@ const OrderConfirmationPage = () => {
 
                         <div className="mt-6 space-y-2">
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Subtotal</span>
-                                <span className="font-medium">PKR {orderData.order_summary.subtotal.toLocaleString()}</span>
+                                <span className="text-gray-900">Subtotal</span>
+                                <span className="font-medium text-gray-900">PKR {orderData.order_summary.subtotal.toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Shipping</span>
-                                <span className="font-medium">PKR 0</span>
+                                <span className="text-gray-900">Shipping</span>
+                                <span className="font-medium text-gray-900">PKR 0</span>
                             </div>
-                            <div className="flex justify-between text-lg font-bold mt-2">
+                            <div className="flex justify-between text-gray-900 text-lg font-bold mt-2">
                                 <span>Total</span>
                                 <span>PKR {orderData.order_summary.total.toLocaleString()}</span>
                             </div>
@@ -163,12 +163,12 @@ const OrderConfirmationPage = () => {
                         <h2 className="text-xl font-semibold text-gray-900 mb-4">Customer Information</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <h3 className="text-sm font-medium text-gray-500">Contact Information</h3>
+                                <h3 className="text-sm font-medium text-gray-900">Contact Information :</h3>
                                 <p className="mt-1 text-sm text-gray-900">{orderData.customer_info.email}</p>
                                 <p className="mt-1 text-sm text-gray-900">{orderData.customer_info.phone}</p>
                             </div>
                             <div>
-                                <h3 className="text-sm font-medium text-gray-500">Shipping Address</h3>
+                                <h3 className="text-sm font-medium text-gray-900">Shipping Address :</h3>
                                 <p className="mt-1 text-sm text-gray-900">{orderData.delivery_info.address}</p>
                                 <p className="mt-1 text-sm text-gray-900">Estimated Delivery: {orderData.delivery_info.estimated_date}</p>
                             </div>
@@ -179,7 +179,7 @@ const OrderConfirmationPage = () => {
                     <div className="p-6">
                         <h2 className="text-xl font-semibold text-gray-900 mb-4">Payment Method</h2>
                         <div className="flex items-center">
-                            <div className="bg-gray-100 p-3 rounded-md">
+                            <div className="bg-gray-900 p-3 rounded-md">
                                 <p className="font-medium capitalize">
                                     {orderData.payment_method.replace(/_/g, ' ')}
                                 </p>

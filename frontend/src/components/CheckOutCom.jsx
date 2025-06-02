@@ -1188,7 +1188,7 @@ const CheckoutPage = () => {
                                                 name="customer_name"
                                                 value={form.customer_name}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                className="w-full px-4 py-2 border border-gray-300  text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                                                 required
                                             />
                                         </div>
@@ -1200,7 +1200,7 @@ const CheckoutPage = () => {
                                                 name="customer_email"
                                                 value={form.customer_email}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                                                 required
                                             />
                                         </div>
@@ -1212,7 +1212,7 @@ const CheckoutPage = () => {
                                                 name="customer_phone"
                                                 value={form.customer_phone}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                                                 required
                                             />
                                         </div>
@@ -1224,7 +1224,7 @@ const CheckoutPage = () => {
                                                 name="delivery_address"
                                                 value={form.delivery_address}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                                                 required
                                             />
                                         </div>
@@ -1236,7 +1236,7 @@ const CheckoutPage = () => {
                                                 name="city"
                                                 value={form.city}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                                className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                                                 required
                                             />
                                         </div>
