@@ -1183,13 +1183,13 @@ const CheckoutPage = () => {
         doc.text('contact@luxury.com', 20, 70);
         
         // Customer Info
-        doc.text(`Customer: ${orderData.customer_name}`, 20, 90);
-        doc.text(`Email: ${orderData.customer_email}`, 20, 100);
-        doc.text(`Phone: ${orderData.customer_phone}`, 20, 110);
-        doc.text(`Address: ${orderData.delivery_address}, ${orderData.city}`, 20, 120);
+        doc.text(`Customer: ${orderData.customer_info.name}`, 20, 90);
+        doc.text(`Email: ${orderData.customer_info.email}`, 20, 100);
+        doc.text(`Phone: ${orderData.customer_info.phone}`, 20, 110);
+        doc.text(`Address: ${orderData.delivery_info.address}`, 20, 120);
         
         // Order Info
-        doc.text(`Order #: ${orderData.id}`, 20, 140);
+        doc.text(`Order #: ${orderData.order_id}`, 20, 140);
         doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 150);
         doc.text(`Status: ${orderData.status}`, 20, 160);
         
@@ -1200,9 +1200,8 @@ const CheckoutPage = () => {
         doc.setFontSize(10);
         let yPosition = 190;
         
-        orderData.order_details.forEach(item => {
-            const productName = item.product?.name || item.sales_product?.name;
-            doc.text(`${productName}`, 20, yPosition);
+        orderData.order_summary.items.forEach(item => {
+            doc.text(`${item.product_name}`, 20, yPosition);
             doc.text(`PKR ${item.unit_price.toLocaleString()} x ${item.quantity}`, 160, yPosition);
             doc.text(`PKR ${item.total_price.toLocaleString()}`, 190, yPosition);
             yPosition += 10;
@@ -1211,9 +1210,9 @@ const CheckoutPage = () => {
         // Total
         doc.setFontSize(12);
         doc.text('TOTAL:', 160, yPosition + 20);
-        doc.text(`PKR ${orderData.bill.toLocaleString()}`, 190, yPosition + 20);
+        doc.text(`PKR ${orderData.order_summary.total.toLocaleString()}`, 190, yPosition + 20);
         
-        doc.save(`invoice-${orderData.id}.pdf`);
+        doc.save(`invoice-${orderData.order_id}.pdf`);
     };
 
     const handleSubmit = async (e) => {
@@ -1229,45 +1228,32 @@ const CheckoutPage = () => {
         try {
             // Prepare items in backend-compatible format
             const items = cartItems.map(item => ({
-                product_type: item.isSalesProduct ? 'sales_product' : 'product',
+                product_type: item.final_price !== undefined ? 'sales_product' : 'product',
                 product_id: item.id,
                 quantity: item.quantity || 1
             }));
 
-            // Prepare the order data according to backend requirements
+            // Prepare the complete order data
             const orderData = {
-                ...form,
+                customer_name: form.customer_name,
+                customer_email: form.customer_email,
+                customer_phone: form.customer_phone,
+                delivery_address: form.delivery_address,
+                city: form.city,
+                payment_method: form.payment_method,
                 items: items
             };
 
-            // Send to backend
-            // const response = await AxiosInstance.post('/ecommerce/contact', formData, {
-
-            const response = await AxiosInstance.post('/ecommerce/publicorder', {
-                method: 'POST',
+            // Send to backend using Axios
+            const response = await AxiosInstance.post('/ecommerce/publicorder', orderData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-                },
-                body: JSON.stringify(orderData)
+                }
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                let errorMsg = 'Failed to place order';
-                if (response.status === 400) {
-                    errorMsg = data.message || Object.values(data.errors || {}).join('\n');
-                } else if (response.status === 401) {
-                    errorMsg = 'Please login to place an order';
-                } else if (response.status === 403) {
-                    errorMsg = 'You do not have permission to perform this action';
-                }
-                throw new Error(errorMsg);
-            }
-
             // On success
-            generateInvoice(data);
+            generateInvoice(response.data.data);
             clearCart();
 
             toast.success('Order placed successfully!', {
@@ -1286,7 +1272,28 @@ const CheckoutPage = () => {
             }, 3500);
 
         } catch (error) {
-            toast.error(error.message || 'Failed to place order');
+            let errorMsg = 'Failed to place order';
+            
+            if (error.response) {
+                // Server responded with error status
+                if (error.response.status === 400) {
+                    errorMsg = error.response.data.message || 'Validation error';
+                } else if (error.response.status === 401) {
+                    errorMsg = 'Please login to place an order';
+                } else if (error.response.status === 403) {
+                    errorMsg = 'You do not have permission to perform this action';
+                } else {
+                    errorMsg = error.response.data.message || `Server error: ${error.response.status}`;
+                }
+            } else if (error.request) {
+                // Request was made but no response
+                errorMsg = 'No response from server - please try again';
+            } else {
+                // Other errors
+                errorMsg = error.message || 'Unknown error occurred';
+            }
+
+            toast.error(errorMsg);
             console.error('Checkout error:', error);
         } finally {
             setIsLoading(false);
@@ -1311,7 +1318,6 @@ const CheckoutPage = () => {
                 pauseOnHover
                 theme="colored"
             />
-            
             
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center mb-8 cursor-pointer" onClick={() => router.back()}>
