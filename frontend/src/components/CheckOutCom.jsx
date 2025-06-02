@@ -1119,6 +1119,7 @@ import { useRouter } from 'next/navigation';
 import { CartContext } from "@/components/CartContext";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AxiosInstance from "@/components/AxiosInstance";
 import jsPDF from 'jspdf';
 import { FaLock, FaArrowLeft, FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 
@@ -1240,7 +1241,9 @@ const CheckoutPage = () => {
             };
 
             // Send to backend
-            const response = await fetch('http://localhost:8000/ecommerce/publicorder/', {
+            // const response = await AxiosInstance.post('/ecommerce/contact', formData, {
+
+            const response = await AxiosInstance.post('/ecommerce/publicorder', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
