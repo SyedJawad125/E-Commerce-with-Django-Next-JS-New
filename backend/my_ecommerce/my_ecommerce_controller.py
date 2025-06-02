@@ -833,14 +833,22 @@ class PublicOrderController:
                         unit_price, product = self._get_product_price(product_type, product_id)
                         total_price = unit_price * quantity
                         
-                        # Create order detail
-                        order_detail = OrderDetail.objects.create(
-                            order=order,
-                            product=product,  # This will work if both models share common fields
-                            unit_price=unit_price,
-                            quantity=quantity,
-                            total_price=total_price
-                        )
+                        # Prepare order detail data based on product type
+                        order_detail_data = {
+                            'order': order,
+                            'unit_price': unit_price,
+                            'quantity': quantity,
+                            'total_price': total_price
+                        }
+                        
+                        # Set the appropriate product field based on type
+                        if product_type == 'product':
+                            order_detail_data['product'] = product
+                        else:
+                            order_detail_data['sales_product'] = product
+                        
+                        # Create order detail with all fields at once
+                        order_detail = OrderDetail.objects.create(**order_detail_data)
                         
                         bill += total_price
                         order_items.append({

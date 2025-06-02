@@ -143,21 +143,28 @@ class OrderDetail(models.Model):
     unit_price = models.PositiveBigIntegerField(help_text="Price per unit at the time of purchase")
     quantity = models.PositiveIntegerField(default=1, help_text="Number of units ordered")
     total_price = models.PositiveBigIntegerField(blank=True, null=True, help_text="Automatically calculated as unit_price * quantity")
-    product = models.ForeignKey(Product,  on_delete=models.CASCADE,  related_name='order_details')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='order_details', null=True, blank=True)
+    sales_product = models.ForeignKey(SalesProduct, on_delete=models.CASCADE, related_name='order_details', null=True, blank=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_details')
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    
     class Meta:
         verbose_name = "Order Detail"
         verbose_name_plural = "Order Details"
         ordering = ['-created_at']
-        # No unique_together constraint to allow same product multiple times in order
 
     def __str__(self):
-        return f"{self.quantity}x {self.product.name} (Order: {self.order.id})"
+        name = self.product.name if self.product else self.sales_product.name
+        return f"{self.quantity}x {name} (Order: {self.order.id})"
 
     def clean(self):
         """Calculate total_price before saving"""
+        if not self.product and not self.sales_product:
+            raise ValidationError("Either product or sales_product must be set")
+        if self.product and self.sales_product:
+            raise ValidationError("Cannot set both product and sales_product")
+            
         if self.unit_price and self.quantity:
             self.total_price = self.unit_price * self.quantity
 
