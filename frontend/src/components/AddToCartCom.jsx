@@ -448,7 +448,7 @@ import { FiShoppingBag } from 'react-icons/fi';
 const formatPrice = (price) => {
   if (price === null || price === undefined) return '0.00';
   const num = typeof price === 'number' ? price : parseFloat(price);
-  return isNaN(num) ? '0.00' : num.toFixed(2);
+  return isNaN(num) ? '0.00' : num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 const AddToCartPage = () => {
@@ -478,7 +478,7 @@ const AddToCartPage = () => {
         return cartItems.reduce((total, item) => {
             const price = item.final_price !== undefined ? item.final_price : item.price;
             return total + (parseFloat(price) * item.quantity);
-        }, 0).toFixed(2);
+        }, 0);
     };
 
     const handleProceedToCheckout = () => {
@@ -500,7 +500,16 @@ const AddToCartPage = () => {
 
     const getDisplayTotal = (item) => {
         const price = item.final_price !== undefined ? item.final_price : item.price;
-        return (parseFloat(price) * item.quantity).toFixed(2);
+        return formatPrice(parseFloat(price)) * item.quantity;
+    };
+
+    // Prepare cart items in backend-compatible format
+    const getBackendCompatibleItems = () => {
+        return cartItems.map(item => ({
+            product_type: item.isSalesProduct ? 'sales_product' : 'product',
+            product_id: item.id,
+            quantity: item.quantity
+        }));
     };
 
     return (
@@ -517,6 +526,7 @@ const AddToCartPage = () => {
                 pauseOnHover
                 theme="dark"
             />
+            
             
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-12">

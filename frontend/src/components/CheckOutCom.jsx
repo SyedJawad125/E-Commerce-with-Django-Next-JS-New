@@ -193,6 +193,10 @@
 
 
 
+
+
+
+
 // import React, { useContext, useState } from 'react';
 // import { useRouter } from 'next/navigation';
 // import { CartContext } from "@/components/CartContext";
@@ -1129,10 +1133,8 @@ const CheckoutPage = () => {
         delivery_address: '',
         city: '',
         payment_method: 'credit_card',
-        payment_status: false
     });
 
-    // Auto-fill user data if available
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
         if (userData) {
@@ -1166,7 +1168,7 @@ const CheckoutPage = () => {
     const generateInvoice = (orderData) => {
         const doc = new jsPDF();
         
-        // Luxury Invoice Design
+        // Invoice design
         doc.setFillColor(20, 20, 20);
         doc.rect(0, 0, 210, 297, 'F');
         doc.setTextColor(255, 255, 255);
@@ -1176,29 +1178,30 @@ const CheckoutPage = () => {
         // Company Info
         doc.setFontSize(12);
         doc.text('LUXURY COLLECTION', 20, 50);
-        doc.text('DHA 2, Islamabad, Pakistan', 20, 60);
-        doc.text('contact@luxurycollection.com', 20, 70);
+        doc.text('123 Main Street, City', 20, 60);
+        doc.text('contact@luxury.com', 20, 70);
         
-        // Customer Info from orderData
+        // Customer Info
         doc.text(`Customer: ${orderData.customer_name}`, 20, 90);
         doc.text(`Email: ${orderData.customer_email}`, 20, 100);
         doc.text(`Phone: ${orderData.customer_phone}`, 20, 110);
         doc.text(`Address: ${orderData.delivery_address}, ${orderData.city}`, 20, 120);
         
         // Order Info
-        doc.text(`Order #: ${orderData.bill}`, 20, 140);
-        doc.text(`Date: ${new Date(orderData.created_at).toLocaleDateString()}`, 20, 150);
+        doc.text(`Order #: ${orderData.id}`, 20, 140);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 150);
         doc.text(`Status: ${orderData.status}`, 20, 160);
         
-        // Invoice Items
+        // Order Items
         doc.setFontSize(14);
         doc.text('ORDER SUMMARY', 20, 180);
         
         doc.setFontSize(10);
         let yPosition = 190;
         
-        orderData.order_details.forEach((item) => {
-            doc.text(`${item.product.name}`, 20, yPosition);
+        orderData.order_details.forEach(item => {
+            const productName = item.product?.name || item.sales_product?.name;
+            doc.text(`${productName}`, 20, yPosition);
             doc.text(`PKR ${item.unit_price.toLocaleString()} x ${item.quantity}`, 160, yPosition);
             doc.text(`PKR ${item.total_price.toLocaleString()}`, 190, yPosition);
             yPosition += 10;
@@ -1209,7 +1212,7 @@ const CheckoutPage = () => {
         doc.text('TOTAL:', 160, yPosition + 20);
         doc.text(`PKR ${orderData.bill.toLocaleString()}`, 190, yPosition + 20);
         
-        doc.save(`invoice-${orderData.bill}.pdf`);
+        doc.save(`invoice-${orderData.id}.pdf`);
     };
 
     const handleSubmit = async (e) => {
@@ -1223,22 +1226,25 @@ const CheckoutPage = () => {
         setIsLoading(true);
 
         try {
+            // Prepare items in backend-compatible format
+            const items = cartItems.map(item => ({
+                product_type: item.isSalesProduct ? 'sales_product' : 'product',
+                product_id: item.id,
+                quantity: item.quantity || 1
+            }));
+
             // Prepare the order data according to backend requirements
             const orderData = {
                 ...form,
-                cart_items: cartItems.map(item => ({
-                    product_id: item.id,
-                    quantity: item.quantity,
-                    unit_price: item.final_price || item.price
-                }))
+                items: items
             };
 
             // Send to backend
-            const response = await fetch('http://localhost:8000/ecommerce/publicorder', {
+            const response = await fetch('http://localhost:8000/ecommerce/publicorder/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
                 },
                 body: JSON.stringify(orderData)
             });
@@ -1248,7 +1254,7 @@ const CheckoutPage = () => {
             if (!response.ok) {
                 let errorMsg = 'Failed to place order';
                 if (response.status === 400) {
-                    errorMsg = Object.values(data).join('\n');
+                    errorMsg = data.message || Object.values(data.errors || {}).join('\n');
                 } else if (response.status === 401) {
                     errorMsg = 'Please login to place an order';
                 } else if (response.status === 403) {
@@ -1288,8 +1294,6 @@ const CheckoutPage = () => {
         router.push('/publicproducts');
     };
 
-    const totalProducts = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
-
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <ToastContainer 
@@ -1304,6 +1308,7 @@ const CheckoutPage = () => {
                 pauseOnHover
                 theme="colored"
             />
+            
             
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center mb-8 cursor-pointer" onClick={() => router.back()}>
