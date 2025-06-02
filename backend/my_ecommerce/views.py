@@ -138,13 +138,32 @@ class OrderViews(ModelViewSet):
     def delete_order(self, request):
         return order_controller.delete_order(request)
     
-class PublicOrderViews(ModelViewSet):
+# class PublicOrderViews(ModelViewSet):
 
-    def post_publicorder(self, request):
-        # Check if this is a checkout request
+#     def post_publicorder(self, request):
+#         # Check if this is a checkout request
+#         if 'cart_items' in request.data:
+#             return publicorder_controller.checkout(request)
+#         return publicorder_controller.create_order_with_products(request)
+
+
+
+class PublicOrderViews(ModelViewSet):
+    
+    def create(self, request, *args, **kwargs):
+        """
+        Unified order creation endpoint that handles:
+        - Regular products
+        - Sales products
+        - Mixed orders
+        - Checkout flow
+        """
         if 'cart_items' in request.data:
             return publicorder_controller.checkout(request)
-        return publicorder_controller.create(request)
+        elif 'items' in request.data and any(item.get('product_type') for item in request.data.get('items', [])):
+            return publicorder_controller.create_mixed_order(request)
+        else:
+            return publicorder_controller.create_order_with_products(request)
 
 
 class ContactViews(ModelViewSet):

@@ -35,7 +35,7 @@ urlpatterns = [
                                                 "patch": "update_order",
                                                 "delete": "delete_order"})),
                                                 
-    path('publicorder', PublicOrderViews.as_view({"post": "post_publicorder"})),
+    path('publicorder', PublicOrderViews.as_view({"post": "create"})),
     
     path('contact', ContactViews.as_view({"get": "get_contact",
                                                 "post": "post_contact",

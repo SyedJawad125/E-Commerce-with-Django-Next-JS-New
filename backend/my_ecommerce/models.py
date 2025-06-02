@@ -117,7 +117,7 @@ class Order(models.Model):
         ("cash_on_delivery", "Cash on Delivery")
     )
 
-    bill = models.PositiveBigIntegerField(null=True, blank=True, unique=True)
+    bill = models.PositiveBigIntegerField(null=True, blank=True)
     customer_name = models.CharField(max_length=100)  # Can be different from User account name
     customer_email = models.EmailField()
     customer_phone = models.CharField(max_length=20)
@@ -130,7 +130,9 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     rider = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    # customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders', null=True, blank=True)
+
     # Other fields remain the same...
 
 
@@ -190,3 +192,12 @@ class Employee(models.Model):
     image = models.FileField(upload_to='employee_images/', blank=True, null=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='employee_created_by', null=True, blank=True)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employee_updated_by', null=True, blank=True)
+
+
+
+# models.py
+# class GuestCustomer(models.Model):
+#     name = models.CharField(max_length=100)
+#     email = models.EmailField()
+#     phone = models.CharField(max_length=20)
+#     created_at = models.DateTimeField(auto_now_add=True)

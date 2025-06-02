@@ -193,6 +193,9 @@ class PublicOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+        extra_kwargs = {
+            'customer': {'required': False, 'allow_null': True}
+        }
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

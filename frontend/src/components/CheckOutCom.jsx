@@ -1234,7 +1234,7 @@ const CheckoutPage = () => {
             };
 
             // Send to backend
-            const response = await fetch('http://localhost:8000/ecommerce/order', {
+            const response = await fetch('http://localhost:8000/ecommerce/publicorder', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
