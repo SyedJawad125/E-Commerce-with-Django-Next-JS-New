@@ -675,14 +675,90 @@ class OrderController:
             filtered_data = self.filterset_class(request.GET, queryset=instances)
             data = filtered_data.qs
             paginated_data, count = paginate_data(data, request)
-            serialized_data = self.serializer_class(paginated_data, many=True).data
+            
+            # Transform each order instance to match create_mixed_order format
+            formatted_orders = []
+            for order in paginated_data:
+                order_items = []
+                
+                # Process order details
+                for detail in order.order_details.all():
+                    # Skip if no product associated
+                    if not detail.product and not detail.sales_product:
+                        continue
+                    
+                    # Determine product type and info
+                    if detail.product:
+                        product_type = "product"
+                        product_id = detail.product.id
+                        product_name = detail.product.name
+                        is_discounted = getattr(detail.product, 'has_discount', False)
+                    else:  # sales_product
+                        product_type = "sales_product"
+                        product_id = detail.sales_product.id
+                        product_name = detail.sales_product.name
+                        is_discounted = True  # Assuming sales products are always discounted
+                    
+                    # Handle None values for prices
+                    unit_price = float(detail.unit_price) if detail.unit_price is not None else 0.0
+                    total_price = float(detail.total_price) if detail.total_price is not None else 0.0
+                    
+                    order_items.append({
+                        'product_type': product_type,
+                        'product_id': product_id,
+                        'product_name': product_name,
+                        'quantity': detail.quantity,
+                        'unit_price': unit_price,
+                        'total_price': total_price,
+                        'is_discounted': is_discounted
+                    })
+                
+                # Calculate subtotal and total, handling None values
+                subtotal = float(order.bill) if order.bill is not None else 0.0
+                
+                # Format the order data
+                formatted_order = {
+                    'order_id': order.id,
+                    'customer_info': {
+                        'name': order.customer_name,
+                        'email': order.customer_email,
+                        'phone': order.customer_phone
+                    },
+                    'delivery_info': {
+                        'address': order.delivery_address,
+                        'city': order.city,  # Added city field here
+                        'estimated_date': order.delivery_date.strftime('%Y-%m-%d') if order.delivery_date else None
+                        
+                    },
+                    'order_summary': {
+                        'items': order_items,
+                        'subtotal': subtotal,
+                        'total': subtotal
+                    },
+                    'payment_method': order.payment_method,
+                    'status': order.status
+                }
+                formatted_orders.append(formatted_order)
+            
             response_data = {
-                "count": count,
-                "data": serialized_data,
+                "status_code": 200,
+                "message": "Successful",
+                "data": {
+                    "count": count,
+                    "data": formatted_orders,
+                }
             }
-            return create_response(response_data, "SUCCESSFUL", 200)
+            return Response(response_data, status=200)
+        
         except Exception as e:
-            return Response({'error': str(e)}, 500)
+            import traceback
+            logger.error(f"Error fetching orders: {str(e)}\n{traceback.format_exc()}")
+            return Response({
+                "status_code": 500,
+                "message": str(e),
+                "data": None
+            }, status=500)
+        
 
     def update_order(self, request):
         try:
