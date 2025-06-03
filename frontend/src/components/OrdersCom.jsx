@@ -487,6 +487,7 @@ const OrdersCom = () => {
                           <table className="min-w-full bg-gray-700 rounded-lg overflow-hidden">
                             <thead className="bg-gray-600">
                               <tr>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">ID</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Product</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Type</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Unit Price</th>
@@ -498,6 +499,9 @@ const OrdersCom = () => {
                             <tbody className="divide-y divide-gray-600">
                               {order.order_summary?.items?.map((item, index) => (
                                 <tr key={index}>
+                                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
+                                    {item.product_id}
+                                  </td>
                                   <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
                                     {item.product_name}
                                   </td>
