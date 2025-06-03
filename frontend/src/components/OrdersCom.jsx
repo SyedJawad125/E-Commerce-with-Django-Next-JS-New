@@ -542,7 +542,7 @@ const OrdersCom = () => {
                       <div className="flex justify-end space-x-3">
                         {/* {permissions.update_order && ( */}
                           <button
-                            onClick={() => updateOrder(item.id)}
+                            onClick={() => updateOrder(order.order_id)}
                             className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
                           >
                             Edit Order
@@ -550,7 +550,7 @@ const OrdersCom = () => {
                         {/* )} */}
                         {/* {permissions.delete_order && ( */}
                           <button
-                            onClick={() => deleteOrder(item.id)}
+                            onClick={() => deleteOrder(order.order_id)}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                           >
                             Delete Order
