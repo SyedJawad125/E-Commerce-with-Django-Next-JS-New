@@ -974,54 +974,149 @@ const CheckoutPage = () => {
         }, 0);
     };
 
+    // const generateInvoice = (orderData) => {
+    //     const doc = new jsPDF();
+        
+    //     // Invoice design
+    //     doc.setFillColor(20, 20, 20);
+    //     doc.rect(0, 0, 210, 297, 'F');
+    //     doc.setTextColor(255, 255, 255);
+    //     doc.setFontSize(24);
+    //     doc.text('INVOICE', 105, 30, { align: 'center' });
+        
+    //     // Company Info
+    //     doc.setFontSize(12);
+    //     doc.text('LUXURY COLLECTION', 20, 50);
+    //     doc.text('123 Main Street, City', 20, 60);
+    //     doc.text('contact@luxury.com', 20, 70);
+        
+    //     // Customer Info
+    //     doc.text(`Customer: ${orderData.customer_info.name}`, 20, 90);
+    //     doc.text(`Email: ${orderData.customer_info.email}`, 20, 100);
+    //     doc.text(`Phone: ${orderData.customer_info.phone}`, 20, 110);
+    //     doc.text(`Address: ${orderData.delivery_info.address}`, 20, 120);
+        
+    //     // Order Info
+    //     doc.text(`Order #: ${orderData.order_id}`, 20, 140);
+    //     doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 150);
+    //     doc.text(`Status: ${orderData.status}`, 20, 160);
+        
+    //     // Order Items
+    //     doc.setFontSize(14);
+    //     doc.text('ORDER SUMMARY', 20, 180);
+        
+    //     doc.setFontSize(10);
+    //     let yPosition = 190;
+        
+    //     orderData.order_summary.items.forEach(item => {
+    //         doc.text(`${item.product_name}`, 20, yPosition);
+    //         doc.text(`PKR ${item.unit_price.toLocaleString()} x ${item.quantity}`, 160, yPosition);
+    //         doc.text(`PKR ${item.total_price.toLocaleString()}`, 190, yPosition);
+    //         yPosition += 10;
+    //     });
+        
+    //     // Total
+    //     doc.setFontSize(12);
+    //     doc.text('TOTAL:', 160, yPosition + 20);
+    //     doc.text(`PKR ${orderData.order_summary.total.toLocaleString()}`, 190, yPosition + 20);
+        
+    //     doc.save(`invoice-${orderData.order_id}.pdf`);
+    // };
+
+
     const generateInvoice = (orderData) => {
-        const doc = new jsPDF();
-        
-        // Invoice design
-        doc.setFillColor(20, 20, 20);
-        doc.rect(0, 0, 210, 297, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(24);
-        doc.text('INVOICE', 105, 30, { align: 'center' });
-        
-        // Company Info
-        doc.setFontSize(12);
-        doc.text('LUXURY COLLECTION', 20, 50);
-        doc.text('123 Main Street, City', 20, 60);
-        doc.text('contact@luxury.com', 20, 70);
-        
-        // Customer Info
-        doc.text(`Customer: ${orderData.customer_info.name}`, 20, 90);
-        doc.text(`Email: ${orderData.customer_info.email}`, 20, 100);
-        doc.text(`Phone: ${orderData.customer_info.phone}`, 20, 110);
-        doc.text(`Address: ${orderData.delivery_info.address}`, 20, 120);
-        
-        // Order Info
-        doc.text(`Order #: ${orderData.order_id}`, 20, 140);
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 150);
-        doc.text(`Status: ${orderData.status}`, 20, 160);
-        
-        // Order Items
-        doc.setFontSize(14);
-        doc.text('ORDER SUMMARY', 20, 180);
-        
-        doc.setFontSize(10);
-        let yPosition = 190;
-        
-        orderData.order_summary.items.forEach(item => {
-            doc.text(`${item.product_name}`, 20, yPosition);
-            doc.text(`PKR ${item.unit_price.toLocaleString()} x ${item.quantity}`, 160, yPosition);
-            doc.text(`PKR ${item.total_price.toLocaleString()}`, 190, yPosition);
-            yPosition += 10;
-        });
-        
-        // Total
-        doc.setFontSize(12);
-        doc.text('TOTAL:', 160, yPosition + 20);
-        doc.text(`PKR ${orderData.order_summary.total.toLocaleString()}`, 190, yPosition + 20);
-        
-        doc.save(`invoice-${orderData.order_id}.pdf`);
-    };
+    const doc = new jsPDF();
+    
+    // Set document properties
+    doc.setProperties({
+        title: `Invoice #${orderData.order_id}`,
+        subject: 'Invoice from GOHAR COLLECTION',
+        author: 'GOHAR COLLECTION',
+    });
+
+    // Add logo or header
+    doc.setFillColor(40, 40, 40);
+    doc.rect(0, 0, 210, 30, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.text('GOHAR COLLECTION', 105, 20, { align: 'center' });
+    
+    // Invoice title and details
+    doc.setFontSize(12);
+    doc.setTextColor(100, 100, 100);
+    doc.text('INVOICE', 20, 45);
+    doc.setFontSize(10);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 160, 45);
+    doc.text(`Invoice #: ${orderData.order_id}`, 160, 50);
+    doc.text(`Status: ${orderData.status}`, 160, 55);
+    
+    // Company and customer info
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    
+    // Company info
+    doc.text('From:', 20, 65);
+    doc.setFont(undefined, 'bold');
+    doc.text('GOHAR COLLECTION', 20, 70);
+    doc.setFont(undefined, 'normal');
+    doc.text('Sector D, DHA 2, ISB.', 20, 75);
+    doc.text('contact@luxury.com', 20, 80);
+    
+    // Customer info
+    doc.text('To:', 20, 95);
+    doc.setFont(undefined, 'bold');
+    doc.text(orderData.customer_info.name, 20, 100);
+    doc.setFont(undefined, 'normal');
+    doc.text(orderData.delivery_info.address, 20, 105);
+    doc.text(orderData.customer_info.phone, 20, 110);
+    doc.text(orderData.customer_info.email, 20, 115);
+    
+    // Items table header
+    doc.setFillColor(240, 240, 240);
+    doc.rect(20, 130, 170, 8, 'F');
+    doc.setTextColor(0, 0, 0);
+    doc.setFont(undefined, 'bold');
+    doc.text('Item', 20, 135);
+    doc.text('Unit Price', 100, 135);
+    doc.text('Qty', 140, 135);
+    doc.text('Total', 170, 135);
+    
+    // Items list
+    doc.setFont(undefined, 'normal');
+    let yPosition = 145;
+    
+    orderData.order_summary.items.forEach(item => {
+        doc.text(item.product_name, 20, yPosition);
+        doc.text(`PKR ${item.unit_price.toLocaleString()}`, 100, yPosition);
+        doc.text(`${item.quantity}`, 140, yPosition);
+        doc.text(`PKR ${item.total_price.toLocaleString()}`, 170, yPosition);
+        yPosition += 10;
+    });
+    
+    // Total section
+    doc.setFont(undefined, 'bold');
+    doc.text('Subtotal:', 140, yPosition + 10);
+    doc.text(`PKR ${orderData.order_summary.total.toLocaleString()}`, 170, yPosition + 10);
+    
+    doc.text('Shipping:', 140, yPosition + 20);
+    doc.text('PKR 0', 170, yPosition + 20);
+    
+    doc.text('Tax:', 140, yPosition + 30);
+    doc.text('PKR 0', 170, yPosition + 30);
+    
+    doc.setFontSize(12);
+    doc.text('Total Amount:', 140, yPosition + 45);
+    doc.text(`PKR ${orderData.order_summary.total.toLocaleString()}`, 170, yPosition + 45);
+    
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.text('Thank you for your business!', 105, 280, { align: 'center' });
+    doc.text('Terms & Conditions: Payment due within 15 days', 105, 285, { align: 'center' });
+    doc.text('GOHAR COLLECTION | Sector D, DHA 2, ISB. | contact@luxury.com', 105, 290, { align: 'center' });
+    
+    doc.save(`invoice-${orderData.order_id}.pdf`);
+};
 
     const prepareOrderDataForConfirmation = (responseData) => {
         return {
