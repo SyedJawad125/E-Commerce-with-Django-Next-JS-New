@@ -785,6 +785,7 @@ class PublicOrderController:
                 'customer_email': request.data.get('customer_email'),
                 'customer_phone': request.data.get('customer_phone'),
                 'delivery_address': request.data.get('delivery_address'),
+                'city': request.data.get('city'), 
                 'payment_method': request.data.get('payment_method'),
             }
             
