@@ -366,8 +366,8 @@ const OrdersCom = () => {
     }
   };
 
-  const updateOrder = (orderId) => {
-    router.push(`/updateorderpage?orderid=${orderId}`);
+  const updateOrder = (orderid) => {
+    router.push(`/updateorderpage?orderid=${orderid}`);
   };
 
   const handleSearch = (e) => {
@@ -433,7 +433,19 @@ const OrdersCom = () => {
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
+            
           </div>
+          {/* {permissions.create_order && ( */}
+            <button
+              className="mt-6 md:mt-0 px-6 py-3 bg-transparent border border-amber-500 text-amber-500 font-medium text-sm leading-tight uppercase rounded-full hover:bg-amber-500 hover:text-black focus:outline-none focus:ring-0 transition duration-150 ease-in-out transform hover:scale-105 flex items-center"
+              onClick={() => router.push('/addproductspage')}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              Add Product
+            </button>
+          {/* )} */}
         </div>
 
         {/* Orders List */}
@@ -528,22 +540,22 @@ const OrdersCom = () => {
                       </div>
 
                       <div className="flex justify-end space-x-3">
-                        {permissions.update_order && (
+                        {/* {permissions.update_order && ( */}
                           <button
-                            onClick={() => updateOrder(order.order_id)}
+                            onClick={() => updateOrder(item.id)}
                             className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
                           >
                             Edit Order
                           </button>
-                        )}
-                        {permissions.delete_order && (
+                        {/* )} */}
+                        {/* {permissions.delete_order && ( */}
                           <button
-                            onClick={() => deleteOrder(order.order_id)}
+                            onClick={() => deleteOrder(item.id)}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                           >
                             Delete Order
                           </button>
-                        )}
+                        {/* )} */}
                       </div>
                     </div>
                   </div>
