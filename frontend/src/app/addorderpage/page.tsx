@@ -340,7 +340,7 @@ const AddOrder = () => {
             </div>
           ))}
 
-          <div className="flex justify-end">
+          {/* <div className="flex justify-end">
             <button
               type="button"
               onClick={addItem}
@@ -348,11 +348,18 @@ const AddOrder = () => {
             >
               + Add Item
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Submit Button */}
         <div className="flex justify-end">
+         <button
+              type="button"
+              onClick={addItem}
+              className="px-6 py-2 bg-green-600 mr-4 hover:bg-green-700 text-white font-semibold rounded-lg transition"
+            >
+              + Add Item
+            </button>
           <button
             type="submit"
             className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition disabled:opacity-50"
