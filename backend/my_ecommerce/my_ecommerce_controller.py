@@ -760,48 +760,190 @@ class OrderController:
             }, status=500)
         
 
+    
     def update_order(self, request):
+        """
+        Handles order updates with both regular and sales products
+        - Requires authentication
+        - Takes order ID and updated fields
+        - Can update personal info and/or items list
+        - For items, can add/update/remove products
+        - Recalculates totals automatically
+        - Returns updated order summary
+        """
         try:
-            if 'id' in request.data:
-                instance = Order.objects.filter(id=request.data['id']).first()
-                if instance:
-                    request.POST._mutable = True
-                    order_details = request.data.pop('OrderDetail') if "OrderDetail" in request.data else None
-                    delete_order_details = request.data.pop('DeleteOrderDetail') if 'DeleteOrderDetail' in request.data else None
-                    request.POST._mutable = False
+            # Require authentication
+            if not request.user.is_authenticated:
+                return create_response(
+                    {},
+                    "Authentication required to update orders",
+                    401
+                )
 
-                    serialized_data = self.serializer_class(instance, data=request.data, partial=True)
-                    if serialized_data.is_valid():
-                        response_data = serialized_data.save()
-                        bill = 0
+            # Validate order ID
+            if 'id' not in request.data:
+                return create_response({}, "Order ID not provided", 400)
+            
+            order_id = request.data['id']
+            instance = Order.objects.filter(id=order_id).first()
+            
+            if not instance:
+                return create_response({}, "Order not found", 404)
 
-                        if order_details:
-                            for i in order_details:
-                                i['order'] = response_data.id
-                                i['total_price'] = i['quantity'] * i['unit_price']
-                                bill += i['total_price']
-                                serialized_detail = self.order_detail_serializer(data=i)
-                                if serialized_detail.is_valid():
-                                    serialized_detail.save()
+            # Prepare update data
+            update_data = {}
+            personal_info_fields = [
+                'customer_name', 'customer_email', 'customer_phone',
+                'delivery_address', 'city', 'payment_method'
+            ]
+            
+            # Extract personal info if provided
+            for field in personal_info_fields:
+                if field in request.data:
+                    update_data[field] = request.data.get(field)
+
+            # Process items if provided
+            items = request.data.get('items', None)
+            delete_items = request.data.get('delete_items', [])
+
+            # Start transaction
+            with transaction.atomic():
+                # Update order fields if any
+                if update_data:
+                    serialized_data = self.serializer_class(instance, data=update_data, partial=True)
+                    if not serialized_data.is_valid():
+                        return create_response(
+                            {}, 
+                            get_first_error_message(serialized_data.errors, UNSUCCESSFUL),
+                            400
+                        )
+                    instance = serialized_data.save()
+
+                bill = 0
+                order_items = []
+
+                # Process item deletions first
+                if delete_items:
+                    instance.order_detail_order.filter(id__in=delete_items).delete()
+
+                # Process new/updated items
+                if items is not None:
+                    # Clear existing items if full update is intended
+                    if request.data.get('full_update', False):
+                        instance.order_detail_order.all().delete()
+
+                    for item in items:
+                        product_type = item.get('product_type')
+                        product_id = item.get('product_id')
+                        quantity = item.get('quantity', 1)
+                        item_id = item.get('id', None)  # For existing items
+
+                        try:
+                            # Get price and product
+                            unit_price, product = self._get_product_price(product_type, product_id)
+                            total_price = unit_price * quantity
+
+                            # Prepare order detail data
+                            order_detail_data = {
+                                'order': instance,
+                                'unit_price': unit_price,
+                                'quantity': quantity,
+                                'total_price': total_price
+                            }
+
+                            # Set product field based on type
+                            if product_type == 'product':
+                                order_detail_data['product'] = product
+                            else:
+                                order_detail_data['sales_product'] = product
+
+                            # Update or create order detail
+                            if item_id:
+                                order_detail = OrderDetail.objects.filter(id=item_id, order=instance).first()
+                                if order_detail:
+                                    for key, value in order_detail_data.items():
+                                        setattr(order_detail, key, value)
+                                    order_detail.save()
                                 else:
-                                    transaction.set_rollback(True)
-                                    return create_response({}, get_first_error_message(serialized_detail.errors, UNSUCCESSFUL),400)
-                            response_data.bill = bill
-                            response_data.save()
+                                    raise ValueError(f"Order detail item {item_id} not found")
+                            else:
+                                order_detail = OrderDetail.objects.create(**order_detail_data)
 
-                        if delete_order_details:
-                            od = instance.order_detail_order.filter(id__in=delete_order_details)
-                            if od:
-                                od.delete()
-                        return create_response(self.serializer_class(response_data).data, SUCCESSFUL, 200)
-                    else:
-                        return create_response({}, get_first_error_message(serialized_data.errors, UNSUCCESSFUL), 400)
-                else:
-                    return create_response({}, NOT_FOUND, 404)
-            else:
-                return create_response({}, ID_NOT_PROVIDED, 400)
+                            bill += total_price
+                            order_items.append({
+                                'id': order_detail.id,
+                                'product_type': product_type,
+                                'product_id': product.id,
+                                'product_name': product.name,
+                                'quantity': quantity,
+                                'unit_price': float(unit_price),
+                                'total_price': float(total_price),
+                                'is_discounted': getattr(product, 'has_discount', False)
+                            })
+
+                        except (Product.DoesNotExist, SalesProduct.DoesNotExist):
+                            return create_response(
+                                {},
+                                f"{product_type.replace('_', ' ').title()} with id {product_id} not found",
+                                404
+                            )
+                        except Exception as e:
+                            return create_response(
+                                {},
+                                f"Error processing {product_type} {product_id}: {str(e)}",
+                                400
+                            )
+
+                    # Update order total
+                    instance.bill = bill
+                    instance.save()
+
+                # Prepare response
+                order_details = instance.order_detail_order.all()
+                if not order_items:  # If items weren't updated, use existing ones
+                    order_items = [{
+                        'id': item.id,
+                        'product_type': 'product' if item.product else 'sales_product',
+                        'product_id': item.product.id if item.product else item.sales_product.id,
+                        'product_name': item.product.name if item.product else item.sales_product.name,
+                        'quantity': item.quantity,
+                        'unit_price': float(item.unit_price),
+                        'total_price': float(item.total_price),
+                        'is_discounted': getattr(item.product or item.sales_product, 'has_discount', False)
+                    } for item in order_details]
+
+                response_data = {
+                    'order_id': instance.id,
+                    'customer_info': {
+                        'name': instance.customer_name,
+                        'email': instance.customer_email,
+                        'phone': instance.customer_phone
+                    },
+                    'delivery_info': {
+                        'address': instance.delivery_address,
+                        'estimated_date': instance.delivery_date.strftime('%Y-%m-%d')
+                    },
+                    'order_summary': {
+                        'items': order_items,
+                        'subtotal': float(instance.bill),
+                        'total': float(instance.bill)
+                    },
+                    'payment_method': instance.payment_method,
+                    'status': instance.status,
+                    'updated_by': request.user.username,
+                    'updated_at': timezone.now().isoformat()
+                }
+
+                return create_response(response_data, SUCCESSFUL, 200)
+
         except Exception as e:
-            return create_response({'error':str(e)}, UNSUCCESSFUL, 500)
+            import traceback
+            logger.error(f"Order update failed: {str(e)}\n{traceback.format_exc()}")
+            return create_response(
+                {'error': str(e)},
+                UNSUCCESSFUL,
+                500
+            )
 
     def delete_order(self, request):
         try:
