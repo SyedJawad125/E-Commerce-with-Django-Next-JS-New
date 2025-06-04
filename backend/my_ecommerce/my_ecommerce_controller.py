@@ -533,137 +533,165 @@ class OrderController:
         elif today.weekday() == 5:  # Saturday
             return today + timedelta(days=3)
         return today + timedelta(days=2)
+    
+    def _get_product_price(self, product_type, product_id):
+        """
+        Helper method to get price based on product type
+        Returns: (price, product) tuple
+        """
+        if product_type == 'product':
+            product = Product.objects.get(id=product_id)
+            return product.price, product
+        elif product_type == 'sales_product':
+            sales_product = SalesProduct.objects.get(id=product_id)
+            return sales_product.final_price, sales_product
+        else:
+            raise ValueError(f"Invalid product type: {product_type}")
+        
 
     def create(self, request):
+        """
+        Handles order creation with both regular and sales products
+        - Requires authentication
+        - Takes customer info and items list
+        - Can include both product types
+        - Calculates totals automatically
+        - Returns created order summary
+        """
         try:
-            request.POST._mutable = True
-            order_details = request.data.pop('OrderDetail', [])
-            request.data['customer'] = request.user.guid
-            request.data['delivery_date'] = self._calculate_delivery_date()
-            request.data['status'] = 'booked'
-            request.POST._mutable = False
-
-            if not (request.user.role in ['admin', 'manager'] or request.user.is_superuser):
-                return Response({'data': "Permission Denied"}, status=400)
-
-            serialized_data = self.serializer_class(data=request.data)
-            if not serialized_data.is_valid():
-                return create_response(
-                    {}, 
-                    get_first_error_message(serialized_data.errors, UNSUCCESSFUL),
-                    400
-                )
-
-            with transaction.atomic():
-                response_data = serialized_data.save()
-                bill = 0
-                
-                for item in order_details:
-                    item['order'] = response_data.id
-                    item['total_price'] = item['quantity'] * item['unit_price']
-                    bill += item['total_price']
-                    
-                    serialized_detail = self.order_detail_serializer(data=item)
-                    if not serialized_detail.is_valid():
-                        return create_response(
-                            {},
-                            get_first_error_message(serialized_detail.errors, UNSUCCESSFUL),
-                            400
-                        )
-                    serialized_detail.save()
-                
-                response_data.bill = bill
-                response_data.save()
-
-            return create_response(
-                self.serializer_class(response_data).data,
-                SUCCESSFUL,
-                200
-            )
-
-        except Exception as e:
-            return create_response(
-                {'error': str(e)},
-                UNSUCCESSFUL,
-                500
-            )
-        
-    def checkout(self, request):
-        """Handle checkout functionality"""
-        try:
-            cart_items = request.data.get('cart_items', [])
-            user = request.user
-            
-            order_data = {
-                'customer': user.guid,
-                'customer_name': request.data.get('name'),
-                'customer_email': request.data.get('email'),
-                'customer_phone': request.data.get('phone'),
-                'delivery_address': request.data.get('address'),
-                'payment_method': request.data.get('payment_method'),
-                'payment_status': request.data.get('payment_status', False),
-                'status': 'booked',
-                'delivery_date': self._calculate_delivery_date()
-            }
-            
-            # Validate and create order
-            serialized_data = self.serializer_class(data=order_data)
-            if not serialized_data.is_valid():
+            # Require authentication
+            if not request.user.is_authenticated:
                 return create_response(
                     {},
-                    get_first_error_message(serialized_data.errors, UNSUCCESSFUL),
-                    400
+                    "Authentication required to create orders",
+                    401
                 )
-            
+
+            # Prepare order data with delivery date
+            order_data = {
+                'customer_name': request.data.get('customer_name'),
+                'customer_email': request.data.get('customer_email'),
+                'customer_phone': request.data.get('customer_phone'),
+                'delivery_address': request.data.get('delivery_address'),
+                'city': request.data.get('city'),
+                'payment_method': request.data.get('payment_method'),
+                'status': 'pending',
+                'created_by': request.user.username,
+                'delivery_date': self._calculate_delivery_date()  # Delivery date added here
+            }
+
+            # Validate required fields
+            required_fields = ['customer_name', 'customer_phone', 'delivery_address', 'payment_method']
+            for field in required_fields:
+                if not order_data.get(field):
+                    return create_response({}, f"{field.replace('_', ' ').title()} is required", 400)
+
+            # Process items
+            items = request.data.get('items', [])
+            if not items:
+                return create_response({}, "At least one item is required", 400)
+
+            # Start transaction
             with transaction.atomic():
-                order = serialized_data.save()
-                order_total = 0
+                # Create order
+                serialized_order = self.serializer_class(data=order_data)
+                if not serialized_order.is_valid():
+                    return create_response(
+                        {},
+                        get_first_error_message(serialized_order.errors, UNSUCCESSFUL),
+                        400
+                    )
                 
-                for item in cart_items:
+                order = serialized_order.save()
+                bill = 0
+                order_items = []
+
+                # Process each item
+                for item in items:
+                    product_type = item.get('product_type', 'product')
+                    product_id = item.get('product_id')
+                    quantity = item.get('quantity', 1)
+
                     try:
-                        product = Product.objects.get(id=item['product_id'])
-                        total_price = product.price * item['quantity']
-                        
+                        # Get price and product
+                        unit_price, product = self._get_product_price(product_type, product_id)
+                        total_price = unit_price * quantity
+
+                        # Prepare order detail data
                         order_detail_data = {
-                            'order': order.id,
-                            'product': product.id,
-                            'unit_price': product.price,
-                            'quantity': item['quantity'],
+                            'order': order,
+                            'unit_price': unit_price,
+                            'quantity': quantity,
                             'total_price': total_price
                         }
-                        
-                        serialized_detail = self.order_detail_serializer(data=order_detail_data)
-                        if not serialized_detail.is_valid():
-                            transaction.set_rollback(True)
-                            return create_response(
-                                {},
-                                get_first_error_message(serialized_detail.errors, UNSUCCESSFUL),
-                                400
-                            )
-                            
-                        serialized_detail.save()
-                        order_total += total_price
-                    except Product.DoesNotExist:
-                        transaction.set_rollback(True)
+
+                        # Set product field based on type
+                        if product_type == 'product':
+                            order_detail_data['product'] = product
+                        else:
+                            order_detail_data['sales_product'] = product
+
+                        # Create order detail
+                        order_detail = OrderDetail.objects.create(**order_detail_data)
+
+                        bill += total_price
+                        order_items.append({
+                            'id': order_detail.id,
+                            'product_type': product_type,
+                            'product_id': product.id,
+                            'product_name': product.name,
+                            'quantity': quantity,
+                            'unit_price': float(unit_price),
+                            'total_price': float(total_price),
+                            'is_discounted': getattr(product, 'has_discount', False)
+                        })
+
+                    except (Product.DoesNotExist, SalesProduct.DoesNotExist):
                         return create_response(
                             {},
-                            f"Product with id {item['product_id']} not found",
+                            f"{product_type.replace('_', ' ').title()} with id {product_id} not found",
+                            404
+                        )
+                    except Exception as e:
+                        return create_response(
+                            {},
+                            f"Error processing {product_type} {product_id}: {str(e)}",
                             400
                         )
-                
-                order.bill = order_total
+
+                # Update order total
+                order.bill = bill
                 order.save()
-                
+
+                # Prepare response
                 response_data = {
-                    'status': 'success',
                     'order_id': order.id,
-                    'bill_number': order.bill,
-                    'total_amount': order_total
+                    'customer_info': {
+                        'name': order.customer_name,
+                        'email': order.customer_email,
+                        'phone': order.customer_phone
+                    },
+                    'delivery_info': {
+                        'address': order.delivery_address,
+                        'city': order.city if hasattr(order, 'city') else None,
+                        'estimated_date': order.delivery_date.strftime('%Y-%m-%d')  # Now guaranteed to exist
+                    },
+                    'order_summary': {
+                        'items': order_items,
+                        'subtotal': float(order.bill),
+                        'total': float(order.bill)
+                    },
+                    'payment_method': order.payment_method,
+                    'status': order.status,
+                    'created_by': request.user.username,
+                    'created_at': timezone.now().isoformat()
                 }
-                
+
                 return create_response(response_data, SUCCESSFUL, 201)
-                
+
         except Exception as e:
+            import traceback
+            logger.error(f"Order creation failed: {str(e)}\n{traceback.format_exc()}")
             return create_response(
                 {'error': str(e)},
                 UNSUCCESSFUL,
@@ -824,13 +852,13 @@ class OrderController:
 
                 # Process item deletions first
                 if delete_items:
-                    instance.order_detail_order.filter(id__in=delete_items).delete()
+                    instance.order_details.filter(id__in=delete_items).delete()
 
                 # Process new/updated items
                 if items is not None:
                     # Clear existing items if full update is intended
                     if request.data.get('full_update', False):
-                        instance.order_detail_order.all().delete()
+                        instance.order_details.all().delete()
 
                     for item in items:
                         product_type = item.get('product_type')
@@ -899,7 +927,7 @@ class OrderController:
                     instance.save()
 
                 # Prepare response
-                order_details = instance.order_detail_order.all()
+                order_details = instance.order_details.all()
                 if not order_items:  # If items weren't updated, use existing ones
                     order_items = [{
                         'id': item.id,
@@ -913,26 +941,28 @@ class OrderController:
                     } for item in order_details]
 
                 response_data = {
-                    'order_id': instance.id,
-                    'customer_info': {
-                        'name': instance.customer_name,
-                        'email': instance.customer_email,
-                        'phone': instance.customer_phone
-                    },
-                    'delivery_info': {
-                        'address': instance.delivery_address,
-                        'estimated_date': instance.delivery_date.strftime('%Y-%m-%d')
-                    },
-                    'order_summary': {
-                        'items': order_items,
-                        'subtotal': float(instance.bill),
-                        'total': float(instance.bill)
-                    },
-                    'payment_method': instance.payment_method,
-                    'status': instance.status,
-                    'updated_by': request.user.username,
-                    'updated_at': timezone.now().isoformat()
-                }
+                        'order_id': instance.id,
+                        'customer_info': {
+                            'name': instance.customer_name,
+                            'email': instance.customer_email,
+                            'phone': instance.customer_phone
+                        },
+                        'delivery_info': {
+                            'address': instance.delivery_address,
+                            'city': instance.city if hasattr(instance, 'city') else None,
+                            'estimated_date': instance.delivery_date.strftime('%Y-%m-%d') if instance.delivery_date else None
+                        },
+                        'order_summary': {
+                            'items': order_items,
+                            'subtotal': float(instance.bill),
+                            'total': float(instance.bill)
+                        },
+                        'payment_method': instance.payment_method,
+                        'status': instance.status,
+                        'updated_by': request.user.username,
+                        'updated_at': timezone.now().isoformat()
+                    }
+
 
                 return create_response(response_data, SUCCESSFUL, 200)
 
@@ -1107,6 +1137,7 @@ class PublicOrderController:
                     },
                     'delivery_info': {
                         'address': order.delivery_address,
+                        'city': order.city if hasattr(order, 'city') else None,
                         'estimated_date': order.delivery_date.strftime('%Y-%m-%d')
                     },
                     'order_summary': {
