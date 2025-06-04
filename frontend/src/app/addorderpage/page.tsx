@@ -32,7 +32,7 @@ const AddOrder = () => {
     customer_phone: '',
     delivery_address: '',
     city: '',
-    payment_method: 'cash',
+    payment_method: 'cash_on_delivery',
   });
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -72,26 +72,31 @@ const AddOrder = () => {
   }, []);
 
   // Fetch products and sales products
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const [productsRes, salesProductsRes] = await Promise.all([
-          AxiosInstance.get('/ecommerce/product'),
-          AxiosInstance.get('/ecommerce/salesproduct')
-        ]);
-        
-        if (productsRes.data) {
-          setProducts(productsRes.data.data.data);
-        }
-        if (salesProductsRes.data) {
-          setSalesProducts(salesProductsRes.data.data.data);
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
+ useEffect(() => {
+  const fetchProducts = async () => {
+    try {
+      const [productsRes, salesProductsRes] = await Promise.all([
+        AxiosInstance.get('/ecommerce/product'),
+        AxiosInstance.get('/ecommerce/salesproduct')
+      ]);
+      
+      if (productsRes.data) {
+        setProducts(productsRes.data.data.data);
       }
-    };
-    fetchProducts();
-  }, []);
+      if (salesProductsRes.data) {
+        // Convert final_price to number for each sales product
+        const salesProductsData = salesProductsRes.data.data.data.map((product: any) => ({
+          ...product,
+          final_price: Number(product.final_price)
+        }));
+        setSalesProducts(salesProductsData);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+  fetchProducts();
+}, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -135,7 +140,7 @@ const AddOrder = () => {
       const response = await AxiosInstance.post('/ecommerce/order', payload);
       
       if (response.data) {
-        router.push('/orders');
+        router.push('/orderspage');
       }
     } catch (error) {
       console.error('Error creating order:', error);
@@ -309,65 +314,58 @@ const AddOrder = () => {
                     </select>
                   </div>
 
-                  {/* Quantity */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-                    <input
-                      type="number"
-                      min="1"
-                      className="w-full px-3 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                      value={item.quantity}
-                      onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                    />
-                  </div>
+                                {/* Quantity */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                <input
+                  type="number"
+                  min="1"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                  value={item.quantity}
+                  onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
+                />
+              </div>
 
-                  {/* Remove Button */}
-                  <div className="md:col-span-2 flex items-end">
-                    <button
-                      type="button"
-                      onClick={() => removeItem(index)}
-                      className="w-full px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
-                      disabled={orderItems.length <= 1}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              ))}
-
-              {/* Add Item Button */}
-              <div className="flex justify-center">
+              {/* Remove Button */}
+              <div className="md:col-span-2 flex items-end">
                 <button
                   type="button"
-                  onClick={addItem}
-                  className="px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+                  onClick={() => removeItem(index)}
+                  className="w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition"
+                  disabled={orderItems.length === 1}
                 >
-                  + Add Another Item
+                  Remove
                 </button>
               </div>
             </div>
+          ))}
 
-            {/* Submit Button */}
-            <div className="flex justify-end pt-4">
-              <button
-                type="button"
-                onClick={() => router.push('/orders')}
-                className="mr-4 px-6 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className={`px-6 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
-              >
-                {isLoading ? 'Creating Order...' : 'Create Order'}
-              </button>
-            </div>
-          </form>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={addItem}
+              className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition"
+            >
+              + Add Item
+            </button>
+          </div>
         </div>
-      </div>
+
+        {/* Submit Button */}
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition disabled:opacity-50"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Creating Order...' : 'Create Order'}
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
+</div>
+
   );
 };
 
