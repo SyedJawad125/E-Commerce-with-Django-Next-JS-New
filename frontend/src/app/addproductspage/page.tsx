@@ -8,6 +8,11 @@ interface Category {
   name: string;
 }
 
+interface Tag {
+  id: number;
+  name: string;
+}
+
 const AddProduct = () => {
   const router = useRouter();
   
@@ -15,10 +20,13 @@ const AddProduct = () => {
     name: '',
     description: '',
     price: '',
-    prodHasCategory: ''
+    prodHasCategory: '',
+    prodHasTag: ''
   });
   const [image, setImage] = useState<File | null>(null);
   const [categoryRecords, setCategoryRecords] = useState<Category[]>([]);
+  const [tagsRecords, setTagsRecords] = useState<Tag[]>([]);
+
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -33,6 +41,17 @@ const AddProduct = () => {
       }
     };
     fetchCategories();
+    const fetchTags = async () => {
+      try {
+        const res = await AxiosInstance.get('/ecommerce/producttag');
+        if (res) {
+          setTagsRecords(res.data.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchTags();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -52,6 +71,8 @@ const AddProduct = () => {
       formDataToSend.append('description', formData.description);
       formDataToSend.append('price', formData.price);
       formDataToSend.append('prod_has_category', formData.prodHasCategory);
+      formDataToSend.append('tags', formData.prodHasTag);
+
       if (image) formDataToSend.append('image', image);
 
       const response = await AxiosInstance.post('/ecommerce/product', formDataToSend, {
@@ -137,7 +158,27 @@ const AddProduct = () => {
                   />
                 </div>
               </div>
-
+              {/* Tag */}
+              <div>
+                <label htmlFor="prodHasTag" className="block text-sm font-medium text-gray-700 mb-1">
+                  Tag <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="prodHasTag"
+                  name="prodHasTag"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                  value={formData.prodHasTag}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select a Tag</option>
+                  {tagsRecords?.map((item) => (
+                    <option value={item.id} key={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               {/* Category */}
               <div>
                 <label htmlFor="prodHasCategory" className="block text-sm font-medium text-gray-700 mb-1">

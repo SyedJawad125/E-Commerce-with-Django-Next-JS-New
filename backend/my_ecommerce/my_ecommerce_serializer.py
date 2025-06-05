@@ -40,6 +40,8 @@ class ProductSerializer(ModelSerializer):
         data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
         data['category_name'] = instance.prod_has_category.name if instance.prod_has_category else None
+        data['tag_name'] = instance.tags.name if instance.tags else None
+
         return data
 
 class PublicproductSerializer(ModelSerializer):
@@ -78,6 +80,8 @@ class PublicproductSerializer(ModelSerializer):
         data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
         data['category_name'] = instance.prod_has_category.name if instance.prod_has_category else None
+        data['tag_name'] = instance.tags.name if instance.tags else None
+
         return data
 
 class SliderproductSerializer(ModelSerializer):

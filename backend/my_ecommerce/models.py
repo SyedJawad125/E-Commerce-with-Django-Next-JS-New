@@ -20,6 +20,8 @@ class Category(models.Model):
 class ProductTag(models.Model):
     name = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=50, unique=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='producttag_created_by', null=True, blank=True)
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='producttag_updated_by', null=True, blank=True)
 
 class Product(models.Model):
     for_choices = (
@@ -35,7 +37,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     image = models.FileField(upload_to='product_images/', blank=True, null=True)
-    images = models.JSONField(default=list,null=True, blank=True)
+    # images = models.JSONField(default=list,null=True, blank=True)
     prod_has_category = models.ForeignKey(Category, on_delete=models.CASCADE,related_name='prod_has_category1', null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='product_created_by', null=True, blank=True)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='product_updated_by', null=True, blank=True)
