@@ -214,6 +214,8 @@ const PublicCategory = () => {
 
             {/* Right Side - Categories */}
             <div className="w-6/7 p-8" ref={productsRef}>
+                <h2 className="text-4xl font-serif text-gray-900 font-bold -mb-10 mt-10 text-center tracking-wider">Collections</h2>
+
                 <br />
                 <br />
                 {data && data.data ? <p>Total: {data.data.count}</p> : <p>Total: 0</p>}
