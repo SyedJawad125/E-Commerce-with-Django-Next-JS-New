@@ -224,7 +224,7 @@ const NavbarCom = () => {
               { name: 'About', path: '/about' },
               { name: 'Sale', path: '/publicsalesproductpage' },
               { 
-                name: 'New Arrivals', 
+                name: 'New IN', 
                 path: '/newarrivalspage',
                 className: "hover-group"
               },
