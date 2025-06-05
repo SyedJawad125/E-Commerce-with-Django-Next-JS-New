@@ -1,6 +1,6 @@
 import json
 from rest_framework import serializers
-from .models import Contact, Employee, Product, Order, OrderDetail, Category, SalesProduct
+from .models import Contact, Employee, Product, Order, OrderDetail, Category, ProductTag, SalesProduct
 from rest_framework.serializers import ModelSerializer
 from user_auth.user_serializer import UserListingSerializer
 
@@ -217,7 +217,19 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             print("ERROR in OrderDetailSerializer:")  # Console log
             traceback.print_exc()  # Full error trace
             raise
-    
+        
+class ProductTagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductTag
+        fields = '__all__'
+        
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
+        data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None 
+
+        return data    
 
 class ContactSerializer(ModelSerializer):
     class Meta:

@@ -2,7 +2,7 @@ from venv import logger
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.auth import authenticate
-from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, EmployeeFilter, ProductFilter, OrderFilter, PublicOrderFilter, PublicSalesProductFilter, \
+from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, EmployeeFilter, ProductFilter, OrderFilter, ProductTagFilter, PublicOrderFilter, PublicSalesProductFilter, \
     PublicproductFilter, PubliccategoryFilter, SlidercategoryFilter, SliderproductFilter
 from my_ecommerce.my_ecommerce_serializer import *
 from my_ecommerce.models import Product
@@ -1159,6 +1159,101 @@ class PublicOrderController:
                 UNSUCCESSFUL,
                 500
             )
+
+class ProductTagController:
+    serializer_class = ProductTagSerializer
+    filterset_class = ProductTagFilter
+
+ 
+    def create(self, request):
+        try:
+            request.POST._mutable = True
+            request.data["created_by"] = request.user.guid
+            request.POST._mutable = False
+
+            # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
+            validated_data = ProductTagSerializer(data=request.data)
+            if validated_data.is_valid():
+                response = validated_data.save()
+                response_data = ProductTagSerializer(response).data
+                return Response({'data': response_data}, 200)
+            else:
+                error_message = get_first_error_message(validated_data.errors, "UNSUCCESSFUL")
+                return Response({'data': error_message}, 400)
+            # else:
+            #     return Response({'data': "Permission Denaied"}, 400)
+        except Exception as e:
+            return Response({'error': str(e)}, 500)
+
+    # mydata = Member.objects.filter(firstname__endswith='s').values()
+    def get_producttag(self, request):
+        try:
+
+            instances = self.serializer_class.Meta.model.objects.all()
+
+            filtered_data = self.filterset_class(request.GET, queryset=instances)
+            data = filtered_data.qs
+
+            paginated_data, count = paginate_data(data, request)
+
+            serialized_data = self.serializer_class(paginated_data, many=True).data
+            response_data = {
+                "count": count,
+                "data": serialized_data,
+            }
+            return create_response(response_data, "SUCCESSFUL", 200)
+
+
+        except Exception as e:
+            return Response({'error': str(e)}, 500)
+
+    def update_producttag(self, request):
+        try:
+            if "id" in request.data:
+                # finding instance
+                instance = ProductTag.objects.filter(id=request.data["id"]).first()
+
+                if instance:
+                    request.POST._mutable = True
+                    request.data["updated_by"] = request.user.guid
+                    request.POST._mutable = False
+
+                    # updating the instance/record
+                    serialized_data = ProductTagSerializer(instance, data=request.data, partial=True)
+                    # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
+                    if serialized_data.is_valid():
+                        response = serialized_data.save()
+                        response_data = ProductTagSerializer(response).data
+                        return Response({"data": response_data}, 200)
+                    else:
+                        error_message = get_first_error_message(serialized_data.errors, "UNSUCCESSFUL")
+                        return Response({'data': error_message}, 400)
+                    # else:
+                    #     return Response({'data': "Permission Denaied"}, 400)
+                else:
+                    return Response({"data": "NOT FOUND"}, 404)
+            else:
+                return Response({"data": "ID NOT PROVIDED"}, 400)
+
+        except Exception as e:
+            return Response({'error': str(e)}, 500)
+
+    def delete_producttag(self, request):
+        try:
+            if "id" in request.query_params:
+                instance = ProductTag.objects.filter(id=request.query_params['id']).first()
+
+                if instance:
+                    instance.delete()
+                    return Response({"data": "SUCESSFULL"}, 200)
+                else:
+                    return Response({"data": "RECORD NOT FOUND"}, 404)
+            else:
+                return Response({"data": "ID NOT PROVIDED"}, 400)
+        except Exception as e:
+            return Response({'error': str(e)}, 500)
+        
+
 
 class ContactController:
     serializer_class = ContactSerializer

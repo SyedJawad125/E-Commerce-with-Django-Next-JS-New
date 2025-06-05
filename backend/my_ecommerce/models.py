@@ -17,8 +17,18 @@ class Category(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='category_created_by', null=True, blank=True)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='category_updated_by', null=True, blank=True)
 
+class ProductTag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=50, unique=True)
 
 class Product(models.Model):
+    for_choices = (
+        ('Men', 'Men'),
+        ('Women', 'Women'),
+        ('Kids', 'Kids'),
+        ('General', 'General'),
+    )
+    group = models.CharField(max_length=20, choices=for_choices, null=True, blank=True)
     name = models.CharField(max_length=50)
     description = models.TextField()
     price = models.PositiveIntegerField()
@@ -29,7 +39,7 @@ class Product(models.Model):
     prod_has_category = models.ForeignKey(Category, on_delete=models.CASCADE,related_name='prod_has_category1', null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='product_created_by', null=True, blank=True)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='product_updated_by', null=True, blank=True)
-
+    tags = models.ManyToManyField(ProductTag, blank=True)
 
 class SalesProduct(models.Model):
     name = models.CharField(max_length=50)

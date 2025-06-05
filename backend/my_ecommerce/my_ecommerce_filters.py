@@ -136,6 +136,15 @@ class PublicOrderFilter(FilterSet):
         model = Order
         fields ='__all__'
 
+class ProductTagFilter(FilterSet):
+    id = CharFilter(field_name='id')
+    date_from = DateFilter(field_name='created_at', lookup_expr='gte' )
+    date_to = DateFilter(field_name='created_at', lookup_expr='lte' )
+    name = CharFilter(field_name='name', lookup_expr='icontains')
+
+    class Meta:
+        model = ProductTag
+        fields ='__all__'
 
 class ContactFilter(FilterSet):
     id = CharFilter(field_name='id')

@@ -6,7 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 #from .blog_serializer import BlogSerializer
 from utils.base_authentication import JWTAuthentication
-from .my_ecommerce_controller import CategoryController, ContactController, EmployeeController, ProductController, OrderController, PublicOrderController, PublicSalesproductController, \
+from .my_ecommerce_controller import CategoryController, ContactController, EmployeeController, ProductController, OrderController, ProductTagController, PublicOrderController, PublicSalesproductController, \
     PublicproductController, PubliccategoryController, SalesProductController, SlidercategoryController, SliderproductController
 
 # from rest_framework.permissions import IsAdminUser
@@ -23,6 +23,7 @@ publiccategory_controller = PubliccategoryController()
 slidercategory_controller = SlidercategoryController()
 order_controller = OrderController()
 publicorder_controller = PublicOrderController()
+producttag_controller = ProductTagController()
 contact_controller = ContactController()
 employee_controller = EmployeeController()
 
@@ -107,6 +108,25 @@ class CategoryViews(ModelViewSet):
     def delete_category(self, request):
         return category_controller.delete_category(request)
     
+
+class ProductTagViews(ModelViewSet):
+    authentication_classes = [JWTAuthentication]
+
+    # @permission_required(['create_producttag'])
+    def post_producttag(self, request):
+        return producttag_controller.create(request)
+    
+    # @permission_required(['read_producttag'])
+    def get_producttag(self, request):
+        return producttag_controller.get_producttag(request)
+    
+    # @permission_required(['update_producttag'])
+    def update_producttag(self, request):
+        return producttag_controller.update_producttag(request)
+    
+    # @permission_required(['delete_producttag'])
+    def delete_producttag(self, request):
+        return producttag_controller.delete_producttag(request)
 
 
 class PubliccategoryViews(ModelViewSet):
