@@ -9,6 +9,7 @@ import PublicSalesProductsOnHome from "@/components/PublicSalesProductsOnHome";
 import NewArrivalOnHome from "@/components/NewArrivalOnHome";
 import PublicCategoriesOnHome from "@/components/PublicCategoriesOnHome";
 import PublicProductsOnHome from "@/components/PublicProductsOnHome";
+import KidsComOnHome from "@/components/KidsComOnHome";
 import ContentpageHome from "@/components/ContentpageHome";
 import AdModal from "@/components/AdModal";
 
@@ -21,6 +22,7 @@ export default function Home() {
     <NavbarCom />
     <BannerSliderHomeCom />
     <PublicSalesProductsOnHome />
+    <KidsComOnHome />
     <NewArrivalOnHome />
     <PublicCategoriesOnHome />
     <PublicProductsOnHome />

@@ -221,7 +221,7 @@ const NavbarCom = () => {
           <ul className="hidden md:flex space-x-6 items-center">
             {[
               { name: 'Home', path: '/' },
-              { name: 'About', path: '/about' },
+              { name: 'Kids', path: '/kidspage' },
               { name: 'Sale', path: '/publicsalesproductpage' },
               { 
                 name: 'New IN', 
