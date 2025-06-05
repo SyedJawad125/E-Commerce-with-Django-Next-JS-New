@@ -14,6 +14,7 @@ class ProductFilter(FilterSet):
     name = CharFilter(field_name='name', lookup_expr='icontains')
     price = CharFilter(field_name='price')
     description = CharFilter(field_name='description', lookup_expr='icontains')
+    tags = CharFilter(field_name='tags__name', lookup_expr='iexact')
 
     class Meta:
         model = Product
@@ -32,6 +33,7 @@ class PublicproductFilter(FilterSet):
     price = CharFilter(field_name='price')
     description = CharFilter(field_name='description', lookup_expr='icontains')
     category = CharFilter(field_name='prod_has_category')
+    tags = CharFilter(field_name='tags__name', lookup_expr='iexact')
 
     class Meta:
         model = Product
@@ -64,6 +66,7 @@ class SalesProductFilter(FilterSet):
     class Meta:
         model = SalesProduct
         exclude = ['image']
+        
 class PublicSalesProductFilter(FilterSet):
     id = CharFilter(field_name='id')
     date_from = DateFilter(field_name='created_at', lookup_expr='gte')

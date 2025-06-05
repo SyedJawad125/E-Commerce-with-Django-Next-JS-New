@@ -23,7 +23,7 @@ const NewArrivalOnHome = () => {
 
         const receiveData = async () => {
             try {
-                const res = await AxiosInstance.get('/ecommerce/publicproduct');
+                const res = await AxiosInstance.get('/ecommerce/publicproduct?tags=New In');
                 if (res) {
                     setRecords(res.data.data.data);
 

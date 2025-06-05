@@ -117,7 +117,7 @@ const PublicNewArrivals = () => {
         const fetchData = async () => {
             try {
                 // Fetch products
-                const productsRes = await AxiosInstance.get('/ecommerce/publicproduct');
+                const productsRes = await AxiosInstance.get('/ecommerce/publicproduct?tags=New In');
                 if (productsRes) {
                     setRecords(productsRes.data.data.data);
                     setData(productsRes.data);
