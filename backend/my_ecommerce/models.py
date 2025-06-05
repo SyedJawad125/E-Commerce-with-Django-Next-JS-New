@@ -128,7 +128,7 @@ class Order(models.Model):
         ("paypal", "PayPal"),
         ("cash_on_delivery", "Cash on Delivery")
     )
-
+    
     bill = models.PositiveBigIntegerField(null=True, blank=True)
     customer_name = models.CharField(max_length=100)  # Can be different from User account name
     customer_email = models.EmailField()
