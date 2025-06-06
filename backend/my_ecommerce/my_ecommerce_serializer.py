@@ -265,7 +265,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    user_name = serializers.CharField(required=False, allow_blank=True)
+    name = serializers.CharField(required=False, allow_blank=True)
     
     class Meta:
         model = Review
@@ -273,6 +273,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'created_at', 'updated_at']
 
     def validate(self, data):
-        if not self.context['request'].user.is_authenticated and not data.get('user_name'):
+        if not self.context['request'].user.is_authenticated and not data.get('name'):
             raise serializers.ValidationError("Please provide a name for your review.")
         return data
