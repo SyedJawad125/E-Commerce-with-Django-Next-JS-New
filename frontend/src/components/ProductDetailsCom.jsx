@@ -371,17 +371,17 @@ const ProductDetailsCom = () => {
       };
       
       const fetchReviews = async () => {
-        try {
-          const res = await AxiosInstance.get(`/ecommerce/publicreview?productId=${ProductId}`);
-          if (res?.data?.data?.data) {
-            setReviews(res.data.data.data);
-          }
-        } catch (error) {
-          console.error('Error fetching reviews:', error);
-        } finally {
-          setReviewLoading(false);
-        }
-      };
+  try {
+    const res = await AxiosInstance.get(`/ecommerce/publicreview?product_id=${ProductId}`);
+    if (res?.data?.data) {  // Updated this line
+      setReviews(res.data.data.data || []);  // Updated this line
+    }
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+  } finally {
+    setReviewLoading(false);
+  }
+};
       
       fetchProduct();
       fetchReviews();
@@ -618,7 +618,7 @@ const ProductDetailsCom = () => {
                     id="comment"
                     name="comment"
                     rows="4"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     value={newReview.comment}
                     onChange={handleReviewChange}
                     required
@@ -634,7 +634,7 @@ const ProductDetailsCom = () => {
                       type="text"
                       id="name"
                       name="name"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       value={newReview.name}
                       onChange={handleReviewChange}
                       required
@@ -648,7 +648,7 @@ const ProductDetailsCom = () => {
                       type="email"
                       id="email"
                       name="email"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       value={newReview.email}
                       onChange={handleReviewChange}
                       placeholder="Optional"
