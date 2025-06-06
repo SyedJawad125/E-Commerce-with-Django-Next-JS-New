@@ -185,3 +185,14 @@ class ReviewFilter(FilterSet):
     class Meta:
         model = Review
         fields ='__all__'
+
+class PublicReviewFilter(FilterSet):
+    id = CharFilter(field_name='id')
+    name = CharFilter(field_name='name', lookup_expr='icontains')
+    date_from = DateFilter(field_name='created_at', lookup_expr='gte' )
+    date_to = DateFilter(field_name='created_at', lookup_expr='lte' )
+    
+
+    class Meta:
+        model = Review
+        fields ='__all__'

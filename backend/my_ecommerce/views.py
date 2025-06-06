@@ -6,7 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 #from .blog_serializer import BlogSerializer
 from utils.base_authentication import JWTAuthentication
-from .my_ecommerce_controller import CategoryController, ContactController, EmployeeController, ProductController, OrderController, ProductTagController, PublicOrderController, PublicSalesproductController, \
+from .my_ecommerce_controller import CategoryController, ContactController, EmployeeController, ProductController, OrderController, ProductTagController, PublicOrderController, PublicReviewController, PublicSalesproductController, \
     PublicproductController, PubliccategoryController, ReviewController, SalesProductController, SlidercategoryController, SliderproductController
 
 # from rest_framework.permissions import IsAdminUser
@@ -27,6 +27,8 @@ producttag_controller = ProductTagController()
 contact_controller = ContactController()
 employee_controller = EmployeeController()
 review_controller = ReviewController()
+publicreview_controller = PublicReviewController()
+
 
 
 
@@ -241,3 +243,13 @@ class ReviewViews(ModelViewSet):
 
     def delete_review(self, request):
         return review_controller.delete_review(request)
+    
+
+class PubliceReviewViews(ModelViewSet):
+    # authentication_classes = [JWTAuthentication]
+
+    def post_publicreview(self, request):
+        return publicreview_controller.create(request)
+    
+    def get_publicreview(self, request):
+        return publicreview_controller.get_publicreview(request)

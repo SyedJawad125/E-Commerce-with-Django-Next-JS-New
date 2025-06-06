@@ -2,7 +2,7 @@ from venv import logger
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.auth import authenticate
-from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, EmployeeFilter, ProductFilter, OrderFilter, ProductTagFilter, PublicOrderFilter, PublicSalesProductFilter, \
+from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, EmployeeFilter, ProductFilter, OrderFilter, ProductTagFilter, PublicOrderFilter, PublicReviewFilter, PublicSalesProductFilter, \
     PublicproductFilter, PubliccategoryFilter, ReviewFilter, SlidercategoryFilter, SliderproductFilter
 from my_ecommerce.my_ecommerce_serializer import *
 from my_ecommerce.models import Product
@@ -1351,23 +1351,23 @@ class ReviewController:
 
     def create(self, request):
         try:
-            product_id = request.data.get('product')
-            if not product_id:
-                return Response({'error': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Check if product exists
-            product = get_object_or_404(Product, id=product_id)
+            request.POST._mutable = True
+            request.data["created_by"] = request.user.guid
+            request.POST._mutable = False
 
-            serializer = ReviewSerializer(data=request.data, context={'request': request})
-            
-            if serializer.is_valid():
-                serializer.save()
-                return Response({'data': serializer.data}, status=status.HTTP_201_CREATED)
+            # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
+            validated_data = ReviewSerializer(data=request.data)
+            if validated_data.is_valid():
+                response = validated_data.save()
+                response_data = ReviewSerializer(response).data
+                return Response({'data': response_data}, 200)
             else:
-                error_message = get_first_error_message(serializer.errors, "UNSUCCESSFUL")
-                return Response({'data': error_message}, status=status.HTTP_400_BAD_REQUEST)
+                error_message = get_first_error_message(validated_data.errors, "UNSUCCESSFUL")
+                return Response({'data': error_message}, 400)
+            # else:
+            #     return Response({'data': "Permission Denaied"}, 400)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'error': str(e)}, 500)
 
     # mydata = Member.objects.filter(firstname__endswith='s').values()
     def get_review(self, request):
@@ -1397,25 +1397,25 @@ class ReviewController:
                 # finding instance
                 instance = Review.objects.filter(id=request.data["id"]).first()
 
-                # if instance:
-                #     request.POST._mutable = True
-                #     request.data["updated_by"] = request.user.guid
-                #     request.POST._mutable = False
+                if instance:
+                    request.POST._mutable = True
+                    request.data["updated_by"] = request.user.guid
+                    request.POST._mutable = False
 
                     # updating the instance/record
-                serialized_data = ReviewSerializer(instance, data=request.data, partial=True)
+                    serialized_data = ReviewSerializer(instance, data=request.data, partial=True)
                     # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
-                if serialized_data.is_valid():
-                    response = serialized_data.save()
-                    response_data = ReviewSerializer(response).data
-                    return Response({"data": response_data}, 200)
-                else:
-                    error_message = get_first_error_message(serialized_data.errors, "UNSUCCESSFUL")
-                    return Response({'data': error_message}, 400)
+                    if serialized_data.is_valid():
+                        response = serialized_data.save()
+                        response_data = ReviewSerializer(response).data
+                        return Response({"data": response_data}, 200)
+                    else:
+                        error_message = get_first_error_message(serialized_data.errors, "UNSUCCESSFUL")
+                        return Response({'data': error_message}, 400)
                     # else:
                     #     return Response({'data': "Permission Denaied"}, 400)
-                # else:
-                #     return Response({"data": "NOT FOUND"}, 404)
+                else:
+                    return Response({"data": "NOT FOUND"}, 404)
             else:
                 return Response({"data": "ID NOT PROVIDED"}, 400)
 
@@ -1439,6 +1439,53 @@ class ReviewController:
         
 
 
+class PublicReviewController:
+    serializer_class = PublicReviewSerializer
+    filterset_class = PublicReviewFilter
+
+
+
+    def create(self, request):
+        try:
+            product_id = request.data.get('product')
+            if not product_id:
+                return Response({'error': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Check if product exists
+            product = get_object_or_404(Product, id=product_id)
+
+            serializer = ReviewSerializer(data=request.data, context={'request': request})
+            
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'data': serializer.data}, status=status.HTTP_201_CREATED)
+            else:
+                error_message = get_first_error_message(serializer.errors, "UNSUCCESSFUL")
+                return Response({'data': error_message}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # mydata = Member.objects.filter(firstname__endswith='s').values()
+    def get_publicreview(self, request):
+        try:
+
+            instances = self.serializer_class.Meta.model.objects.all()
+
+            filtered_data = self.filterset_class(request.GET, queryset=instances)
+            data = filtered_data.qs
+
+            paginated_data, count = paginate_data(data, request)
+
+            serialized_data = self.serializer_class(paginated_data, many=True).data
+            response_data = {
+                "count": count,
+                "data": serialized_data,
+            }
+            return create_response(response_data, "SUCCESSFUL", 200)
+
+
+        except Exception as e:
+            return Response({'error': str(e)}, 500)
 
 
 
