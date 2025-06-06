@@ -100,7 +100,7 @@ const ReviewsPage = () => {
   const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
+ 
   // Render star ratings
   const renderStars = (rating) => {
     return (
@@ -125,6 +125,9 @@ const ReviewsPage = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+   const updateRecord = async (reviewid) => {
+    router.push(`/updatereviewpage?reviewid=${reviewid}`);
+  };
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
       <ToastContainer 
@@ -149,9 +152,20 @@ const ReviewsPage = () => {
             <p className="text-gray-400 text-sm">What customers are saying about your products</p>
           </div>
         </div>
+        
 
         {/* Stats and Search */}
+        
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 bg-gray-800/50 p-4 rounded-xl">
+          <button
+              className="mt-6 md:mt-0 px-6 py-3 bg-transparent border border-amber-500 text-amber-500 font-medium text-sm leading-tight uppercase rounded-full hover:bg-amber-500 hover:text-black focus:outline-none focus:ring-0 transition duration-150 ease-in-out transform hover:scale-105 flex items-center"
+              onClick={() => router.push('/addreviewpage')}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              Add Review
+            </button>
           <div className="text-amber-400 font-light mb-4 md:mb-0">
             <span className="text-white">Showing <span className="text-amber-400 font-medium">{filteredReviews.length}</span> of <span className="text-amber-400 font-medium">{reviews.length}</span> reviews</span>
           </div>
@@ -235,6 +249,15 @@ const ReviewsPage = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                         <span className="ml-1 hidden sm:inline">Delete</span>
+                      </button>
+                      <button
+                        onClick={() => updateRecord(review.id)}
+                        className="p-2 bg-amber-600/90 text-white rounded-full hover:bg-amber-700 transition-colors duration-300"
+                        title="Edit"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
                       </button>
                     </div>
                   </div>

@@ -1,57 +1,39 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AxiosInstance from "@/components/AxiosInstance";
 
-interface Category {
+interface Product {
   id: number;
   name: string;
 }
 
-interface Tag {
-  id: number;
-  name: string;
-}
-
-const AddProduct = () => {
+const AddReview = () => {
   const router = useRouter();
   
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
-    price: '',
-    prodHasCategory: '',
-    prodHasTag: ''
+    rating: 0,
+    comment: '',
+    product: ''
   });
-  const [image, setImage] = useState<File | null>(null);
-  const [categoryRecords, setCategoryRecords] = useState<Category[]>([]);
-  const [tagsRecords, setTagsRecords] = useState<Tag[]>([]);
-
+  
+  const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [hoverRating, setHoverRating] = useState(0);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
+  React.useEffect(() => {
+    const fetchProducts = async () => {
       try {
-        const res = await AxiosInstance.get('/ecommerce/category');
+        const res = await AxiosInstance.get('/ecommerce/product');
         if (res) {
-          setCategoryRecords(res.data.data.data);
+          setProducts(res.data.data.data);
         }
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching products:', error);
       }
     };
-    fetchCategories();
-    const fetchTags = async () => {
-      try {
-        const res = await AxiosInstance.get('/ecommerce/producttag');
-        if (res) {
-          setTagsRecords(res.data.data.data);
-        }
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-    fetchTags();
+    fetchProducts();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -62,27 +44,25 @@ const AddProduct = () => {
     }));
   };
 
+  const handleRatingChange = (rating: number) => {
+    setFormData(prev => ({
+      ...prev,
+      rating
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('description', formData.description);
-      formDataToSend.append('price', formData.price);
-      formDataToSend.append('prod_has_category', formData.prodHasCategory);
-      formDataToSend.append('tags', formData.prodHasTag);
-
-      if (image) formDataToSend.append('image', image);
-
-      const response = await AxiosInstance.post('/ecommerce/product', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const response = await AxiosInstance.post('/ecommerce/review', {
+        ...formData,
+        product: parseInt(formData.product),
+        rating: parseInt(formData.rating as unknown as string)
       });
       
       if (response) {
-        router.push('/products');
+        router.push('/reviews');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -97,17 +77,17 @@ const AddProduct = () => {
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
           <div className="bg-indigo-600 px-6 py-4">
-            <h2 className="text-2xl font-bold text-white">Add New Product</h2>
-            <p className="mt-1 text-indigo-100">Fill in the details below to add a new product to your inventory</p>
+            <h2 className="text-2xl font-bold text-white">Add New Review</h2>
+            <p className="mt-1 text-indigo-100">Share your feedback about a review</p>
           </div>
           
           {/* Form */}
           <form className="p-6 space-y-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Product Name */}
+              {/* Reviewer Name */}
               <div className="md:col-span-2">
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Product Name <span className="text-red-500">*</span>
+                  Your Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -120,112 +100,66 @@ const AddProduct = () => {
                 />
               </div>
 
-              {/* Description */}
+              {/* Product Selection */}
               <div className="md:col-span-2">
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
+                <label htmlFor="product" className="block text-sm font-medium text-gray-700 mb-1">
+                  Product <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="product"
+                  name="product"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                  value={formData.product}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select a Product</option>
+                  {products?.map((item) => (
+                    <option value={item.id} key={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Rating */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Rating <span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center space-x-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      className={`text-3xl focus:outline-none ${(hoverRating || formData.rating) >= star ? 'text-yellow-400' : 'text-gray-300'}`}
+                      onClick={() => handleRatingChange(star)}
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                    >
+                      ★
+                    </button>
+                  ))}
+                  <span className="ml-2 text-gray-600">
+                    {formData.rating > 0 ? `${formData.rating} star${formData.rating !== 1 ? 's' : ''}` : 'Select rating'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Comment */}
+              <div className="md:col-span-2">
+                <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-1">
+                  Review Comment <span className="text-red-500">*</span>
                 </label>
                 <textarea
-                  id="description"
-                  name="description"
-                  rows={3}
+                  id="comment"
+                  name="comment"
+                  rows={4}
                   className="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                  value={formData.description}
+                  value={formData.comment}
                   onChange={handleChange}
+                  required
                 />
-              </div>
-
-              {/* Price */}
-              <div>
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-                  Price <span className="text-red-500">*</span>
-                </label>
-                <div className="relative rounded-lg shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 sm:text-sm">$</span>
-                  </div>
-                  <input
-                    type="number"
-                    id="price"
-                    name="price"
-                    min="0"
-                    step="0.01"
-                    className="block w-full pl-7 pr-12 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                    placeholder="0.00"
-                    value={formData.price}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-              {/* Tag */}
-              <div>
-                <label htmlFor="prodHasTag" className="block text-sm font-medium text-gray-700 mb-1">
-                  Tag <span className="text-red-500">*</span>
-                </label>
-                <select
-                  id="prodHasTag"
-                  name="prodHasTag"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                  value={formData.prodHasTag}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select a Tag</option>
-                  {tagsRecords?.map((item) => (
-                    <option value={item.id} key={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {/* Category */}
-              <div>
-                <label htmlFor="prodHasCategory" className="block text-sm font-medium text-gray-700 mb-1">
-                  Category <span className="text-red-500">*</span>
-                </label>
-                <select
-                  id="prodHasCategory"
-                  name="prodHasCategory"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                  value={formData.prodHasCategory}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select a category</option>
-                  {categoryRecords?.map((item) => (
-                    <option value={item.id} key={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Upload Image */}
-              <div className="md:col-span-2">
-                <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
-                  Product Image
-                </label>
-                <div className="mt-1 flex items-center">
-                  <label className="cursor-pointer">
-                    <span className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                      <svg className="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      Upload Image
-                    </span>
-                    <input
-                      type="file"
-                      id="image"
-                      className="sr-only"
-                      onChange={(e) => setImage(e.target.files?.[0] || null)}
-                      accept="image/*"
-                    />
-                  </label>
-                  {image && (
-                    <span className="ml-4 text-sm text-gray-600">{image.name}</span>
-                  )}
-                </div>
               </div>
             </div>
 
@@ -233,7 +167,7 @@ const AddProduct = () => {
             <div className="flex justify-end pt-4">
               <button
                 type="button"
-                onClick={() => router.push('/products')}
+                onClick={() => router.push('/reviews')}
                 className="mr-4 px-6 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Cancel
@@ -243,7 +177,7 @@ const AddProduct = () => {
                 disabled={isLoading}
                 className={`px-6 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
               >
-                {isLoading ? 'Adding...' : 'Add Product'}
+                {isLoading ? 'Submitting...' : 'Submit Review'}
               </button>
             </div>
           </form>
@@ -253,4 +187,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default AddReview;
