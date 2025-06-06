@@ -7,7 +7,7 @@ from rest_framework.response import Response
 #from .blog_serializer import BlogSerializer
 from utils.base_authentication import JWTAuthentication
 from .my_ecommerce_controller import CategoryController, ContactController, EmployeeController, ProductController, OrderController, ProductTagController, PublicOrderController, PublicSalesproductController, \
-    PublicproductController, PubliccategoryController, SalesProductController, SlidercategoryController, SliderproductController
+    PublicproductController, PubliccategoryController, ReviewController, SalesProductController, SlidercategoryController, SliderproductController
 
 # from rest_framework.permissions import IsAdminUser
 # Create your views here.
@@ -26,6 +26,8 @@ publicorder_controller = PublicOrderController()
 producttag_controller = ProductTagController()
 contact_controller = ContactController()
 employee_controller = EmployeeController()
+review_controller = ReviewController()
+
 
 
 
@@ -222,3 +224,20 @@ class EmployeeViews(ModelViewSet):
     @permission_required(['delete_employee'])
     def delete_employee(self, request):
         return employee_controller.delete_employee(request)
+    
+
+
+class ReviewViews(ModelViewSet):
+    # authentication_classes = [JWTAuthentication]
+
+    def post_review(self, request):
+        return review_controller.create(request)
+    
+    def get_review(self, request):
+        return review_controller.get_review(request)
+
+    def update_review(self, request):
+        return review_controller.update_review(request)
+
+    def delete_review(self, request):
+        return review_controller.delete_review(request)

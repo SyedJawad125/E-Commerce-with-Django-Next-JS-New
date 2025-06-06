@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CategoryViews, ContactViews, EmployeeViews, ProductTagViews, ProductViews, OrderViews, PublicOrderViews, PublicSalesProductViews, PublicproductViews, PubliccategoryViews, SalesProductViews, \
+from .views import CategoryViews, ContactViews, EmployeeViews, ProductTagViews, ProductViews, OrderViews, PublicOrderViews, PublicSalesProductViews, PublicproductViews, PubliccategoryViews, ReviewViews, SalesProductViews, \
     SlidercategoryViews, SliderproductViews,EmployeeViews
 
 urlpatterns = [
@@ -51,5 +51,11 @@ urlpatterns = [
                                                 "post": "post_employee",
                                                 "patch": "update_employee",
                                                 "delete": "delete_employee"})),
+
+    path('review', ReviewViews.as_view({"get": "get_review",
+                                                "post": "post_review",
+                                                "patch": "update_review",
+                                                "delete": "delete_review"})),
+
 
 ]

@@ -174,3 +174,14 @@ class EmployeeFilter(FilterSet):
         model = Employee
         # fields ='__all__'
         exclude = ['image']
+
+class ReviewFilter(FilterSet):
+    id = CharFilter(field_name='id')
+    name = CharFilter(field_name='name', lookup_expr='icontains')
+    date_from = DateFilter(field_name='created_at', lookup_expr='gte' )
+    date_to = DateFilter(field_name='created_at', lookup_expr='lte' )
+    
+
+    class Meta:
+        model = Review
+        fields ='__all__'
