@@ -266,13 +266,19 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False, allow_blank=True)
-    
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+
     class Meta:
         model = Review
-        fields = ['id', 'user', 'name', 'rating', 'comment', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'name', 'rating', 'comment', 'product', 'created_at', 'updated_at']
         read_only_fields = ['user', 'created_at', 'updated_at']
 
     def validate(self, data):
         if not self.context['request'].user.is_authenticated and not data.get('name'):
             raise serializers.ValidationError("Please provide a name for your review.")
         return data
+
+    def create(self, validated_data):
+        if self.context['request'].user.is_authenticated:
+            validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)

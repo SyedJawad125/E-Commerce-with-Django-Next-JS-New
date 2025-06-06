@@ -1341,31 +1341,33 @@ class EmployeeController:
         
 
 
+from django.shortcuts import get_object_or_404
 
 class ReviewController:
     serializer_class = ReviewSerializer
     filterset_class = ReviewFilter
 
- 
+
+
     def create(self, request):
         try:
-            # request.POST._mutable = True
-            # request.data["created_by"] = request.user.guid
-            # request.POST._mutable = False
+            product_id = request.data.get('product')
+            if not product_id:
+                return Response({'error': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Check if product exists
+            product = get_object_or_404(Product, id=product_id)
 
-            # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
-            validated_data = ReviewSerializer(data=request.data)
-            if validated_data.is_valid():
-                response = validated_data.save()
-                response_data = ReviewSerializer(response).data
-                return Response({'data': response_data}, 200)
+            serializer = ReviewSerializer(data=request.data, context={'request': request})
+            
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'data': serializer.data}, status=status.HTTP_201_CREATED)
             else:
-                error_message = get_first_error_message(validated_data.errors, "UNSUCCESSFUL")
-                return Response({'data': error_message}, 400)
-            # else:
-            #     return Response({'data': "Permission Denaied"}, 400)
+                error_message = get_first_error_message(serializer.errors, "UNSUCCESSFUL")
+                return Response({'data': error_message}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response({'error': str(e)}, 500)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # mydata = Member.objects.filter(firstname__endswith='s').values()
     def get_review(self, request):
