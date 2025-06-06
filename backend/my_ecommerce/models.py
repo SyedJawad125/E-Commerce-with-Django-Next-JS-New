@@ -214,9 +214,37 @@ class Employee(models.Model):
 
 
 
+class Review(models.Model):
+    name = models.CharField(max_length=100)  # For anonymous users
+    rating = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(1, 6)])
+    comment = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # For logged-in users
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        name = self.user.username if self.user else self.name
+        return f"Review by {name} for {self.product.name}"
+
 # models.py
 # class GuestCustomer(models.Model):
 #     name = models.CharField(max_length=100)
 #     email = models.EmailField()
 #     phone = models.CharField(max_length=20)
 #     created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+# class Review(models.Model):
+
+#     rating = models.PositiveSmallIntegerField()  # Assuming rating is from 1 to 5
+#     comment = models.TextField()
+#     date = models.DateTimeField(auto_now_add=True)
+#     created_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='review_created_by', null=True, blank=True)
+#     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='review_updated_by', null=True, blank=True)
+#     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='restaurant_reviews', null=True, blank=True)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_can_reviews', null=True, blank=True)

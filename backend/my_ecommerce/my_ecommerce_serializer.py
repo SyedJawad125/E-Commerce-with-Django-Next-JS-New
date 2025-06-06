@@ -1,6 +1,6 @@
 import json
 from rest_framework import serializers
-from .models import Contact, Employee, Product, Order, OrderDetail, Category, ProductTag, SalesProduct
+from .models import Contact, Employee, Product, Order, OrderDetail, Category, ProductTag, Review, SalesProduct
 from rest_framework.serializers import ModelSerializer
 from user_auth.user_serializer import UserListingSerializer
 
@@ -260,4 +260,19 @@ class EmployeeSerializer(serializers.ModelSerializer):
         data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None 
 
+        return data
+
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    user_name = serializers.CharField(required=False, allow_blank=True)
+    
+    class Meta:
+        model = Review
+        fields = ['id', 'user', 'name', 'rating', 'comment', 'created_at', 'updated_at']
+        read_only_fields = ['user', 'created_at', 'updated_at']
+
+    def validate(self, data):
+        if not self.context['request'].user.is_authenticated and not data.get('user_name'):
+            raise serializers.ValidationError("Please provide a name for your review.")
         return data
