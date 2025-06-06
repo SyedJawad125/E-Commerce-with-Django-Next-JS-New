@@ -153,7 +153,7 @@ const UpdateProduct = () => {
               {/* Product Name */}
               <div className="md:col-span-2">
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Product Name <span className="text-red-500">*</span>
+                  Your Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"

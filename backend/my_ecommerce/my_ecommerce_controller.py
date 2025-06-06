@@ -1356,7 +1356,7 @@ class ReviewController:
             request.POST._mutable = False
 
             # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
-            validated_data = ReviewSerializer(data=request.data)
+            validated_data = ReviewSerializer(data=request.data, context={'request': request})
             if validated_data.is_valid():
                 response = validated_data.save()
                 response_data = ReviewSerializer(response).data
@@ -1402,9 +1402,14 @@ class ReviewController:
                     request.data["updated_by"] = request.user.guid
                     request.POST._mutable = False
 
-                    # updating the instance/record
-                    serialized_data = ReviewSerializer(instance, data=request.data, partial=True)
-                    # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
+                    # updating the instance/record with request in context
+                    serialized_data = ReviewSerializer(
+                        instance, 
+                        data=request.data, 
+                        partial=True,
+                        context={'request': request}  # Add this line
+                    )
+                    
                     if serialized_data.is_valid():
                         response = serialized_data.save()
                         response_data = ReviewSerializer(response).data
@@ -1412,8 +1417,6 @@ class ReviewController:
                     else:
                         error_message = get_first_error_message(serialized_data.errors, "UNSUCCESSFUL")
                         return Response({'data': error_message}, 400)
-                    # else:
-                    #     return Response({'data': "Permission Denaied"}, 400)
                 else:
                     return Response({"data": "NOT FOUND"}, 404)
             else:

@@ -230,7 +230,7 @@ class EmployeeViews(ModelViewSet):
 
 
 class ReviewViews(ModelViewSet):
-    # authentication_classes = [JWTAuthentication]
+    authentication_classes = [JWTAuthentication]
 
     def post_review(self, request):
         return review_controller.create(request)

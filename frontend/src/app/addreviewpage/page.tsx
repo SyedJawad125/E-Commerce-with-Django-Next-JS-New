@@ -62,7 +62,7 @@ const AddReview = () => {
       });
       
       if (response) {
-        router.push('/reviews');
+        router.push('/Reviews');
       }
     } catch (error) {
       console.error('Error:', error);
