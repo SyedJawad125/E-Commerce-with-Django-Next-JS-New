@@ -283,6 +283,12 @@ class ReviewSerializer(serializers.ModelSerializer):
             validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
     
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['product_name'] = instance.product.name if instance.product else None
+        
+        return data
+    
 
 class PublicReviewSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False, allow_blank=True)
