@@ -171,39 +171,22 @@ const PublicNewArrivals = () => {
     };
 
     return (
-        <div className="flex min-h-screen bg-gray-50">
+       <div className="flex min-h-screen bg-gray-50">
   {/* Left Side - Categories Slider */}
-  <div className="w-[10%] bg-gray-100 p-4 shadow-lg ml-2" style={{ height: sliderHeight }}>
+  <div className="w-[10%] bg-gray-100 shadow-lg ml-4 relative overflow-hidden" style={{ height: sliderHeight }}>
     <div className="h-full overflow-hidden relative space-y-2">
-      {/* First set of categories */}
+      {/* Scrolling Content */}
       <div className="animate-scrollUp space-y-2">
-        {categories.map((category) => (
+        {[...categories, ...categories].map((category, index) => (
           <div
-            key={category.id}
+            key={index}
             onClick={() => handleCategoryClick(category.id)}
-            className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
+            className="cursor-pointer p-2 shadow-md hover:bg-gray-400 transition duration-300 rounded"
           >
             <img
               src={`http://localhost:8000/${category.image}`}
               alt={category.name}
               className="w-full h-28 object-cover rounded"
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Second set of categories (looping) */}
-      <div className="animate-scrollUp space-y-2 absolute top-full w-full">
-        {categories.map((category) => (
-          <div
-            key={`${category.id}-duplicate`}
-            onClick={() => handleCategoryClick(category.id)}
-            className="cursor-pointer transition-transform duration-300 transform hover:scale-105"
-          >
-            <img
-              src={`http://localhost:8000/${category.image}`}
-              alt={category.name}
-              className="w-full h-40 object-cover border border-black"
             />
           </div>
         ))}
@@ -250,14 +233,14 @@ const PublicNewArrivals = () => {
 
   <ToastContainer />
 
-  {/* Custom vertical scroll animation */}
+  {/* Smooth vertical scrolling keyframes */}
   <style jsx>{`
     @keyframes scrollUp {
       0% {
         transform: translateY(0);
       }
       100% {
-        transform: translateY(-${categories.length * 168}px); /* h-40 + margin */
+        transform: translateY(-${categories.length * 120}px);
       }
     }
     .animate-scrollUp {
