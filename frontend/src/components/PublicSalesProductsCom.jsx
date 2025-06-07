@@ -150,6 +150,7 @@ const PublicSalesProductsCom = () => {
     const [data, setData] = useState([]);
     const [flag, setFlag] = useState(false);
     const [categories, setCategories] = useState([]);
+    const [sliderHeight, setSliderHeight] = useState('100vh'); // Default to full viewport height
     const productsRef = useRef(null);
     const sliderRef = useRef(null);
 
@@ -186,11 +187,20 @@ const PublicSalesProductsCom = () => {
 
     // Set fixed height for slider based on products container
     useEffect(() => {
-        if (productsRef.current && sliderRef.current) {
-            const productsHeight = productsRef.current.offsetHeight;
-            sliderRef.current.style.height = `${productsHeight}px`;
-        }
-    }, [records]);
+        const updateSliderHeight = () => {
+            if (productsRef.current) {
+                const productsHeight = productsRef.current.offsetHeight;
+                setSliderHeight(`${productsHeight}px`);
+            }
+        };
+
+        updateSliderHeight();
+        window.addEventListener('resize', updateSliderHeight);
+
+        return () => {
+            window.removeEventListener('resize', updateSliderHeight);
+        };
+    }, [records]); // Update when records change or on resize
 
     const handleProductClick = (ProductId) => {
         router.push(`/salesproductdetailspage?ProductId=${ProductId}`);
@@ -203,50 +213,35 @@ const PublicSalesProductsCom = () => {
     return (
         <div className="flex min-h-screen bg-gray-50">
             {/* Left Side - Categories Slider */}
-            <div className="w-1/7 bg-gray-100 p-4 shadow-lg" ref={sliderRef}>
-                <div className="h-full overflow-hidden relative">
-                    {/* <h3 className="text-lg font-semibold mb-4">Categories</h3> */}
-                    {/* Categories container with fixed height */}
-                    <div className="h-[calc(100%-3rem)] overflow-hidden relative">
-                        {/* First set of categories */}
-                        <div className="animate-scrollUp space-y-2">
-                            {categories.map((category) => (
-                                <div
-                                    key={category.id}
-                                    onClick={() => handleCategoryClick(category.id)}
-                                    className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
-                                >
-                                    <img
-                                        src={`http://localhost:8000/${category.image}`}
-                                        alt={category.name}
-                                        className="w-full h-28 object-cover"
-                                    />
-                                </div>
-                            ))}
+            <div 
+                ref={sliderRef}
+                className="w-[10%] bg-gray-100 shadow-lg ml-4 relative overflow-hidden" 
+                style={{ height: sliderHeight }}
+            >
+                <div className="absolute top-0 left-0 right-0 animate-scrollUp">
+                    {/* Combined list for smooth scroll */}
+                    {[...categories, ...categories].map((category, index) => (
+                        <div
+                            key={`${category.id}-${index}`}
+                            onClick={() => handleCategoryClick(category.id)}
+                            className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
+                        >
+                            <img
+                                src={`http://localhost:8000/${category.image}`}
+                                alt={category.name}
+                                className="w-full h-28 object-cover rounded"
+                            />
                         </div>
-
-                        {/* Second set of categories (for seamless looping) */}
-                        <div className="animate-scrollUp space-y-2 absolute top-full w-full">
-                            {categories.map((category) => (
-                                <div
-                                    key={`${category.id}-duplicate`}
-                                    onClick={() => handleCategoryClick(category.id)}
-                                    className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
-                                >
-                                    <img
-                                        src={`http://localhost:8000/${category.image}`}
-                                        alt={category.name}
-                                        className="w-full h-28 object-cover"
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    ))}
                 </div>
+
+                {/* Top and bottom gradient masks */}
+                <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-gray-100 to-transparent z-10 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-gray-100 to-transparent z-10 pointer-events-none" />
             </div>
 
             {/* Right Side - Products */}
-            <div className="w-6/7 p-8" ref={productsRef}>
+            <div className="w-[85%] p-8" ref={productsRef}>
                 {/* Header Section */}
                 <div className="text-center mb-12">
                     <h2 className="text-4xl font-serif text-gray-900 font-bold mb-16 mt-10 tracking-wider">EXCLUSIVE SALES</h2>
@@ -292,12 +287,10 @@ const PublicSalesProductsCom = () => {
                                             )}
                                             <p className="text-lg font-bold text-amber-800">
                                                 Rs. {item.final_price}
-                                                </p>
-                                                <p>
-                                                {item.discount_percent > 0 && (
-                                                    <span className="text-xs text-green-600 ml-2">You save Rs.{(item.original_price - item.final_price).toFixed(2)}</span>
-                                                )}
                                             </p>
+                                            {item.discount_percent > 0 && (
+                                                <p className="text-xs text-green-600">You save Rs.{(item.original_price - item.final_price).toFixed(2)}</p>
+                                            )}
                                         </div>
                                         <button className="text-amber-800 hover:text-amber-900 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -331,6 +324,7 @@ const PublicSalesProductsCom = () => {
                 progressClassName="bg-gradient-to-r from-amber-500 to-amber-800"
             />
 
+            {/* Animation */}
             <style jsx>{`
                 @keyframes scrollUp {
                     0% {
