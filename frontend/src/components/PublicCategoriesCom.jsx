@@ -169,104 +169,84 @@ const PublicCategory = () => {
 
     return (
         <div className="flex min-h-screen bg-gray-50">
-            {/* Left Side - Products Slider (styled like first code) */}
-            <div className="w-1/7 bg-gray-100 p-4 shadow-lg" style={{ height: sliderHeight }}>
-                <div className="h-full overflow-hidden relative space-y-2">
-                    {/* First set of products */}
-                    <div className="animate-scrollUp space-y-2">
-                        {categories.map((product) => (
-                            <div
-                                key={product.id}
-                                onClick={() => handleProductClick(product.id)}
-                                className="card-5 cursor-pointer"
-                            >
-                                <img
-                                    src={`http://localhost:8000/${product.image}`}
-                                    className="card-image5 clickable-image w-full h-40 object-cover transform 
-                                    transition-transform duration-300 hover:scale-105 border border-black"
-                                    alt={product.name}
-                                />
-                                
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Second set of products (for seamless looping) */}
-                    <div className="animate-scrollUp space-y-2 absolute top-full w-full">
-                        {categories.map((product) => (
-                            <div
-                                key={`${product.id}-duplicate`}
-                                onClick={() => handleProductClick(product.id)}
-                                className="card-5 cursor-pointer"
-                            >
-                                <img
-                                    src={`http://localhost:8000/${product.image}`}
-                                    className="card-image5 clickable-image w-full h-40 object-cover transform 
-                                    transition-transform duration-300 hover:scale-105 border border-black"
-                                    alt={product.name}
-                                />
-                                
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Right Side - Categories */}
-            <div className="w-6/7 p-8" ref={productsRef}>
-                <h2 className="text-4xl font-serif text-gray-900 font-bold -mb-10 mt-10 text-center tracking-wider">Collections</h2>
-
-                <br />
-                <br />
-                {data && data.data ? <p>Total: {data.data.count}</p> : <p>Total: 0</p>}
-                <br/>
-                
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-2">
-                    {records.length > 0 ? (
-                        records.map((item) => (
-                            <div
-                                key={item.id}
-                                className="card-5 cursor-pointer"
-                                onClick={() => handleCategoryClick(item.id)}
-                            >
-                                <img
-                                    src={`http://localhost:8000/${item.image}`}
-                                    className="card-image5 clickable-image w-full h-40 object-cover transform 
-                                    transition-transform duration-300 hover:scale-105 border border-black"
-                                    alt={item.name}
-                                />
-                                <div className="card-body5 p-4">
-                                    <h5 className="card-title text-black text-sm font-medium -m-6 p-3">{item.name}</h5>
-                                    <p className="card-text text-black text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
-                                    <p className="card-text text-black text-xs mt-1 font-semibold -m-6 p-3">Price: {item.price}</p>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p>Loading....</p>
-                    )}
-                </div>
-
-                {/* Bottom padding */}
-                <div className="h-8"></div>
-            </div>
-
-            <ToastContainer />
-
-            <style jsx>{`
-                @keyframes scrollUp {
-                    0% {
-                        transform: translateY(0);
-                    }
-                    100% {
-                        transform: translateY(-${categories.length * 120}px);
-                    }
-                }
-                .animate-scrollUp {
-                    animation: scrollUp ${categories.length * 5}s linear infinite;
-                }
-            `}</style>
+  {/* Left Side - Products Slider (polished like earlier version) */}
+  <div className="w-[10%] bg-gray-100 shadow-lg relative overflow-hidden ml-2" style={{ height: sliderHeight }}>
+    <div className="absolute top-0 left-0 right-0 animate-scrollUp">
+      {[...categories, ...categories].map((product, index) => (
+        <div
+          key={`${product.id}-${index}`}
+          onClick={() => handleProductClick(product.id)}
+          className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
+        >
+          <img
+            src={`http://localhost:8000/${product.image}`}
+            className="w-full h-28 object-cover rounded"
+            alt={product.name}
+          />
         </div>
+      ))}
+    </div>
+
+    {/* Top and Bottom Gradient Masks */}
+    <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-gray-100 to-transparent z-10 pointer-events-none" />
+    <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-gray-100 to-transparent z-10 pointer-events-none" />
+  </div>
+
+  {/* Right Side - Categories */}
+  <div className="w-[85%] p-8" ref={productsRef}>
+    <h2 className="text-4xl font-serif text-gray-900 font-bold -mb-10 mt-10 text-center tracking-wider">Collections</h2>
+
+    <br />
+    <br />
+    {data && data.data ? <p>Total: {data.data.count}</p> : <p>Total: 0</p>}
+    <br/>
+
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-2">
+      {records.length > 0 ? (
+        records.map((item) => (
+          <div
+            key={item.id}
+            className="card-5 cursor-pointer"
+            onClick={() => handleCategoryClick(item.id)}
+          >
+            <img
+              src={`http://localhost:8000/${item.image}`}
+              className="card-image5 clickable-image w-full h-40 object-cover transform transition-transform duration-300 hover:scale-105 border border-black"
+              alt={item.name}
+            />
+            <div className="card-body5 p-4">
+              <h5 className="card-title text-black text-sm font-medium -m-6 p-3">{item.name}</h5>
+              <p className="card-text text-black text-xs mt-1 -m-6 p-3">Des: {item.description}</p>
+              <p className="card-text text-black text-xs mt-1 font-semibold -m-6 p-3">Price: {item.price}</p>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p>Loading....</p>
+      )}
+    </div>
+
+    <div className="h-8"></div>
+  </div>
+
+  <ToastContainer />
+
+  {/* Animation Style */}
+  <style jsx>{`
+    @keyframes scrollUp {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(-${categories.length * 120}px);
+      }
+    }
+    .animate-scrollUp {
+      animation: scrollUp ${categories.length * 5}s linear infinite;
+    }
+  `}</style>
+</div>
+
     );
 };
 
