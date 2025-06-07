@@ -228,7 +228,7 @@ const ReviewsPage = () => {
                           <p className="text-gray-400 text-sm">{formatDate(review.created_at)}</p>
                         </div>
                       </div>
-                      <div className="text-sm text-gray-300">Product ID: {review.product}  ,
+                      <div className="text-sm text-gray-300 mr-2">Product ID: {review.product}  ,
                          Product Name: {review.product_name}</div>   
                     </div>
                     
