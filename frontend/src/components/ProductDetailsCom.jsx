@@ -323,20 +323,23 @@
 // export default ProductDetailsCom;
 
 
+
+
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AxiosInstance from "@/components/AxiosInstance";
 import { useCart } from '@/components/CartContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Image from 'next/image';
-// import { useAuth } from '@/components/AuthContext';
 
 const ProductDetailsCom = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  // const { user } = useAuth();
+  const sliderRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
   const [products, setProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
@@ -350,6 +353,8 @@ const ProductDetailsCom = () => {
     name: '',
     email: ''
   });
+
+  const [featuredProducts, setFeaturedProducts] = useState([]);
 
   const ProductId = searchParams.get('ProductId');
 
@@ -370,23 +375,58 @@ const ProductDetailsCom = () => {
         }
       };
       
+      const fetchFeaturedProducts = async () => {
+        try {
+          const res = await AxiosInstance.get('/ecommerce/publiccategory');
+          if (res?.data?.data?.data) {
+            setFeaturedProducts(res.data.data.data);
+          }
+        } catch (error) {
+          console.error('Error fetching featured products:', error);
+        }
+      };
+      
+      fetchFeaturedProducts();
+    
       const fetchReviews = async () => {
-  try {
-    const res = await AxiosInstance.get(`/ecommerce/publicreview?product_id=${ProductId}`);
-    if (res?.data?.data) {  // Updated this line
-      setReviews(res.data.data.data || []);  // Updated this line
-    }
-  } catch (error) {
-    console.error('Error fetching reviews:', error);
-  } finally {
-    setReviewLoading(false);
-  }
-};
+        try {
+          const res = await AxiosInstance.get(`/ecommerce/publicreview?product_id=${ProductId}`);
+          if (res?.data?.data) {
+            setReviews(res.data.data.data || []);
+          }
+        } catch (error) {
+          console.error('Error fetching reviews:', error);
+        } finally {
+          setReviewLoading(false);
+        }
+      };
       
       fetchProduct();
       fetchReviews();
     }
   }, [ProductId]);
+
+  // Auto-scrolling slider effect
+  useEffect(() => {
+    if (featuredProducts.length <= 1 || isHovered) return;
+
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => {
+        const nextIndex = (prev + 1) % featuredProducts.length;
+        const itemWidth = slider.firstChild?.offsetWidth || 300;
+        slider.scrollTo({
+          left: nextIndex * itemWidth,
+          behavior: 'smooth'
+        });
+        return nextIndex;
+      });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [featuredProducts.length, isHovered]);
 
   const handleBackButton = () => {
     router.push('/publicproducts');
@@ -441,7 +481,6 @@ const ProductDetailsCom = () => {
         ...newReview,
         product: ProductId,
         rating: parseInt(newReview.rating),
-        // Make email optional
         email: newReview.email.trim() || null
       };
 
@@ -462,14 +501,12 @@ const ProductDetailsCom = () => {
     }
   };
 
-  // Helper function to clean image URL
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
     const cleanedPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
     return `http://localhost:8000/${cleanedPath}`;
   };
 
-  // Render star ratings
   const renderStars = (rating, interactive = false) => {
     return (
       <div className="flex">
@@ -495,6 +532,19 @@ const ProductDetailsCom = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const scrollToItem = (direction) => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    const itemWidth = slider.firstChild?.offsetWidth || 300;
+    const scrollAmount = direction === 'left' ? -itemWidth : itemWidth;
+    
+    slider.scrollBy({
+      left: scrollAmount,
+      behavior: 'smooth'
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -506,15 +556,15 @@ const ProductDetailsCom = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 py-12 px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center mb-8">
-          <button
-            onClick={handleBackButton}
-            className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Products
-          </button>
+        <button
+          onClick={handleBackButton}
+          className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Products
+        </button>
       </div>
       <div className="max-w-5xl mx-auto -mt-10">
         
@@ -597,6 +647,75 @@ const ProductDetailsCom = () => {
               </div>
             </div>
 
+            {/* Luxury Horizontal Slider */}
+            {featuredProducts.length > 0 && (
+              <div className="px-8 py-12 border-t border-gray-200 mt-20">
+                {/* <h2 className="text-2xl font-serif font-bold text-gray-900 mt-10 mb-8 text-center">
+                  Luxury Selection
+                </h2> */}
+                
+                <div 
+                  className="relative overflow-hidden group"
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                >
+                  <button 
+                    onClick={() => scrollToItem('left')}
+                    className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100"
+                    aria-label="Scroll left"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  
+                  <div 
+                    ref={sliderRef}
+                    className="flex space-x-6 overflow-x-auto py-4 px-2 scrollbar-hide scroll-smooth"
+                    style={{ scrollbarWidth: 'none' }}
+                  >
+                    {featuredProducts.map((product) => (
+                      <div 
+                        key={product.id}
+                        onClick={() => router.push(`/productdetailpage?ProductId=${product.id}`)}
+                        className="flex-shrink-0 w-40 h-48 bg-white rounded-xl shadow-md overflow-hidden cursor-pointer transform transition-all hover:scale-105 hover:shadow-xl border border-gray-200"
+                      >
+                        <div className="relative h-48 w-full">
+                          <img
+                            src={getImageUrl(product.image)}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = '/placeholder-product.png';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                          {/* <div className="absolute bottom-0 left-0 p-4">
+                            <h4 className="text-white font-medium">{product.name}</h4>
+                            <p className="text-amber-400 font-bold">${product.price}</p>
+                          </div> */}
+                        </div>
+                        {/* <div className="p-4">
+                          <p className="text-gray-600 text-sm line-clamp-2">{product.description}</p>
+                        </div> */}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <button 
+                    onClick={() => scrollToItem('right')}
+                    className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100"
+                    aria-label="Scroll right"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Reviews Section */}
             <div className="border-t border-gray-200 px-8 py-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-8">Customer Reviews</h2>
@@ -666,40 +785,56 @@ const ProductDetailsCom = () => {
               
               {/* Reviews List */}
               {reviewLoading ? (
-                <div className="flex justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                </div>
-              ) : reviews.length > 0 ? (
-                <div className="space-y-8">
-                  {reviews.map((review) => (
-                    <div key={review.id} className="border-b border-gray-200 pb-8 last:border-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="bg-blue-100 text-blue-800 rounded-full w-10 h-10 flex items-center justify-center font-medium">
-                            {review.name.charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <h4 className="font-medium text-gray-900">{review.name}</h4>
-                            <p className="text-sm text-gray-500">{formatDate(review.created_at)}</p>
-                          </div>
-                        </div>
-                        <div className="flex">
-                          {renderStars(review.rating)}
-                        </div>
-                      </div>
-                      <div className="mt-4 pl-14">
-                        <p className="text-gray-700">{review.comment}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <h3 className="mt-2 text-lg font-medium text-gray-900">No reviews yet</h3>
-                  <p className="mt-1 text-gray-500">Be the first to review this product!</p>
+  <div className="flex justify-center items-center h-32">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-opacity-80 border-gold-500"></div>
+  </div>
+) : reviews.length > 0 ? (
+  <div className="space-y-8">
+    {reviews.map((review) => (
+      <div 
+        key={review.id} 
+        className="relative bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100"
+      >
+        {/* Decorative corner accent */}
+        <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden">
+          <div className="absolute -right-8 -top-8 w-16 h-16 bg-gradient-to-br from-gold-100 to-transparent transform rotate-45"></div>
+        </div>
+        
+        <div className="flex items-start justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="bg-blue-400 from-gold-500 to-gold-700 text-white rounded-full w-12 h-12 flex items-center justify-center font-medium text-xl shadow-sm">
+              {review.name.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900 text-lg">{review.name}</h4>
+              <p className="text-sm text-gray-500 font-light">{formatDate(review.created_at)}</p>
+            </div>
+          </div>
+          <div className="flex items-center bg-gray-50 px-3 py-1 rounded-full">
+            {renderStars(review.rating)}
+            <span className="ml-2 text-sm font-medium text-gray-700">{review.rating}.0</span>
+          </div>
+        </div>
+        
+        <div className="mt-4 pl-16">
+          <p className="text-gray-700 leading-relaxed font-light">{review.comment}</p>
+        </div>
+        
+        {/* Decorative divider */}
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-px bg-gradient-to-r from-transparent via-gold-300 to-transparent"></div>
+      </div>
+    ))}
+  </div>
+) : (
+  <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
+    <div className="w-24 h-24 mx-auto flex items-center justify-center bg-gradient-to-br from-gold-50 to-gold-100 rounded-full mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+    <h3 className="mt-2 text-xl font-medium text-gray-900">No reviews yet</h3>
+    <p className="mt-2 text-gray-500 max-w-md mx-auto">Be the first to share your thoughts about this exquisite product.</p>
+
                 </div>
               )}
             </div>
