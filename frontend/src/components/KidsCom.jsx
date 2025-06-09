@@ -172,47 +172,30 @@ const PublicNewArrivals = () => {
 
     return (
         <div className="flex min-h-screen bg-gray-50">
-            {/* Left Side - Categories Slider */}
-            <div className="w-1/7 bg-gray-100 p-4 shadow-lg" style={{ height: sliderHeight }}>
-                <div className="h-full overflow-hidden relative space-y-2">
-                    {/* <h3 className="text-lg font-semibold mb-4">Categories</h3> */}
-                    {/* First set of categories */}
-                    <div className="animate-scrollUp space-y-2">
-                        {categories.map((category) => (
-                            <div
-                                key={category.id}
-                                onClick={() => handleCategoryClick(category.id)}
-                                className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
-                            >
-                                <img
-                                    src={`http://localhost:8000/${category.image}`}
-                                    alt={category.name}
-                                    className="w-full h-28 object-cover"
-                                />
-                                {/* <p className="text-center mt-1">{category.name}</p> */}
-                            </div>
-                        ))}
-                    </div>
+  {/* Left Side - Categories Slider */}
+  <div className="w-[10%] bg-gray-100 shadow-lg ml-4 relative overflow-hidden" style={{ height: sliderHeight }}>
+    <div className="absolute top-0 left-0 right-0 animate-scrollUp">
+      {/* Combined list for smooth scroll */}
+      {[...categories, ...categories].map((category, index) => (
+        <div
+          key={`${category.id}-${index}`}
+          onClick={() => handleCategoryClick(category.id)}
+          className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
+        >
+          <img
+            src={`http://localhost:8000/${category.image}`}
+            alt={category.name}
+            className="w-full h-28 object-cover rounded"
+          />
+        </div>
+      ))}
+    </div>
 
-                    {/* Second set of categories (for seamless looping) */}
-                    <div className="animate-scrollUp space-y-2 absolute top-full w-full">
-                        {categories.map((category) => (
-                            <div
-                                key={`${category.id}-duplicate`}
-                                onClick={() => handleCategoryClick(category.id)}
-                                className="shadow-md cursor-pointer p-2 hover:bg-gray-400 transition duration-300"
-                            >
-                                <img
-                                    src={`http://localhost:8000/${category.image}`}
-                                    alt={category.name}
-                                    className="w-full h-28 object-cover"
-                                />
-                                {/* <p className="text-center mt-1">{category.name}</p> */}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+    {/* Top and bottom gradient masks */}
+    <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-gray-100 to-transparent z-10 pointer-events-none" />
+    <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-gray-100 to-transparent z-10 pointer-events-none" />
+  </div>
+
 
             {/* Right Side - Products */}
             <div className="w-6/7 p-8" ref={productsRef}>
@@ -256,18 +239,18 @@ const PublicNewArrivals = () => {
             <ToastContainer />
 
             <style jsx>{`
-                @keyframes scrollUp {
-                    0% {
-                        transform: translateY(0);
-                    }
-                    100% {
-                        transform: translateY(-${categories.length * 120}px);
-                    }
-                }
-                .animate-scrollUp {
-                    animation: scrollUp ${categories.length * 5}s linear infinite;
-                }
-            `}</style>
+    @keyframes scrollUp {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(-${categories.length * 120}px);
+      }
+    }
+    .animate-scrollUp {
+      animation: scrollUp ${categories.length * 5}s linear infinite;
+    }
+  `}</style>
         </div>
     );
 };
