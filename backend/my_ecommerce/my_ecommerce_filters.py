@@ -37,7 +37,7 @@ class PublicproductFilter(FilterSet):
 
     class Meta:
         model = Product
-        exclude = ['image', 'images']
+        exclude = ['image']
        
 
 class SliderproductFilter(FilterSet):
