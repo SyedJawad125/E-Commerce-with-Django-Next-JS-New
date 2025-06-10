@@ -1,10 +1,23 @@
 import json
 from rest_framework import serializers
-from .models import Contact, Employee, Product, Order, OrderDetail, Category, ProductTag, Review, SalesProduct
+from .models import Contact, Employee, Product, Order, OrderDetail, Category, ProductImage, ProductTag, Review, SalesProduct
 from rest_framework.serializers import ModelSerializer
 from user_auth.user_serializer import UserListingSerializer
 
+
+class ProductImageSerializer(ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ['id', 'images']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
+        data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
+        return data
+    
 class ProductSerializer(ModelSerializer):
+    images = ProductImageSerializer(many=True, read_only=True)
     class Meta:
         model = Product
         fields='__all__'
@@ -24,7 +37,7 @@ class ProductSerializer(ModelSerializer):
             
         # Handle case where it might come as a path string
         if isinstance(value, str):
-            if value.startswith('product_images/'):
+            if value.startswith('product_images_new/'):
                 return value
             if '.' in value:  # Has file extension
                 return value
@@ -41,8 +54,11 @@ class ProductSerializer(ModelSerializer):
         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
         data['category_name'] = instance.prod_has_category.name if instance.prod_has_category else None
         data['tag_name'] = instance.tags.name if instance.tags else None
+        data['image_urls'] = [img.images.url for img in instance.images.all()] if hasattr(instance, 'images') else []
 
         return data
+
+
 
 class PublicproductSerializer(ModelSerializer):
     class Meta:
@@ -120,8 +136,6 @@ class SliderproductSerializer(ModelSerializer):
         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
         data['category_name'] = instance.prod_has_category.name if instance.prod_has_category else None
         return data
-
-
 
 class SalesProductSerializer(serializers.ModelSerializer):
     class Meta:

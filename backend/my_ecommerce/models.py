@@ -36,12 +36,27 @@ class Product(models.Model):
     price = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    image = models.FileField(upload_to='product_images/', blank=True, null=True)
+    # image = models.FileField(upload_to='product_images/', blank=True, null=True)
     # images = models.JSONField(default=list,null=True, blank=True)
     prod_has_category = models.ForeignKey(Category, on_delete=models.CASCADE,related_name='prod_has_category1', null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='product_created_by', null=True, blank=True)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='product_updated_by', null=True, blank=True)
     tags = models.ManyToManyField(ProductTag, blank=True)
+    @property
+    def images(self):
+        return self.images.all()
+    
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    images = models.ImageField(upload_to='product_images_new/')
+    alt_text = models.CharField(max_length=100, blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='productimage_created_by', null=True, blank=True)
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='productimage_updated_by', null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.product.name} Image"
+
 
 class SalesProduct(models.Model):
     name = models.CharField(max_length=50)

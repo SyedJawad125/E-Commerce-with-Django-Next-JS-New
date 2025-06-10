@@ -33,23 +33,33 @@ class ProductController:
     
     def create(self, request):
         try:
-            request.POST._mutable = True
-            request.data["created_by"] = request.user.guid
-            request.POST._mutable = False
+            # Attach created_by user
+            data = request.data.copy()
+            data["created_by"] = request.user.guid  # use guid if needed
 
-            # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
-            validated_data = ProductSerializer(data=request.data)
-            if validated_data.is_valid():
-                response = validated_data.save()
-                response_data = ProductSerializer(response).data
-                return Response({'data': response_data}, 200)
+            # Validate and save product
+            serializer = ProductSerializer(data=data)
+            if serializer.is_valid():
+                product = serializer.save()
+
+                # Handle image uploads
+                images = request.FILES.getlist('images')
+                if len(images) > 5:
+                    return Response({'error': 'You can upload a maximum of 5 images.'}, status=400)
+
+                for img in images:
+                    ProductImage.objects.create(product=product, images=img)
+
+                response_data = ProductSerializer(product).data
+                return Response({'data': response_data}, status=201)
             else:
-                error_message = get_first_error_message(validated_data.errors, "UNSUCCESSFUL")
-                return Response({'data': error_message}, 400)
-            # else:
-            #     return Response({'data': "Permission Denaied"}, 400)
+                error_message = get_first_error_message(serializer.errors, "UNSUCCESSFUL")
+                return Response({'error': error_message}, status=400)
+
         except Exception as e:
-            return Response({'error': str(e)}, 500)
+            return Response({'error': str(e)}, status=500)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
         
     def get_product(self, request):
         try:

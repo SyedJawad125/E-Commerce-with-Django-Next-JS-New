@@ -53,7 +53,26 @@ class ProductViews(ModelViewSet):
     def delete_product(self, request):
         return product_controller.delete_product(request)
 
+# class ProductImageViews(ModelViewSet):
 
+#     # authentication_classes = [JWTAuthentication]
+    
+#     # @permission_required(['create_product'])
+#     def post_productimage(self, request):
+#         return productimage_controller.create(request)
+    
+#     # @permission_required(['read_product'])
+#     def get_productimage(self, request):
+#         return productimage_controller.get_productimage(request)
+    
+#     # @permission_required(['update_product'])
+#     def update_productimage(self, request):
+#         return productimage_controller.update_productimage(request)
+    
+#     # @permission_required(['delete_product'])
+#     def delete_productimage(self, request):
+#         return productimage_controller.delete_productimage(request)
+    
 class PublicproductViews(ModelViewSet):
     # authentication_classes = [JWTAuthentication]
     def get_publicproduct(self, request):
