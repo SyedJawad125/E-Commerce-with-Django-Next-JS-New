@@ -63,24 +63,34 @@ class ProductController:
         
     def get_product(self, request):
         try:
-
+            # Get all product instances
             instances = self.serializer_class.Meta.model.objects.all()
 
+            # Apply filters if any
             filtered_data = self.filterset_class(request.GET, queryset=instances)
             data = filtered_data.qs
 
+            # Paginate the data
             paginated_data, count = paginate_data(data, request)
 
+            # Serialize the data
             serialized_data = self.serializer_class(paginated_data, many=True).data
+
+            # For each product, include its images in the response
+            for product_data in serialized_data:
+                product_id = product_data['id']
+                product_images = ProductImage.objects.filter(product_id=product_id)
+                image_urls = [img.images.url for img in product_images if img.images]
+                product_data['images'] = image_urls
+
             response_data = {
                 "count": count,
                 "data": serialized_data,
             }
             return create_response(response_data, "SUCCESSFUL", 200)
 
-
         except Exception as e:
-            return Response({'error': str(e)}, 500)
+            return Response({'error': str(e)}, status=500)
 
     def update_product(self, request):
         try:
