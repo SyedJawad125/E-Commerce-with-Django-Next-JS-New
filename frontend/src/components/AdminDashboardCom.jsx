@@ -4,9 +4,11 @@ import 'chart.js/auto';
 import { FiUsers, FiShoppingCart, FiDollarSign, FiPackage, FiClock, FiCalendar } from 'react-icons/fi';
 
 const AdminPage = () => {
+  const [isClient, setIsClient] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   
   useEffect(() => {
+    setIsClient(true); // This will only run on client side
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -57,11 +59,15 @@ const AdminPage = () => {
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2 bg-emerald-700/50 px-4 py-2 rounded-lg text-white">
               <FiCalendar className="text-white" />
-              <span>{currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              {isClient && (
+                <span>{currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              )}
             </div>
             <div className="flex items-center space-x-2 bg-emerald-700/50 px-4 py-2 rounded-lg text-white">
               <FiClock className="text-white" />
-              <span>{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+              {isClient && (
+                <span>{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+              )}
             </div>
             <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white">
               <span className="font-bold">AD</span>
@@ -70,6 +76,7 @@ const AdminPage = () => {
         </div>
       </header>
 
+      {/* Rest of your component remains the same */}
       {/* Main Content */}
       <div className="container mx-auto p-4">
         {/* Welcome Banner */}
