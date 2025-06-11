@@ -2,6 +2,8 @@ from django.urls import path
 from .views import CategoryViews, ContactViews, EmployeeViews, ProductTagViews, ProductViews, OrderViews, PublicOrderViews, PublicSalesProductViews, PubliceReviewViews, PublicproductViews, PubliccategoryViews, ReviewViews, SalesProductViews, \
     SlidercategoryViews, SliderproductViews,EmployeeViews
 
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('product', ProductViews.as_view({"get": "get_product",
                                           "post": "post_product",
@@ -61,4 +63,4 @@ urlpatterns = [
                                                 "post": "post_publicreview"})),
 
 
-]
+]   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

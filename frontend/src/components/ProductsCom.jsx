@@ -178,7 +178,8 @@
 // export default ProductsCom;
 
 
-'use client';
+
+'use client'
 import React, { useEffect, useState, useContext } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -194,6 +195,8 @@ const ProductsCom = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const recordsPerPage = 8;
 
   useEffect(() => {
@@ -202,8 +205,14 @@ const ProductsCom = () => {
         setIsLoading(true);
         const res = await AxiosInstance.get('/ecommerce/product');
         if (res?.data?.data?.data) {
-          setRecords(res.data.data.data);
-          setFilteredRecords(res.data.data.data);
+          // Process the data to use first image as main image
+          const processedProducts = res.data.data.data.map(product => ({
+            ...product,
+            mainImage: product.image_urls?.[0] || '/default-product-image.jpg',
+            remainingImages: product.image_urls?.slice(1) || [] // All images except the first
+          }));
+          setRecords(processedProducts);
+          setFilteredRecords(processedProducts);
         }
       } catch (error) {
         console.error('Error occurred:', error);
@@ -224,6 +233,16 @@ const ProductsCom = () => {
 
     receiveData();
   }, []);
+
+  const openDetailsModal = (product) => {
+    setSelectedProduct(product);
+    setShowDetailsModal(true);
+  };
+
+  const closeDetailsModal = () => {
+    setShowDetailsModal(false);
+    setSelectedProduct(null);
+  };
 
   const deleteRecord = async (id) => {
     try {
@@ -296,6 +315,108 @@ const ProductsCom = () => {
         pauseOnHover
         theme="dark"
       />
+      
+      {/* Product Details Modal */}
+      {showDetailsModal && selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-gray-800 rounded-xl max-w-4xl w-full max-h-screen overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-6">
+                <h2 className="text-2xl font-bold text-white">{selectedProduct.name}</h2>
+                <button 
+                  onClick={closeDetailsModal}
+                  className="text-gray-400 hover:text-white text-3xl"
+                >
+                  &times;
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Product Images */}
+                <div>
+                  <div className="mb-4 h-80 bg-gray-700 rounded-lg overflow-hidden">
+                    <img 
+                      src={selectedProduct.mainImage} 
+                      className="w-full h-full object-contain"
+                      alt={selectedProduct.name}
+                    />
+                  </div>
+                  
+                  {selectedProduct.remainingImages.length > 0 && (
+                    <div className="grid grid-cols-4 gap-2">
+                      <div className="relative h-20 bg-gray-700 rounded overflow-hidden border-2 border-amber-500">
+                        <img 
+                          src={selectedProduct.mainImage} 
+                          className="w-full h-full object-cover"
+                          alt="Main"
+                        />
+                      </div>
+                      {selectedProduct.remainingImages.map((img, index) => (
+                        <div key={index} className="h-20 bg-gray-700 rounded overflow-hidden">
+                          <img 
+                            src={img} 
+                            className="w-full h-full object-cover"
+                            alt={`Product ${index + 2}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Product Details */}
+                <div>
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-amber-400 mb-2">Description</h3>
+                    <p className="text-gray-300">{selectedProduct.description}</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-amber-400 mb-2">Category</h3>
+                      <p className="text-gray-300">{selectedProduct.category_name || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-amber-400 mb-2">Price</h3>
+                      <p className="text-gray-300">${selectedProduct.price}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-amber-400 mb-2">Created At</h3>
+                      <p className="text-gray-300">{new Date(selectedProduct.created_at).toLocaleDateString()}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-amber-400 mb-2">Created By</h3>
+                      <p className="text-gray-300">
+                        {selectedProduct.created_by?.get_full_name || selectedProduct.created_by?.email || 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex space-x-4">
+                    {permissions.update_product && (
+                      <button
+                        onClick={() => {
+                          updateRecord(selectedProduct.id);
+                          closeDetailsModal();
+                        }}
+                        className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition-colors"
+                      >
+                        Edit Product
+                      </button>
+                    )}
+                    <button
+                      onClick={closeDetailsModal}
+                      className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
@@ -373,10 +494,16 @@ const ProductsCom = () => {
                     {/* Product Image */}
                     <div className="relative h-80 w-full">
                       <img
-                        src={`http://localhost:8000/${item.image}`}
+                        src={item.mainImage}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         alt={item.name}
                       />
+                      {/* Gallery indicator badge */}
+                      {item.remainingImages.length > 0 && (
+                        <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full z-20">
+                          +{item.remainingImages.length} more
+                        </div>
+                      )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10"></div>
                     </div>
                     
@@ -392,9 +519,25 @@ const ProductsCom = () => {
                         <span className="text-amber-400 font-bold text-lg">${item.price}</span>
                         
                         <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openDetailsModal(item);
+                            }}
+                            className="p-2 bg-gray-700/90 text-white rounded-full hover:bg-gray-600 transition-colors duration-300"
+                            title="View Details"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </button>
                           {permissions.update_product && (
                             <button
-                              onClick={() => updateRecord(item.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updateRecord(item.id);
+                              }}
                               className="p-2 bg-amber-600/90 text-white rounded-full hover:bg-amber-700 transition-colors duration-300"
                               title="Edit"
                             >
@@ -405,7 +548,10 @@ const ProductsCom = () => {
                           )}
                           {permissions.delete_product && (
                             <button
-                              onClick={() => deleteRecord(item.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteRecord(item.id);
+                              }}
                               className="p-2 bg-red-600/90 text-white rounded-full hover:bg-red-700 transition-colors duration-300"
                               title="Delete"
                             >
