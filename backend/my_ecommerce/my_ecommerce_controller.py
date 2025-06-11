@@ -110,34 +110,44 @@ class ProductController:
 
     def update_product(self, request):
         try:
-            if "id" in request.data:
-                # finding instance
-                instance = Product.objects.filter(id=request.data["id"]).first()
+            if "id" not in request.data:
+                return Response({"error": "ID NOT PROVIDED"}, status=400)
+                
+            # Find instance
+            instance = Product.objects.filter(id=request.data["id"]).first()
+            if not instance:
+                return Response({"error": "Product not found"}, status=404)
 
-                if instance:
-                    request.POST._mutable = True
-                    request.data["updated_by"] = request.user.guid
-                    request.POST._mutable = False
+            # Prepare data with updated_by user
+            data = request.data.copy()
+            data["updated_by"] = request.user.guid  # use guid if needed
 
-                    # updating the instance/record
-                    serialized_data = ProductSerializer(instance, data=request.data, partial=True)
-                    # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
-                    if serialized_data.is_valid():
-                        response = serialized_data.save()
-                        response_data = ProductSerializer(response).data
-                        return Response({"data": response_data}, 200)
-                    else:
-                        error_message = get_first_error_message(serialized_data.errors, "UNSUCCESSFUL")
-                        return Response({'data': error_message}, 400)
-                    # else:
-                    #     return Response({'data': "Permission Denaied"}, 400)
-                else:
-                    return Response({"data": "NOT FOUND"}, 404)
-            else:
-                return Response({"data": "ID NOT PROVIDED"}, 400)
+            # Validate and update product
+            serializer = ProductSerializer(instance, data=data, partial=True)
+            if not serializer.is_valid():
+                error_message = get_first_error_message(serializer.errors, "UNSUCCESSFUL")
+                return Response({'error': error_message}, status=400)
+                
+            product = serializer.save()
+
+            # Handle image uploads if provided
+            images = request.FILES.getlist('images')
+            if images:
+                if len(images) > 5:
+                    return Response({'error': 'You can upload a maximum of 5 images.'}, status=400)
+                
+                # Delete existing images (optional - you might want to keep them)
+                # ProductImage.objects.filter(product=product).delete()
+                
+                # Add new images
+                for img in images:
+                    ProductImage.objects.create(product=product, images=img)
+
+            response_data = ProductSerializer(product).data
+            return Response({'data': response_data}, status=200)
 
         except Exception as e:
-            return Response({'error': str(e)}, 500)
+            return Response({'error': str(e)}, status=500)
 
     def delete_product(self, request):
         try:
