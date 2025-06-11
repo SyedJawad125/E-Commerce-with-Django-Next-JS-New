@@ -61,39 +61,15 @@ class ProductController:
         except Exception as e:
             return Response({'error': str(e)}, status=500)
         
-    # def get_product(self, request):
-    #     try:
-    #         instances = self.serializer_class.Meta.model.objects.all()
-
-    #         filtered_data = self.filterset_class(request.GET, queryset=instances)
-    #         data = filtered_data.qs
-
-    #         paginated_data, count = paginate_data(data, request)
-
-    #         serialized_data = self.serializer_class(paginated_data, many=True).data
-
-    #         response_data = {
-    #             "count": count,
-    #             "data": serialized_data,
-    #         }
-    #         return create_response(response_data, "SUCCESSFUL", 200)
-
-    #     except Exception as e:
-    #         return Response({'error': str(e)}, status=500)
-
     def get_product(self, request):
         try:
-            # Query all products
-            queryset = self.serializer_class.Meta.model.objects.all()
+            instances = self.serializer_class.Meta.model.objects.all()
 
-            # Apply filters
-            filtered_qs = self.filterset_class(request.GET, queryset=queryset)
-            final_qs = filtered_qs.qs
+            filtered_data = self.filterset_class(request.GET, queryset=instances)
+            data = filtered_data.qs
 
-            # Apply pagination
-            paginated_data, count = paginate_data(final_qs, request)
+            paginated_data, count = paginate_data(data, request)
 
-            # Serialize data
             serialized_data = self.serializer_class(paginated_data, many=True).data
 
             response_data = {
@@ -103,9 +79,33 @@ class ProductController:
             return create_response(response_data, "SUCCESSFUL", 200)
 
         except Exception as e:
-            import traceback
-            traceback.print_exc()  # Optional: useful for logging/debugging
             return Response({'error': str(e)}, status=500)
+
+    # def get_product(self, request):
+    #     try:
+    #         # Query all products
+    #         queryset = self.serializer_class.Meta.model.objects.all()
+
+    #         # Apply filters
+    #         filtered_qs = self.filterset_class(request.GET, queryset=queryset)
+    #         final_qs = filtered_qs.qs
+
+    #         # Apply pagination
+    #         paginated_data, count = paginate_data(final_qs, request)
+
+    #         # Serialize data
+    #         serialized_data = self.serializer_class(paginated_data, many=True).data
+
+    #         response_data = {
+    #             "count": count,
+    #             "data": serialized_data,
+    #         }
+    #         return create_response(response_data, "SUCCESSFUL", 200)
+
+    #     except Exception as e:
+    #         import traceback
+    #         traceback.print_exc()  # Optional: useful for logging/debugging
+    #         return Response({'error': str(e)}, status=500)
 
 
     def update_product(self, request):
