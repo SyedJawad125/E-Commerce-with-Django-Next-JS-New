@@ -15,47 +15,25 @@ class ProductImageSerializer(ModelSerializer):
         data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
         return data
-    
+
+
 class ProductSerializer(ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
+
     class Meta:
         model = Product
-        fields='__all__'
+        fields = '__all__'
         extra_kwargs = {
             'images': {'required': False, 'allow_null': True},
-            'image': {'required': False, 'allow_null': True}
         }
-
-    def validate_image(self, value):
-        """Modified to handle edge cases"""
-        if value is None or value == 'undefined':
-            return None
-            
-        # Handle case where Django might have already processed it
-        if hasattr(value, 'file'):
-            return value
-            
-        # Handle case where it might come as a path string
-        if isinstance(value, str):
-            if value.startswith('product_images_new/'):
-                return value
-            if '.' in value:  # Has file extension
-                return value
-                
-        raise serializers.ValidationError(
-            "Invalid image format. Must be a file upload or valid path string"
-        )
-
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-
         data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
         data['category_name'] = instance.prod_has_category.name if instance.prod_has_category else None
-        data['tag_name'] = instance.tags.name if instance.tags else None
+        data['tag_name'] = [tag.name for tag in instance.tags.all()] if instance.tags.exists() else []
         data['image_urls'] = [img.images.url for img in instance.images.all()] if hasattr(instance, 'images') else []
-
         return data
 
 
@@ -322,3 +300,48 @@ class PublicReviewSerializer(serializers.ModelSerializer):
         if self.context['request'].user.is_authenticated:
             validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
+    
+
+
+# class ProductSerializer(ModelSerializer):
+#     # images = ProductImageSerializer(many=True, read_only=True)
+#     class Meta:
+#         model = Product
+#         fields='__all__'
+#         extra_kwargs = {
+#             'images': {'required': False, 'allow_null': True},
+#             'image': {'required': False, 'allow_null': True}
+#         }
+
+#     def validate_image(self, value):
+#         """Modified to handle edge cases"""
+#         if value is None or value == 'undefined':
+#             return None
+            
+#         # Handle case where Django might have already processed it
+#         if hasattr(value, 'file'):
+#             return value
+            
+#         # Handle case where it might come as a path string
+#         if isinstance(value, str):
+#             if value.startswith('product_images_new/'):
+#                 return value
+#             if '.' in value:  # Has file extension
+#                 return value
+                
+#         raise serializers.ValidationError(
+#             "Invalid image format. Must be a file upload or valid path string"
+#         )
+
+
+#     def to_representation(self, instance):
+#         data = super().to_representation(instance)
+
+#         data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
+#         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
+#         data['category_name'] = instance.prod_has_category.name if instance.prod_has_category else None
+#         # data['tag_name'] = instance.tags.name if instance.tags else None
+#         data['tag_name'] = [tags.name for tags in instance.tags.all()] if instance.tags.exists() else []
+#         data['image_urls'] = [img.images.url for img in instance.images.all()] if hasattr(instance, 'images') else []
+
+#         return data
