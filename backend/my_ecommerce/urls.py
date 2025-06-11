@@ -4,6 +4,7 @@ from .views import CategoryViews, ContactViews, EmployeeViews, ProductTagViews, 
 
 from django.conf import settings
 from django.conf.urls.static import static
+
 urlpatterns = [
     path('product', ProductViews.as_view({"get": "get_product",
                                           "post": "post_product",

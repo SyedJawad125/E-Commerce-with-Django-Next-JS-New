@@ -17,25 +17,53 @@ class ProductImageSerializer(ModelSerializer):
         return data
 
 
+# class ProductSerializer(ModelSerializer):
+#     images = ProductImageSerializer(many=True, read_only=True)
+
+#     class Meta:
+#         model = Product
+#         fields = '__all__'
+#         extra_kwargs = {
+#             'images': {'required': False, 'allow_null': True},
+#         }
+
+#     def to_representation(self, instance):
+#         data = super().to_representation(instance)
+#         data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
+#         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
+#         data['category_name'] = instance.prod_has_category.name if instance.prod_has_category else None
+#         data['tag_name'] = [tag.name for tag in instance.tags.all()] if instance.tags.exists() else []
+#         data['image_urls'] = [img.images.url for img in instance.images.all()] if hasattr(instance, 'images') else []
+#         return data
+
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
+
 class ProductSerializer(ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
+    created_by = SerializerMethodField()
+    updated_by = SerializerMethodField()
+    category_name = SerializerMethodField()
+    tag_name = SerializerMethodField()
+    image_urls = SerializerMethodField()
 
     class Meta:
         model = Product
         fields = '__all__'
-        extra_kwargs = {
-            'images': {'required': False, 'allow_null': True},
-        }
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
-        data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
-        data['category_name'] = instance.prod_has_category.name if instance.prod_has_category else None
-        data['tag_name'] = [tag.name for tag in instance.tags.all()] if instance.tags.exists() else []
-        data['image_urls'] = [img.images.url for img in instance.images.all()] if hasattr(instance, 'images') else []
-        return data
+    def get_created_by(self, obj):
+        return UserListingSerializer(obj.created_by).data if obj.created_by else None
 
+    def get_updated_by(self, obj):
+        return UserListingSerializer(obj.updated_by).data if obj.updated_by else None
+
+    def get_category_name(self, obj):
+        return obj.prod_has_category.name if obj.prod_has_category else None
+
+    def get_tag_name(self, obj):
+        return [tag.name for tag in obj.tags.all()] if obj.tags.exists() else []
+
+    def get_image_urls(self, obj):
+        return [img.images.url for img in obj.images.all()] if obj.images.exists() else []
 
 
 class PublicproductSerializer(ModelSerializer):
