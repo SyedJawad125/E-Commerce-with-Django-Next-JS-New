@@ -208,8 +208,8 @@ const ProductsCom = () => {
           // Process the data to use first image as main image
           const processedProducts = res.data.data.data.map(product => ({
             ...product,
-            mainImage: product.image_urls?.[0] || '/default-product-image.jpg',
-            remainingImages: product.image_urls?.slice(1) || [] // All images except the first
+            mainImage: product.images?.[0] || '/default-product-image.jpg',
+            remainingImages: product.images?.slice(1) || [] // All images except the first
           }));
           setRecords(processedProducts);
           setFilteredRecords(processedProducts);
