@@ -187,6 +187,7 @@ import AxiosInstance from "@/components/AxiosInstance";
 import { useRouter } from 'next/navigation';
 import { AuthContext } from '@/components/AuthContext';
 
+
 const ProductsCom = () => {
   const router = useRouter();
   const { permissions = {} } = useContext(AuthContext);
@@ -199,17 +200,18 @@ const ProductsCom = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const recordsPerPage = 8;
 
+  const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+
   useEffect(() => {
     const receiveData = async () => {
       try {
         setIsLoading(true);
         const res = await AxiosInstance.get('/ecommerce/product');
         if (res?.data?.data?.data) {
-          // Process the data to use first image as main image
           const processedProducts = res.data.data.data.map(product => ({
             ...product,
-            mainImage: product.image_urls?.[0] || '/default-product-image.jpg',
-            remainingImages: product.image_urls?.slice(1) || []
+            mainImage: product.image_urls?.[0] ? `${baseURL}${product.image_urls[0]}` : '/default-product-image.jpg',
+            remainingImages: product.image_urls?.slice(1).map(url => `${baseURL}${url}`) || []
           }));
           setRecords(processedProducts);
           setFilteredRecords(processedProducts);
@@ -223,7 +225,6 @@ const ProductsCom = () => {
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
-          progress: undefined,
           theme: "dark",
         });
       } finally {
@@ -243,7 +244,6 @@ const ProductsCom = () => {
     setShowDetailsModal(false);
     setSelectedProduct(null);
   };
-
   const deleteRecord = async (id) => {
     try {
       const res = await AxiosInstance.delete(`/ecommerce/product?id=${id}`);
