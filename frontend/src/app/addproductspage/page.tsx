@@ -281,8 +281,8 @@ const AddProduct = () => {
     name: '',
     description: '',
     price: '',
-    prodHasCategory: '',
-    prodHasTag: '',
+    prod_has_category: '', // Changed from prodHasCategory to match API expectation
+    tags: '', // Changed from prodHasTag to match API expectation
     group: 'General'
   });
   const [images, setImages] = useState<File[]>([]);
@@ -291,28 +291,35 @@ const AddProduct = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const res = await AxiosInstance.get('/ecommerce/category');
-        if (res) {
-          setCategoryRecords(res.data.data.data);
+        // Fetch categories and tags in parallel
+        const [categoriesRes, tagsRes] = await Promise.all([
+          AxiosInstance.get('/ecommerce/category'),
+          AxiosInstance.get('/ecommerce/producttag')
+        ]);
+
+        if (categoriesRes?.data?.data?.data) {
+          setCategoryRecords(categoriesRes.data.data.data);
+        }
+        if (tagsRes?.data?.data?.data) {
+          setTagsRecords(tagsRes.data.data.data);
         }
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching data:', error);
+        toast.error('Failed to load categories and tags', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "dark",
+        });
       }
     };
-    fetchCategories();
-    const fetchTags = async () => {
-      try {
-        const res = await AxiosInstance.get('/ecommerce/producttag');
-        if (res) {
-          setTagsRecords(res.data.data.data);
-        }
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-    fetchTags();
+
+    fetchData();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -327,7 +334,6 @@ const AddProduct = () => {
     if (e.target.files) {
       const newImages = Array.from(e.target.files);
       
-      // Check if adding these images would exceed the limit
       if (images.length + newImages.length > 5) {
         toast.error('You can upload a maximum of 5 images', {
           position: "top-center",
@@ -351,6 +357,21 @@ const AddProduct = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.prod_has_category || !formData.tags || images.length === 0) {
+      toast.error('Please fill all required fields and upload at least one image', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      });
+      return;
+    }
+
     setIsLoading(true);
     
     try {
@@ -358,8 +379,8 @@ const AddProduct = () => {
       formDataToSend.append('name', formData.name);
       formDataToSend.append('description', formData.description);
       formDataToSend.append('price', formData.price);
-      formDataToSend.append('prod_has_category', formData.prodHasCategory);
-      formDataToSend.append('tags', formData.prodHasTag);
+      formDataToSend.append('prod_has_category', formData.prod_has_category);
+      formDataToSend.append('tags', formData.tags);
       formDataToSend.append('group', formData.group);
 
       // Append each image
@@ -485,7 +506,6 @@ const AddProduct = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select a category</option>
                   <option value="Men">Men</option>
                   <option value="Women">Women</option>
                   <option value="Kids">Kids</option>
@@ -495,19 +515,19 @@ const AddProduct = () => {
 
               {/* Tag */}
               <div>
-                <label htmlFor="prodHasTag" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
                   Tag <span className="text-red-500">*</span>
                 </label>
                 <select
-                  id="prodHasTag"
-                  name="prodHasTag"
+                  id="tags"
+                  name="tags"
                   className="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                  value={formData.prodHasTag}
+                  value={formData.tags}
                   onChange={handleChange}
                   required
                 >
                   <option value="">Select a Tag</option>
-                  {tagsRecords?.map((item) => (
+                  {tagsRecords.map((item) => (
                     <option value={item.id} key={item.id}>
                       {item.name}
                     </option>
@@ -517,19 +537,19 @@ const AddProduct = () => {
               
               {/* Category */}
               <div>
-                <label htmlFor="prodHasCategory" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="prod_has_category" className="block text-sm font-medium text-gray-700 mb-1">
                   Category <span className="text-red-500">*</span>
                 </label>
                 <select
-                  id="prodHasCategory"
-                  name="prodHasCategory"
+                  id="prod_has_category"
+                  name="prod_has_category"
                   className="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                  value={formData.prodHasCategory}
+                  value={formData.prod_has_category}
                   onChange={handleChange}
                   required
                 >
                   <option value="">Select a category</option>
-                  {categoryRecords?.map((item) => (
+                  {categoryRecords.map((item) => (
                     <option value={item.id} key={item.id}>
                       {item.name}
                     </option>
