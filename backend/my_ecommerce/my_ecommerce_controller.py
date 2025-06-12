@@ -111,44 +111,66 @@ class ProductController:
     def update_product(self, request):
         try:
             if "id" not in request.data:
-                return Response({"error": "ID NOT PROVIDED"}, status=400)
+                return Response({"error": "Product ID is required"}, status=400)
                 
-            # Find instance
             instance = Product.objects.filter(id=request.data["id"]).first()
             if not instance:
                 return Response({"error": "Product not found"}, status=404)
 
-            # Prepare data with updated_by user
             data = request.data.copy()
-            data["updated_by"] = request.user.guid  # use guid if needed
+            data["updated_by"] = request.user.guid
 
             # Validate and update product
             serializer = ProductSerializer(instance, data=data, partial=True)
             if not serializer.is_valid():
-                error_message = get_first_error_message(serializer.errors, "UNSUCCESSFUL")
+                error_message = get_first_error_message(serializer.errors, "Validation failed")
                 return Response({'error': error_message}, status=400)
                 
             product = serializer.save()
 
-            # Handle image uploads if provided
+            # Handle image deletions
+            deleted_count = 0
+            if 'deleted_images' in request.data:
+                try:
+                    deleted_image_ids = [int(id) for id in request.data['deleted_images'].split(',') if id.strip().isdigit()]
+                    deleted_count = ProductImage.objects.filter(product=product, id__in=deleted_image_ids).delete()[0]
+                except (ValueError, AttributeError) as e:
+                    print(f"Error deleting images: {str(e)}")
+
+            # Handle new image uploads
+            added_count = 0
             images = request.FILES.getlist('images')
             if images:
-                if len(images) > 5:
-                    return Response({'error': 'You can upload a maximum of 5 images.'}, status=400)
+                current_images_count = ProductImage.objects.filter(product=product).count()
+                available_slots = 5 - current_images_count
                 
-                # Delete existing images (optional - you might want to keep them)
-                # ProductImage.objects.filter(product=product).delete()
+                if len(images) > available_slots:
+                    return Response({
+                        'error': 'Image limit exceeded',
+                        'detail': f'You can upload {available_slots} more images (max 5 total). Currently has {current_images_count} images.'
+                    }, status=400)
                 
                 # Add new images
                 for img in images:
                     ProductImage.objects.create(product=product, images=img)
+                    added_count += 1
 
+            # Force refresh of the instance and its relations
+            product = Product.objects.prefetch_related('images').get(id=product.id)
+
+            # Get updated data
             response_data = ProductSerializer(product).data
-            return Response({'data': response_data}, status=200)
+            return Response({
+                'data': response_data,
+                'message': f'Product updated successfully. Deleted {deleted_count} images, added {added_count} images'
+            }, status=200)
 
         except Exception as e:
-            return Response({'error': str(e)}, status=500)
-
+            return Response({
+                'error': 'Server error',
+                'detail': str(e)
+            }, status=500)
+        
     def delete_product(self, request):
         try:
             if "id" in request.query_params:

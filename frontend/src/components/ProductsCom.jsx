@@ -638,6 +638,304 @@
 
 
 
+// 'use client'
+// import React, { useEffect, useState, useContext, useRef } from 'react';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+// import AxiosInstance from "@/components/AxiosInstance";
+// import { useRouter } from 'next/navigation';
+// import { AuthContext } from '@/components/AuthContext';
+
+// const ProductsCom = () => {
+//   const router = useRouter();
+//   const { permissions = {} } = useContext(AuthContext);
+//   const [records, setRecords] = useState([]);
+//   const [filteredRecords, setFilteredRecords] = useState([]);
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [selectedProduct, setSelectedProduct] = useState(null);
+//   const [showDetailsModal, setShowDetailsModal] = useState(false);
+//   const [refreshKey, setRefreshKey] = useState(0);
+//   const recordsPerPage = 8;
+
+//   const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+//   const modalRef = useRef(null);
+
+//   // Reload products when triggered
+//   useEffect(() => {
+//     const fetchProducts = async () => {
+//       setIsLoading(true);
+//       try {
+//         const res = await AxiosInstance.get('/ecommerce/product');
+//         const dataArr = res?.data?.data?.data || [];
+//         const processed = dataArr.map(product => ({
+//           ...product,
+//           mainImage: product.image_urls?.[0] ? `${baseURL}${product.image_urls[0]}` : '/default-product-image.jpg',
+//           remainingImages: product.image_urls?.slice(1).map(u => `${baseURL}${u}`) || []
+//         }));
+//         setRecords(processed);
+//         setFilteredRecords(processed);
+
+//         if (selectedProduct) {
+//           const update = processed.find(p => p.id === selectedProduct.id);
+//           if (update) setSelectedProduct(update);
+//         }
+//       } catch (e) {
+//         console.error(e);
+//         toast.error('Failed to load products', { theme: 'dark', autoClose: 2000 });
+//       } finally {
+//         setIsLoading(false);
+//       }
+//     };
+
+//     fetchProducts();
+//   }, [refreshKey, baseURL]);
+
+//   const openDetailsModal = (product) => {
+//     setSelectedProduct(product);
+//     setShowDetailsModal(true);
+//     setTimeout(() => modalRef.current?.focus(), 0);
+//   };
+
+//   const closeDetailsModal = () => {
+//     setShowDetailsModal(false);
+//     setSelectedProduct(null);
+//   };
+
+//   const deleteRecord = async (id) => {
+//     if (!confirm('Are you sure you want to delete this product?')) return;
+//     try {
+//       await AxiosInstance.delete(`/ecommerce/product?id=${id}`);
+//       setRecords(r => r.filter(x => x.id !== id));
+//       setFilteredRecords(r => r.filter(x => x.id !== id));
+//       if (selectedProduct?.id === id) closeDetailsModal();
+//       toast.success('Product removed successfully', { theme: 'dark', autoClose: 2000 });
+//     } catch {
+//       toast.error('Error deleting product', { theme: 'dark', autoClose: 2000 });
+//     }
+//   };
+
+//   const updateRecord = (id) => {
+//     router.push(`/updateproductpage?productid=${id}`);
+//   };
+
+//   // Refresh key listener for update modal communication
+//   useEffect(() => {
+//     const handler = () => setRefreshKey(k => k + 1);
+//     window.addEventListener('productUpdated', handler);
+//     return () => window.removeEventListener('productUpdated', handler);
+//   }, []);
+
+//   const handleSearch = e => {
+//     const value = e.target.value.toLowerCase();
+//     setSearchTerm(value);
+//     const filtered = records.filter(r => 
+//       r.id.toString() === value ||
+//       r.name.toLowerCase().includes(value) ||
+//       r.category_name?.toLowerCase().includes(value)
+//     );
+//     setFilteredRecords(filtered);
+//     setCurrentPage(1);
+//   };
+
+//   // pagination
+//   const start = (currentPage-1)*recordsPerPage;
+//   const end = start + recordsPerPage;
+//   const currentRecords = filteredRecords.slice(start, end);
+//   const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-12 px-4">
+//       <ToastContainer />
+//       {/* Modal */}
+//       {showDetailsModal && selectedProduct && (
+//         <div ref={modalRef} tabIndex={-1} aria-modal="true" role="dialog"
+//              className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 overflow-y-auto">
+//           <div className="bg-gray-800 rounded-xl max-w-4xl w-full max-h-screen overflow-y-auto p-6">
+//             <div className="flex justify-between">
+//               <h2 className="text-2xl font-bold text-white">{selectedProduct.name}</h2>
+//               <button onClick={closeDetailsModal} className="text-gray-400 hover:text-white text-3xl">&times;</button>
+//             </div>
+//             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
+//               <div>
+//                 <img src={selectedProduct.mainImage} alt={selectedProduct.name}
+//                      className="w-full h-80 object-contain bg-gray-700 rounded-lg" />
+//                 {selectedProduct.remainingImages.length > 0 && (
+//                   <div className="grid grid-cols-4 gap-2 mt-4">
+//                     {selectedProduct.remainingImages.map((img, i) => (
+//                       <img key={i} src={img} className="h-20 object-cover rounded" alt={`more-${i}`} />
+//                     ))}
+//                   </div>
+//                 )}
+//               </div>
+//               <div className="text-gray-300">
+//                 <h3 className="text-lg font-semibold text-amber-400 mb-2">Description</h3>
+//                 <p>{selectedProduct.description}</p>
+//                 <div className="grid grid-cols-2 gap-4 mt-6">
+//                   <div><h3 className="font-semibold text-amber-400">Category</h3><p>{selectedProduct.category_name||'N/A'}</p></div>
+//                   <div><h3 className="font-semibold text-amber-400">Price</h3><p>${selectedProduct.price}</p></div>
+//                   <div><h3 className="font-semibold text-amber-400">Created At</h3><p>{new Date(selectedProduct.created_at).toLocaleDateString()}</p></div>
+//                   <div><h3 className="font-semibold text-amber-400">Created By</h3><p>{selectedProduct.created_by?.get_full_name||selectedProduct.created_by?.email}</p></div>
+//                 </div>
+//                 <div className="flex mt-6 space-x-4">
+//                   {permissions.update_product && (
+//                     <button onClick={() => {updateRecord(selectedProduct.id); closeDetailsModal();}}
+//                             className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700">Edit</button>
+//                   )}
+//                   {permissions.delete_product && (
+//                     <button onClick={() => deleteRecord(selectedProduct.id)}
+//                             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
+//                   )}
+//                   <button onClick={closeDetailsModal}
+//                           className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">Close</button>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="max-w-7xl mx-auto">
+//         <div className="flex justify-between items-center mb-12">
+//           <div>
+//             <h1 className="text-4xl font-light text-white">LUXURY COLLECTION</h1>
+//             <div className="w-20 h-1 bg-gradient-to-r from-amber-400 to-amber-600 mt-1"></div>
+//           </div>
+//           {permissions.create_product && (
+//             <button onClick={() => router.push('/addproductspage')}
+//                     className="px-6 py-3 border border-amber-500 text-amber-500 rounded-full hover:bg-amber-500 hover:text-black transform hover:scale-105">
+//               Add Product
+//             </button>
+//           )}
+//         </div>
+
+//         <div className="flex justify-between items-center p-4 bg-gray-800/50 rounded-xl mb-8">
+//           <div className="text-amber-400">
+//             Displaying <span className="text-white font-medium">{filteredRecords.length}</span> of <span className="text-white font-medium">{records.length}</span> items
+//           </div>
+//           <div className="relative w-1/3">
+//             <span className="absolute left-3 top-3 text-gray-400">
+//               🔍
+//             </span>
+//             <input type="text" value={searchTerm} onChange={handleSearch}
+//                    placeholder="Search by name, ID or category..."
+//                    className="w-full pl-10 py-3 bg-gray-700 rounded-full text-white focus:ring-amber-500" />
+//           </div>
+//         </div>
+
+//         {isLoading ? (
+//           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+//             {[...Array(4)].map((_, idx) => (
+//               <div key={idx} className="animate-pulse space-y-4">
+//                 <div className="bg-gray-800 h-80 rounded-lg"></div>
+//                 <div className="h-5 bg-gray-800 rounded w-3/4"></div>
+//                 <div className="h-4 bg-gray-800 rounded"></div>
+//               </div>
+//             ))}
+//           </div>
+//         ) : (
+//           <>
+//             {currentRecords.length > 0 ? (
+//               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+//                 {currentRecords.map(item => (
+//                   <div
+//                     key={item.id}
+//                     className="group relative rounded-xl shadow-xl overflow-hidden hover:shadow-amber-400 transition transform hover:-translate-y-1">
+//                     <img src={item.mainImage} alt={item.name}
+//                          className="h-80 w-full object-cover group-hover:scale-110 transition" />
+//                     {item.remainingImages.length > 0 && (
+//                       <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+//                         +{item.remainingImages.length}
+//                       </div>
+//                     )}
+//                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+//                     <div className="absolute bottom-0 p-6 text-white z-10">
+//                       <span className="text-xs text-amber-400 uppercase">{item.category_name}</span>
+//                       <h3 className="text-xl font-medium">{item.name}</h3>
+//                       <p className="text-sm line-clamp-2">{item.description}</p>
+//                       <div className="flex justify-between items-center mt-4">
+//                         <span className="text-amber-400 font-bold text-lg">${item.price}</span>
+//                         <div className="flex space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] transform group-hover:translate-y-0 translate-y-3">
+  
+//                           {/* View Button - Crystal Glass Style */}
+//                           <button
+//                             onClick={(e) => { e.stopPropagation(); openDetailsModal(item); }}
+//                             className="p-2.5 bg-white/5 ml-2 backdrop-blur-lg rounded-lg hover:bg-white/10 transition-all duration-300 shadow-[0_2px_12px_rgba(255,255,255,0.05)] hover:shadow-[0_4px_16px_rgba(255,255,255,0.1)] border border-white/15 hover:border-white/25 group flex items-center justify-center"
+//                           >
+//                             <span className="text-white/80 group-hover:text-white text-lg transition-colors duration-200">👁️</span>
+//                             <span className="absolute inset-0 rounded-lg bg-white/0 group-hover:bg-white/5 transition-all duration-500"></span>
+//                           </button>
+
+//                           {/* Edit Button - Luxury Gold Accent */}
+//                           {permissions.update_product && (
+//                             <button
+//                               onClick={(e) => { e.stopPropagation(); updateRecord(item.id); }}
+//                               className="p-2.5 bg-gradient-to-br from-amber-500/90 to-amber-600 rounded-lg hover:from-amber-500 hover:to-amber-600 transition-all duration-300 shadow-[0_2px_12px_rgba(234,179,8,0.3)] hover:shadow-[0_4px_20px_rgba(234,179,8,0.4)] border border-amber-400/40 hover:border-amber-300/60 group relative overflow-hidden flex items-center justify-center"
+//                             >
+//                               <span className="text-white text-lg z-10 relative">✏️</span>
+//                               <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -translate-x-full group-hover:translate-x-0"></span>
+//                             </button>
+//                           )}
+
+//                           {/* Delete Button - Jewel Red */}
+//                           {permissions.delete_product && (
+//                             <button
+//                               onClick={(e) => { e.stopPropagation(); deleteRecord(item.id); }}
+//                               className="p-2.5 bg-gradient-to-br from-rose-700/90 to-rose-900 rounded-lg hover:from-rose-600 hover:to-rose-800 transition-all duration-300 shadow-[0_2px_12px_rgba(190,18,60,0.25)] hover:shadow-[0_4px_20px_rgba(190,18,60,0.35)] border border-rose-600/40 hover:border-rose-500/60 group relative overflow-hidden flex items-center justify-center"
+//                             >
+//                               <span className="text-white/90 group-hover:text-white text-lg z-10 relative">🗑️</span>
+//                               <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -translate-x-full group-hover:translate-x-0"></span>
+//                             </button>
+//                           )}
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 ))}
+//               </div>
+//             ) : (
+//               <div className="text-center py-20 text-gray-300">
+//                 <p>No products match your search.</p>
+//                 {permissions.create_product && (
+//                   <button onClick={() => router.push('/addproductspage')}
+//                           className="mt-6 px-6 py-2 bg-amber-600 rounded-full hover:bg-amber-700 text-white">Add Product</button>
+//                 )}
+//               </div>
+//             )}
+
+//             {/* Pagination */}
+//             {totalPages > 1 && (
+//               <div className="flex justify-center mt-16 space-x-2">
+//                 <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+//                         disabled={currentPage === 1}
+//                         className="px-3 py-1 border rounded-full bg-gray-700 hover:bg-gray-600 disabled:opacity-50">{"<"}</button>
+//                 {Array.from({ length: totalPages }, (_, i) => (
+//                   <button key={i}
+//                           onClick={() => setCurrentPage(i + 1)}
+//                           className={`w-10 h-10 rounded-full ${
+//                             currentPage === i + 1
+//                               ? 'bg-amber-600 text-white shadow'
+//                               : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+//                           }`}>{i + 1}</button>
+//                 ))}
+//                 <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+//                         disabled={currentPage === totalPages}
+//                         className="px-3 py-1 border rounded-full bg-gray-700 hover:bg-gray-600 disabled:opacity-50">{">"}</button>
+//               </div>
+//             )}
+//           </>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ProductsCom;
+
+
+
+
 'use client'
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
@@ -648,7 +946,12 @@ import { AuthContext } from '@/components/AuthContext';
 
 const ProductsCom = () => {
   const router = useRouter();
-  const { permissions = {} } = useContext(AuthContext);
+  const { permissions = {
+    create_product: false,
+    update_product: false,
+    delete_product: false
+  } } = useContext(AuthContext);
+  
   const [records, setRecords] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -662,27 +965,40 @@ const ProductsCom = () => {
   const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
   const modalRef = useRef(null);
 
-  // Reload products when triggered
+  // Handle modal focus
+  useEffect(() => {
+    if (showDetailsModal && modalRef.current) {
+      modalRef.current.focus();
+    }
+  }, [showDetailsModal]);
+
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
         const res = await AxiosInstance.get('/ecommerce/product');
         const dataArr = res?.data?.data?.data || [];
+        
         const processed = dataArr.map(product => ({
           ...product,
-          mainImage: product.image_urls?.[0] ? `${baseURL}${product.image_urls[0]}` : '/default-product-image.jpg',
-          remainingImages: product.image_urls?.slice(1).map(u => `${baseURL}${u}`) || []
+          mainImage: product.image_urls?.[0] 
+            ? `${baseURL}${product.image_urls[0].startsWith('/') ? '' : '/'}${product.image_urls[0]}`
+            : '/default-product-image.jpg',
+          remainingImages: product.image_urls?.slice(1).map(u => 
+            `${baseURL}${u.startsWith('/') ? '' : '/'}${u}`
+          ) || []
         }));
+        
         setRecords(processed);
         setFilteredRecords(processed);
 
         if (selectedProduct) {
-          const update = processed.find(p => p.id === selectedProduct.id);
-          if (update) setSelectedProduct(update);
+          const updatedProduct = processed.find(p => p.id === selectedProduct.id);
+          if (updatedProduct) setSelectedProduct(updatedProduct);
         }
       } catch (e) {
-        console.error(e);
+        console.error('Error fetching products:', e);
         toast.error('Failed to load products', { theme: 'dark', autoClose: 2000 });
       } finally {
         setIsLoading(false);
@@ -692,10 +1008,16 @@ const ProductsCom = () => {
     fetchProducts();
   }, [refreshKey, baseURL]);
 
+  // Event listener for product updates
+  useEffect(() => {
+    const handleProductUpdate = () => setRefreshKey(k => k + 1);
+    window.addEventListener('productUpdated', handleProductUpdate);
+    return () => window.removeEventListener('productUpdated', handleProductUpdate);
+  }, []);
+
   const openDetailsModal = (product) => {
     setSelectedProduct(product);
     setShowDetailsModal(true);
-    setTimeout(() => modalRef.current?.focus(), 0);
   };
 
   const closeDetailsModal = () => {
@@ -704,14 +1026,20 @@ const ProductsCom = () => {
   };
 
   const deleteRecord = async (id) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    
     try {
       await AxiosInstance.delete(`/ecommerce/product?id=${id}`);
-      setRecords(r => r.filter(x => x.id !== id));
-      setFilteredRecords(r => r.filter(x => x.id !== id));
-      if (selectedProduct?.id === id) closeDetailsModal();
+      setRecords(prev => prev.filter(x => x.id !== id));
+      setFilteredRecords(prev => prev.filter(x => x.id !== id));
+      
+      if (selectedProduct?.id === id) {
+        closeDetailsModal();
+      }
+      
       toast.success('Product removed successfully', { theme: 'dark', autoClose: 2000 });
-    } catch {
+    } catch (error) {
+      console.error('Error deleting product:', error);
       toast.error('Error deleting product', { theme: 'dark', autoClose: 2000 });
     }
   };
@@ -720,75 +1048,127 @@ const ProductsCom = () => {
     router.push(`/updateproductpage?productid=${id}`);
   };
 
-  // Refresh key listener for update modal communication
-  useEffect(() => {
-    const handler = () => setRefreshKey(k => k + 1);
-    window.addEventListener('productUpdated', handler);
-    return () => window.removeEventListener('productUpdated', handler);
-  }, []);
-
-  const handleSearch = e => {
+  const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
+    
     const filtered = records.filter(r => 
       r.id.toString() === value ||
       r.name.toLowerCase().includes(value) ||
       r.category_name?.toLowerCase().includes(value)
     );
+    
     setFilteredRecords(filtered);
     setCurrentPage(1);
   };
 
-  // pagination
-  const start = (currentPage-1)*recordsPerPage;
+  // Pagination logic
+  const start = (currentPage - 1) * recordsPerPage;
   const end = start + recordsPerPage;
   const currentRecords = filteredRecords.slice(start, end);
   const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-12 px-4">
-      <ToastContainer />
-      {/* Modal */}
+      <ToastContainer position="top-right" autoClose={2000} />
+      
+      {/* Product Details Modal */}
       {showDetailsModal && selectedProduct && (
-        <div ref={modalRef} tabIndex={-1} aria-modal="true" role="dialog"
-             className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-gray-800 rounded-xl max-w-4xl w-full max-h-screen overflow-y-auto p-6">
+        <div 
+          ref={modalRef}
+          tabIndex={-1}
+          aria-modal="true"
+          role="dialog"
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 overflow-y-auto"
+          onClick={closeDetailsModal}
+        >
+          <div 
+            className="bg-gray-800 rounded-xl max-w-4xl w-full max-h-screen overflow-y-auto p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between">
               <h2 className="text-2xl font-bold text-white">{selectedProduct.name}</h2>
-              <button onClick={closeDetailsModal} className="text-gray-400 hover:text-white text-3xl">&times;</button>
+              <button 
+                onClick={closeDetailsModal} 
+                className="text-gray-400 hover:text-white text-3xl"
+                aria-label="Close modal"
+              >
+                &times;
+              </button>
             </div>
+            
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
               <div>
-                <img src={selectedProduct.mainImage} alt={selectedProduct.name}
-                     className="w-full h-80 object-contain bg-gray-700 rounded-lg" />
+                <img 
+                  src={selectedProduct.mainImage} 
+                  alt={selectedProduct.name}
+                  className="w-full h-80 object-contain bg-gray-700 rounded-lg" 
+                />
                 {selectedProduct.remainingImages.length > 0 && (
                   <div className="grid grid-cols-4 gap-2 mt-4">
                     {selectedProduct.remainingImages.map((img, i) => (
-                      <img key={i} src={img} className="h-20 object-cover rounded" alt={`more-${i}`} />
+                      <img 
+                        key={i} 
+                        src={img} 
+                        className="h-20 object-cover rounded" 
+                        alt={`Additional view ${i + 1}`} 
+                      />
                     ))}
                   </div>
                 )}
               </div>
+              
               <div className="text-gray-300">
                 <h3 className="text-lg font-semibold text-amber-400 mb-2">Description</h3>
                 <p>{selectedProduct.description}</p>
+                
                 <div className="grid grid-cols-2 gap-4 mt-6">
-                  <div><h3 className="font-semibold text-amber-400">Category</h3><p>{selectedProduct.category_name||'N/A'}</p></div>
-                  <div><h3 className="font-semibold text-amber-400">Price</h3><p>${selectedProduct.price}</p></div>
-                  <div><h3 className="font-semibold text-amber-400">Created At</h3><p>{new Date(selectedProduct.created_at).toLocaleDateString()}</p></div>
-                  <div><h3 className="font-semibold text-amber-400">Created By</h3><p>{selectedProduct.created_by?.get_full_name||selectedProduct.created_by?.email}</p></div>
+                  <div>
+                    <h3 className="font-semibold text-amber-400">Category</h3>
+                    <p>{selectedProduct.category_name || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-amber-400">Price</h3>
+                    <p>${selectedProduct.price}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-amber-400">Created At</h3>
+                    <p>{new Date(selectedProduct.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-amber-400">Created By</h3>
+                    <p>{selectedProduct.created_by?.get_full_name || selectedProduct.created_by?.email}</p>
+                  </div>
                 </div>
+                
                 <div className="flex mt-6 space-x-4">
                   {permissions.update_product && (
-                    <button onClick={() => {updateRecord(selectedProduct.id); closeDetailsModal();}}
-                            className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700">Edit</button>
+                    <button 
+                      onClick={() => {
+                        updateRecord(selectedProduct.id);
+                        closeDetailsModal();
+                      }}
+                      className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700"
+                    >
+                      Edit
+                    </button>
                   )}
+                  
                   {permissions.delete_product && (
-                    <button onClick={() => deleteRecord(selectedProduct.id)}
-                            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
+                    <button 
+                      onClick={() => deleteRecord(selectedProduct.id)}
+                      className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
                   )}
-                  <button onClick={closeDetailsModal}
-                          className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">Close</button>
+                  
+                  <button 
+                    onClick={closeDetailsModal}
+                    className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             </div>
@@ -797,33 +1177,45 @@ const ProductsCom = () => {
       )}
 
       <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
         <div className="flex justify-between items-center mb-12">
           <div>
             <h1 className="text-4xl font-light text-white">LUXURY COLLECTION</h1>
             <div className="w-20 h-1 bg-gradient-to-r from-amber-400 to-amber-600 mt-1"></div>
           </div>
+          
           {permissions.create_product && (
-            <button onClick={() => router.push('/addproductspage')}
-                    className="px-6 py-3 border border-amber-500 text-amber-500 rounded-full hover:bg-amber-500 hover:text-black transform hover:scale-105">
+            <button 
+              onClick={() => router.push('/addproductspage')}
+              className="px-6 py-3 border border-amber-500 text-amber-500 rounded-full hover:bg-amber-500 hover:text-black transform hover:scale-105 transition-transform"
+            >
               Add Product
             </button>
           )}
         </div>
 
+        {/* Search and Stats Section */}
         <div className="flex justify-between items-center p-4 bg-gray-800/50 rounded-xl mb-8">
           <div className="text-amber-400">
-            Displaying <span className="text-white font-medium">{filteredRecords.length}</span> of <span className="text-white font-medium">{records.length}</span> items
+            Displaying <span className="text-white font-medium">{filteredRecords.length}</span> of{' '}
+            <span className="text-white font-medium">{records.length}</span> items
           </div>
+          
           <div className="relative w-1/3">
             <span className="absolute left-3 top-3 text-gray-400">
               🔍
             </span>
-            <input type="text" value={searchTerm} onChange={handleSearch}
-                   placeholder="Search by name, ID or category..."
-                   className="w-full pl-10 py-3 bg-gray-700 rounded-full text-white focus:ring-amber-500" />
+            <input 
+              type="text" 
+              value={searchTerm} 
+              onChange={handleSearch}
+              placeholder="Search by name, ID or category..."
+              className="w-full pl-10 py-3 bg-gray-700 rounded-full text-white focus:ring-amber-500 focus:outline-none"
+            />
           </div>
         </div>
 
+        {/* Products Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[...Array(4)].map((_, idx) => (
@@ -841,51 +1233,68 @@ const ProductsCom = () => {
                 {currentRecords.map(item => (
                   <div
                     key={item.id}
-                    className="group relative rounded-xl shadow-xl overflow-hidden hover:shadow-amber-400 transition transform hover:-translate-y-1">
-                    <img src={item.mainImage} alt={item.name}
-                         className="h-80 w-full object-cover group-hover:scale-110 transition" />
+                    className="group relative rounded-xl shadow-xl overflow-hidden hover:shadow-amber-400 transition transform hover:-translate-y-1"
+                  >
+                    <img 
+                      src={item.mainImage} 
+                      alt={item.name}
+                      className="h-80 w-full object-cover group-hover:scale-110 transition duration-300" 
+                    />
+                    
                     {item.remainingImages.length > 0 && (
                       <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
                         +{item.remainingImages.length}
                       </div>
                     )}
+                    
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                    
                     <div className="absolute bottom-0 p-6 text-white z-10">
                       <span className="text-xs text-amber-400 uppercase">{item.category_name}</span>
                       <h3 className="text-xl font-medium">{item.name}</h3>
                       <p className="text-sm line-clamp-2">{item.description}</p>
+                      
                       <div className="flex justify-between items-center mt-4">
                         <span className="text-amber-400 font-bold text-lg">${item.price}</span>
+                        
                         <div className="flex space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] transform group-hover:translate-y-0 translate-y-3">
-  
-                          {/* View Button - Crystal Glass Style */}
+                          {/* View Button */}
                           <button
-                            onClick={(e) => { e.stopPropagation(); openDetailsModal(item); }}
-                            className="p-2.5 bg-white/5 ml-2 backdrop-blur-lg rounded-lg hover:bg-white/10 transition-all duration-300 shadow-[0_2px_12px_rgba(255,255,255,0.05)] hover:shadow-[0_4px_16px_rgba(255,255,255,0.1)] border border-white/15 hover:border-white/25 group flex items-center justify-center"
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              openDetailsModal(item); 
+                            }}
+                            className="p-2.5 bg-white/5 backdrop-blur-lg rounded-lg hover:bg-white/10 transition-all duration-300 shadow-[0_2px_12px_rgba(255,255,255,0.05)] hover:shadow-[0_4px_16px_rgba(255,255,255,0.1)] border border-white/15 hover:border-white/25"
+                            aria-label="View details"
                           >
-                            <span className="text-white/80 group-hover:text-white text-lg transition-colors duration-200">👁️</span>
-                            <span className="absolute inset-0 rounded-lg bg-white/0 group-hover:bg-white/5 transition-all duration-500"></span>
+                            👁️
                           </button>
 
-                          {/* Edit Button - Luxury Gold Accent */}
+                          {/* Edit Button */}
                           {permissions.update_product && (
                             <button
-                              onClick={(e) => { e.stopPropagation(); updateRecord(item.id); }}
-                              className="p-2.5 bg-gradient-to-br from-amber-500/90 to-amber-600 rounded-lg hover:from-amber-500 hover:to-amber-600 transition-all duration-300 shadow-[0_2px_12px_rgba(234,179,8,0.3)] hover:shadow-[0_4px_20px_rgba(234,179,8,0.4)] border border-amber-400/40 hover:border-amber-300/60 group relative overflow-hidden flex items-center justify-center"
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                updateRecord(item.id); 
+                              }}
+                              className="p-2.5 bg-gradient-to-br from-amber-500/90 to-amber-600 rounded-lg hover:from-amber-500 hover:to-amber-600 transition-all duration-300 shadow-[0_2px_12px_rgba(234,179,8,0.3)] hover:shadow-[0_4px_20px_rgba(234,179,8,0.4)] border border-amber-400/40 hover:border-amber-300/60"
+                              aria-label="Edit product"
                             >
-                              <span className="text-white text-lg z-10 relative">✏️</span>
-                              <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -translate-x-full group-hover:translate-x-0"></span>
+                              ✏️
                             </button>
                           )}
 
-                          {/* Delete Button - Jewel Red */}
+                          {/* Delete Button */}
                           {permissions.delete_product && (
                             <button
-                              onClick={(e) => { e.stopPropagation(); deleteRecord(item.id); }}
-                              className="p-2.5 bg-gradient-to-br from-rose-700/90 to-rose-900 rounded-lg hover:from-rose-600 hover:to-rose-800 transition-all duration-300 shadow-[0_2px_12px_rgba(190,18,60,0.25)] hover:shadow-[0_4px_20px_rgba(190,18,60,0.35)] border border-rose-600/40 hover:border-rose-500/60 group relative overflow-hidden flex items-center justify-center"
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                deleteRecord(item.id); 
+                              }}
+                              className="p-2.5 bg-gradient-to-br from-rose-700/90 to-rose-900 rounded-lg hover:from-rose-600 hover:to-rose-800 transition-all duration-300 shadow-[0_2px_12px_rgba(190,18,60,0.25)] hover:shadow-[0_4px_20px_rgba(190,18,60,0.35)] border border-rose-600/40 hover:border-rose-500/60"
+                              aria-label="Delete product"
                             >
-                              <span className="text-white/90 group-hover:text-white text-lg z-10 relative">🗑️</span>
-                              <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -translate-x-full group-hover:translate-x-0"></span>
+                              🗑️
                             </button>
                           )}
                         </div>
@@ -898,8 +1307,12 @@ const ProductsCom = () => {
               <div className="text-center py-20 text-gray-300">
                 <p>No products match your search.</p>
                 {permissions.create_product && (
-                  <button onClick={() => router.push('/addproductspage')}
-                          className="mt-6 px-6 py-2 bg-amber-600 rounded-full hover:bg-amber-700 text-white">Add Product</button>
+                  <button 
+                    onClick={() => router.push('/addproductspage')}
+                    className="mt-6 px-6 py-2 bg-amber-600 rounded-full hover:bg-amber-700 text-white transition-colors"
+                  >
+                    Add Product
+                  </button>
                 )}
               </div>
             )}
@@ -907,21 +1320,38 @@ const ProductsCom = () => {
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex justify-center mt-16 space-x-2">
-                <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                        disabled={currentPage === 1}
-                        className="px-3 py-1 border rounded-full bg-gray-700 hover:bg-gray-600 disabled:opacity-50">{"<"}</button>
+                <button 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 border rounded-full bg-gray-700 hover:bg-gray-600 disabled:opacity-50 transition-colors"
+                  aria-label="Previous page"
+                >
+                  {"<"}
+                </button>
+                
                 {Array.from({ length: totalPages }, (_, i) => (
-                  <button key={i}
-                          onClick={() => setCurrentPage(i + 1)}
-                          className={`w-10 h-10 rounded-full ${
-                            currentPage === i + 1
-                              ? 'bg-amber-600 text-white shadow'
-                              : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                          }`}>{i + 1}</button>
+                  <button 
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`w-10 h-10 rounded-full transition-colors ${
+                      currentPage === i + 1
+                        ? 'bg-amber-600 text-white shadow'
+                        : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                    }`}
+                    aria-label={`Page ${i + 1}`}
+                  >
+                    {i + 1}
+                  </button>
                 ))}
-                <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        disabled={currentPage === totalPages}
-                        className="px-3 py-1 border rounded-full bg-gray-700 hover:bg-gray-600 disabled:opacity-50">{">"}</button>
+                
+                <button 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 border rounded-full bg-gray-700 hover:bg-gray-600 disabled:opacity-50 transition-colors"
+                  aria-label="Next page"
+                >
+                  {">"}
+                </button>
               </div>
             )}
           </>
