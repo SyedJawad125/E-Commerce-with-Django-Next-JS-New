@@ -23,7 +23,8 @@ import uuid
 import json
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage
-
+import traceback
+import re
 
 class ProductController:
     serializer_class = ProductSerializer
@@ -108,87 +109,64 @@ class ProductController:
     #         return Response({'error': str(e)}, status=500)
 
 
+
     def update_product(self, request):
         try:
-            # Debug request data
-            print("\n=== REQUEST DATA ===")
-            print("POST data:", request.data)
-            print("FILES data:", request.FILES)
-            
-            # Validate product ID
-            product_id = request.data.get('id')
-            if not product_id:
-                return Response({"error": "Product ID is required"}, status=400)
-            
-            # Get product instance
-            instance = Product.objects.filter(id=product_id).first()
-            if not instance:
-                return Response({"error": "Product not found"}, status=404)
-
-            # Handle image uploads FIRST (before other updates)
-            added_count = 0
-            if request.FILES:
-                images = request.FILES.getlist('images', [])
-                print(f"\nFound {len(images)} images to upload")
-                
-                # Calculate available slots
-                current_count = ProductImage.objects.filter(product=instance).count()
-                available_slots = max(0, 5 - current_count)
-                
-                if images and available_slots > 0:
-                    for img in images[:available_slots]:
-                        ProductImage.objects.create(product=instance, images=img)
-                        added_count += 1
-                        print(f"Uploaded image: {img.name}")
-                else:
-                    print(f"Cannot add images. Available slots: {available_slots}")
-
-            # Then handle other updates
             data = request.data.copy()
+
+            # Validate required fields
+            if "id" not in data:
+                return Response({"data": "ID NOT PROVIDED"}, status=400)
+
+            product = Product.objects.filter(id=data["id"]).first()
+            if not product:
+                return Response({"data": "NOT FOUND"}, status=404)
+
+            # Add updated_by info
             data["updated_by"] = request.user.guid
-            
-            serializer = ProductSerializer(instance, data=data, partial=True)
+
+            # Update product
+            serializer = ProductSerializer(product, data=data, partial=True)
             if not serializer.is_valid():
-                return Response({'error': serializer.errors}, status=400)
-            
-            product = serializer.save()
+                error_message = get_first_error_message(serializer.errors, "UNSUCCESSFUL")
+                return Response({'data': error_message}, status=400)
 
-            # Handle image deletions
-            deleted_count = 0
-            if 'deleted_images' in request.data and request.data['deleted_images']:
-                deleted_ids = [int(id) for id in request.data['deleted_images'].split(',') if id.strip().isdigit()]
-                if deleted_ids:
-                    deleted_count = ProductImage.objects.filter(
-                        product=product, 
-                        id__in=deleted_ids
-                    ).delete()[0]
-                    print(f"Deleted {deleted_count} images")
+            product_instance = serializer.save()
 
-            # Return final state
-            updated_product = Product.objects.prefetch_related('images').get(id=product.id)
-            serializer = ProductSerializer(updated_product)
-            
-            return Response({
-                'data': serializer.data,
-                'message': f'Product updated. Deleted {deleted_count} images, added {added_count} images',
-                'debug': {
-                    'received_files': [f.name for f in request.FILES.getlist('images')],
-                    'existing_images_pre_update': ProductImage.objects.filter(product=instance).count(),
-                    'existing_images_post_update': ProductImage.objects.filter(product=product).count()
-                }
-            }, status=200)
+            # Handle deleted images
+            deleted_ids = []
+            if "deleted_images" in data:
+                try:
+                    deleted_ids = [int(i.strip()) for i in data["deleted_images"].split(",") if i.strip().isdigit()]
+                    ProductImage.objects.filter(id__in=deleted_ids, product=product_instance).delete()
+                except Exception as e:
+                    print(f"Error deleting images: {str(e)}")
+
+            # Handle uploaded images - THIS IS CORRECT FOR MULTIPLE IMAGES
+            uploaded_images = request.FILES.getlist('images')  # This should get all images
+            if len(uploaded_images) > 5:
+                return Response({'error': 'You can upload a maximum of 5 images.'}, status=400)
+
+            for img in uploaded_images:
+                ProductImage.objects.create(product=product_instance, images=img, created_by=request.user)
+
+            response_data = ProductSerializer(product_instance).data
+            response_data.update({
+                'message': 'Product updated successfully',
+                'images_uploaded': len(uploaded_images),
+                'images_deleted': len(deleted_ids),
+                'total_images': ProductImage.objects.filter(product=product_instance).count()
+            })
+
+            return Response({"data": response_data}, status=200)
 
         except Exception as e:
-            return Response({
-                'error': 'Server error',
-                'detail': str(e),
-                'debug': {
-                    'request_method': request.method,
-                    'content_type': request.content_type,
-                    'has_files': bool(request.FILES)
-                }
-            }, status=500)
-        
+            print(f"\n!!! ERROR in update_product: {str(e)}")
+            print(traceback.format_exc())
+            return Response({'error': str(e)}, status=500)
+
+
+            
     def delete_product(self, request):
         try:
             if "id" in request.query_params:
