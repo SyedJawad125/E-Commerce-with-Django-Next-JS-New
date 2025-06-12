@@ -506,6 +506,7 @@ const AddProduct = () => {
                   onChange={handleChange}
                   required
                 >
+                  <option value="">Select a Group</option>
                   <option value="Men">Men</option>
                   <option value="Women">Women</option>
                   <option value="Kids">Kids</option>

@@ -856,21 +856,36 @@ const ProductsCom = () => {
                       <p className="text-sm line-clamp-2">{item.description}</p>
                       <div className="flex justify-between items-center mt-4">
                         <span className="text-amber-400 font-bold text-lg">${item.price}</span>
-                        <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition">
-                          <button onClick={e => {e.stopPropagation(); openDetailsModal(item);}}
-                                  className="p-2 bg-gray-700 rounded-full hover:bg-gray-600">
-                            👁️
+                        <div className="flex space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] transform group-hover:translate-y-0 translate-y-3">
+  
+                          {/* View Button - Crystal Glass Style */}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); openDetailsModal(item); }}
+                            className="p-2.5 bg-white/5 ml-2 backdrop-blur-lg rounded-lg hover:bg-white/10 transition-all duration-300 shadow-[0_2px_12px_rgba(255,255,255,0.05)] hover:shadow-[0_4px_16px_rgba(255,255,255,0.1)] border border-white/15 hover:border-white/25 group flex items-center justify-center"
+                          >
+                            <span className="text-white/80 group-hover:text-white text-lg transition-colors duration-200">👁️</span>
+                            <span className="absolute inset-0 rounded-lg bg-white/0 group-hover:bg-white/5 transition-all duration-500"></span>
                           </button>
+
+                          {/* Edit Button - Luxury Gold Accent */}
                           {permissions.update_product && (
-                            <button onClick={e => {e.stopPropagation(); updateRecord(item.id);}}
-                                    className="p-2 bg-amber-600 rounded-full hover:bg-amber-700">
-                              ✏️
+                            <button
+                              onClick={(e) => { e.stopPropagation(); updateRecord(item.id); }}
+                              className="p-2.5 bg-gradient-to-br from-amber-500/90 to-amber-600 rounded-lg hover:from-amber-500 hover:to-amber-600 transition-all duration-300 shadow-[0_2px_12px_rgba(234,179,8,0.3)] hover:shadow-[0_4px_20px_rgba(234,179,8,0.4)] border border-amber-400/40 hover:border-amber-300/60 group relative overflow-hidden flex items-center justify-center"
+                            >
+                              <span className="text-white text-lg z-10 relative">✏️</span>
+                              <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -translate-x-full group-hover:translate-x-0"></span>
                             </button>
                           )}
+
+                          {/* Delete Button - Jewel Red */}
                           {permissions.delete_product && (
-                            <button onClick={e => {e.stopPropagation(); deleteRecord(item.id);}}
-                                    className="p-2 bg-red-600 rounded-full hover:bg-red-700">
-                              🗑️
+                            <button
+                              onClick={(e) => { e.stopPropagation(); deleteRecord(item.id); }}
+                              className="p-2.5 bg-gradient-to-br from-rose-700/90 to-rose-900 rounded-lg hover:from-rose-600 hover:to-rose-800 transition-all duration-300 shadow-[0_2px_12px_rgba(190,18,60,0.25)] hover:shadow-[0_4px_20px_rgba(190,18,60,0.35)] border border-rose-600/40 hover:border-rose-500/60 group relative overflow-hidden flex items-center justify-center"
+                            >
+                              <span className="text-white/90 group-hover:text-white text-lg z-10 relative">🗑️</span>
+                              <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -translate-x-full group-hover:translate-x-0"></span>
                             </button>
                           )}
                         </div>
