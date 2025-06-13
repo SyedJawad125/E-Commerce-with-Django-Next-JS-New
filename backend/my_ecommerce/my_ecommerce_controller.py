@@ -69,19 +69,54 @@ class ProductController:
             filtered_data = self.filterset_class(request.GET, queryset=instances)
             data = filtered_data.qs
 
-            paginated_data, count = paginate_data(data, request)
-
+            # Get pagination parameters from request
+            page = request.GET.get('page', 1)
+            limit = request.GET.get('limit', 12)  # Default limit 10 items per page
+            offset = request.GET.get('offset', 0)  # Default offset 0
+            
+            try:
+                page = int(page)
+                limit = int(limit)
+                offset = int(offset)
+            except ValueError:
+                return create_response(
+                    {"error": "Invalid pagination parameters. Page, limit and offset must be integers."},
+                    "BAD_REQUEST",
+                    400
+                )
+            
+            # Apply offset and limit
+            if offset > 0:
+                data = data[offset:]
+            
+            paginator = Paginator(data, limit)
+            
+            try:
+                paginated_data = paginator.page(page)
+            except EmptyPage:
+                return create_response(
+                    {"error": "Page not found"},
+                    "NOT_FOUND",
+                    404
+                )
+            
             serialized_data = self.serializer_class(paginated_data, many=True).data
-
+            
             response_data = {
-                "count": count,
+                "count": paginator.count,
+                "total_pages": paginator.num_pages,
+                "current_page": page,
+                "limit": limit,
+                "offset": offset,
+                "next": paginated_data.has_next(),
+                "previous": paginated_data.has_previous(),
                 "data": serialized_data,
             }
+            
             return create_response(response_data, "SUCCESSFUL", 200)
 
         except Exception as e:
             return Response({'error': str(e)}, status=500)
-
     # def get_product(self, request):
     #     try:
     #         # Query all products
@@ -505,24 +540,61 @@ class CategoryController:
     # mydata = Member.objects.filter(firstname__endswith='s').values()
     def get_category(self, request):
         try:
-
+            # Get all instances
             instances = self.serializer_class.Meta.model.objects.all()
-
+            
+            # Apply filters
             filtered_data = self.filterset_class(request.GET, queryset=instances)
             data = filtered_data.qs
-
-            paginated_data, count = paginate_data(data, request)
-
+            
+            # Get pagination parameters from request
+            page = request.GET.get('page', 1)
+            limit = request.GET.get('limit', 12)  # Default to 12 items per page
+            offset = request.GET.get('offset', 0)
+            
+            try:
+                page = int(page)
+                limit = int(limit)
+                offset = int(offset)
+            except ValueError:
+                return create_response(
+                    {"error": "Invalid pagination parameters. Page, limit and offset must be integers."},
+                    "BAD_REQUEST",
+                    400
+                )
+            
+            # Apply offset and limit
+            if offset > 0:
+                data = data[offset:]
+            
+            paginator = Paginator(data, limit)
+            
+            try:
+                paginated_data = paginator.page(page)
+            except EmptyPage:
+                return create_response(
+                    {"error": "Page not found"},
+                    "NOT_FOUND",
+                    404
+                )
+            
             serialized_data = self.serializer_class(paginated_data, many=True).data
+            
             response_data = {
-                "count": count,
+                "count": paginator.count,
+                "total_pages": paginator.num_pages,
+                "current_page": page,
+                "limit": limit,
+                "offset": offset,
+                "next": paginated_data.has_next(),
+                "previous": paginated_data.has_previous(),
                 "data": serialized_data,
             }
+            
             return create_response(response_data, "SUCCESSFUL", 200)
 
-
         except Exception as e:
-            return Response({'error': str(e)}, 500)
+            return Response({'error': str(e)}, status=500)
 
     def update_category(self, request):
         try:
