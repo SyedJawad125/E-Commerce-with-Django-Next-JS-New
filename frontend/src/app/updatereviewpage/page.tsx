@@ -115,8 +115,8 @@ const UpdateProduct = () => {
       const formDataToSend = new FormData();
       formDataToSend.append('id', reviewId as string);
       formDataToSend.append('name', formData.name);
-      formDataToSend.append('description', formData.comment);
-      formDataToSend.append('price', formData.rating);
+      formDataToSend.append('comment', formData.comment);
+      formDataToSend.append('rating', formData.rating);
       formDataToSend.append('product', formData.product);
 
     //   if (image) formDataToSend.append('image', image);
