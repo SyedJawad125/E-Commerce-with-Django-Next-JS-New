@@ -1370,7 +1370,7 @@ const ProductDetailsCom = () => {
       </nav>
 
       {/* Main Product Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12 -mt-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Product Images */}
@@ -1415,7 +1415,7 @@ const ProductDetailsCom = () => {
             </div>
 
             {/* Product Details */}
-            <div className="p-8 flex flex-col justify-center">
+            <div className="p-8 flex flex-col justify-center -mt-8">
               <div className="mb-6">
                 <span className="text-sm font-medium text-gold-600 uppercase tracking-wider">Luxury Collection</span>
                 <h1 className="text-3xl font-serif font-bold text-gray-900 mt-2">{product.name}</h1>
