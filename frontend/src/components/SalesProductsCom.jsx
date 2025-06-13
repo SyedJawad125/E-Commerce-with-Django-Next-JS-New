@@ -409,8 +409,8 @@ const SalesProductsCom = () => {
                         <div className="absolute bottom-0 left-0 right-0 z-20 p-6">
                           <h3 className="text-xl font-light text-white mb-1">{item.name}</h3>
                           <div className="flex items-center space-x-2">
-                            <span className="text-amber-400 font-medium">${item.final_price}</span>
-                            <span className="text-gray-400 line-through text-sm">${item.original_price}</span>
+                            <span className="text-amber-400 font-medium">PKR {item.final_price}</span>
+                            <span className="text-gray-400 line-through text-sm">PKR {item.original_price}</span>
                           </div>
                           <p className="text-gray-300 text-xs font-light mt-1 line-clamp-2">{item.description}</p>
                           <span className="text-xs text-gray-400 uppercase block mt-1">{item.category_name}</span>

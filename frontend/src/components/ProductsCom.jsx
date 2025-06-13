@@ -1129,7 +1129,7 @@ const ProductsCom = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-amber-400">Price</h3>
-                    <p>${selectedProduct.price}</p>
+                    <p>PKR {selectedProduct.price}</p>
                   </div>
                   <div>
                     <h3 className="font-semibold text-amber-400">Created At</h3>
@@ -1255,7 +1255,7 @@ const ProductsCom = () => {
                       <p className="text-sm line-clamp-2">{item.description}</p>
                       
                       <div className="flex justify-between items-center mt-4">
-                        <span className="text-amber-400 font-bold text-lg">${item.price}</span>
+                        <span className="text-amber-400 font-bold text-lg">PKR {item.price}</span>
                         
                         <div className="flex space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] transform group-hover:translate-y-0 translate-y-3">
                           {/* View Button */}

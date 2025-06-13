@@ -1436,14 +1436,14 @@ const ProductDetailsCom = () => {
 
               <div className="mb-8">
                 <div className="flex items-center">
-                  <span className="text-3xl font-serif font-bold text-gray-900">${product.price}</span>
+                  <span className="text-3xl font-serif font-bold text-gray-900">PKR {product.price}</span>
                   {product.originalPrice && (
-                    <span className="ml-3 text-lg text-gray-500 line-through">${product.originalPrice}</span>
+                    <span className="ml-3 text-lg text-gray-500 line-through">PKR{product.originalPrice}</span>
                   )}
                 </div>
                 {product.originalPrice && (
                   <span className="inline-block mt-2 px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">
-                    SAVE ${(product.originalPrice - product.price).toFixed(2)}
+                    SAVE PKR{(product.originalPrice - product.price).toFixed(2)}
                   </span>
                 )}
               </div>

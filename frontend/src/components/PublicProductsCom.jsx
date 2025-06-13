@@ -505,7 +505,7 @@ const PublicProducts = () => {
                                         <div className="card-body5 p-4">
                                             <h5 className="text-black text-sm font-medium -m-6 p-3">{item.name}</h5>
                                             <p className="text-black text-xs mt-1 -m-6 p-3 line-clamp-2">Des: {item.description}</p>
-                                            <p className="text-black text-xs mt-1 font-semibold -m-6 p-3">Price: ${item.price}</p>
+                                            <p className="text-black text-xs mt-1 font-semibold -m-6 p-3">Price: {item.price}</p>
                                         </div>
                                     </div>
                                 ))

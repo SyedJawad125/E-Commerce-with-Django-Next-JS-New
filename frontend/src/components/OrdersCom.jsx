@@ -533,9 +533,9 @@ const OrdersCom = () => {
                                 <td className="border p-2">{item.product_id}</td>
                                 <td className="border p-2">{item.product_name}</td>
                                 <td className="border p-2">{item.product_type}</td>
-                                <td className="border p-2">${item.unit_price}</td>
+                                <td className="border p-2">PKR {item.unit_price}</td>
                                 <td className="border p-2">{item.quantity}</td>
-                                <td className="border p-2">${item.total_price}</td>
+                                <td className="border p-2">PKR {item.total_price}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -615,13 +615,13 @@ const OrdersCom = () => {
                                   {item.product_type}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
-                                  ${item.unit_price}
+                                  PKR {item.unit_price}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
                                   {item.quantity}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
-                                  ${item.total_price}
+                                  PKR {item.total_price}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
                                   {item.is_discounted ? 'Yes' : 'No'}

@@ -61,8 +61,8 @@ const OrderConfirmationPage = () => {
         
         orderData.order_summary.items.forEach(item => {
             doc.text(`${item.product_name}`, 20, yPosition);
-            doc.text(`PKR ${item.unit_price.toLocaleString()} x ${item.quantity}`, 160, yPosition);
-            doc.text(`PKR ${item.total_price.toLocaleString()}`, 190, yPosition);
+            doc.text(`PKR {item.unit_price.toLocaleString()} x ${item.quantity}`, 160, yPosition);
+            doc.text(`PKR {item.total_price.toLocaleString()}`, 190, yPosition);
             yPosition += 10;
         });
         

@@ -157,7 +157,7 @@ const EmployeeDetail = () => {
                       <div className="h-8 w-px bg-gray-600"></div>
                       <div>
                         <p className="text-xs text-gray-400">Salary</p>
-                        <p className="text-amber-400 font-medium">${employee.salary}</p>
+                        <p className="text-amber-400 font-medium">PKR {employee.salary}</p>
                       </div>
                     </div>
                   </div>
@@ -233,7 +233,7 @@ const EmployeeDetail = () => {
                       <div className="space-y-4">
                         <div>
                           <p className="text-xs text-gray-500 uppercase tracking-wider">Salary</p>
-                          <p className="text-amber-400 font-medium">${employee.salary}</p>
+                          <p className="text-amber-400 font-medium">PKR {employee.salary}</p>
                         </div>
                         <div>
                           <p className="text-xs text-gray-500 uppercase tracking-wider">Status</p>
