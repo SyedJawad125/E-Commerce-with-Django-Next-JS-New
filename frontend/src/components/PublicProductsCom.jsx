@@ -497,11 +497,11 @@ const PublicProducts = () => {
                                             className="card-image5 clickable-image w-full h-40 object-cover transform transition-transform duration-300 hover:scale-105 border border-black"
                                             alt={item.name}
                                         />
-                                        {item.remainingImages.length > 0 && (
+                                        {/* {item.remainingImages.length > 0 && (
                                             <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
                                                 +{item.remainingImages.length}
                                             </div>
-                                        )}
+                                        )} */}
                                         <div className="card-body5 p-4">
                                             <h5 className="text-black text-sm font-medium -m-6 p-3">{item.name}</h5>
                                             <p className="text-black text-xs mt-1 -m-6 p-3 line-clamp-2">Des: {item.description}</p>
