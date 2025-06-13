@@ -52,52 +52,126 @@
 //     };
 
 //     const generateInvoice = (orderData) => {
-//         const doc = new jsPDF();
-        
-//         // Invoice design
-//         doc.setFillColor(20, 20, 20);
-//         doc.rect(0, 0, 210, 297, 'F');
-//         doc.setTextColor(255, 255, 255);
-//         doc.setFontSize(24);
-//         doc.text('INVOICE', 105, 30, { align: 'center' });
-        
-//         // Company Info
-//         doc.setFontSize(12);
-//         doc.text('LUXURY COLLECTION', 20, 50);
-//         doc.text('123 Main Street, City', 20, 60);
-//         doc.text('contact@luxury.com', 20, 70);
-        
-//         // Customer Info
-//         doc.text(`Customer: ${orderData.customer_info.name}`, 20, 90);
-//         doc.text(`Email: ${orderData.customer_info.email}`, 20, 100);
-//         doc.text(`Phone: ${orderData.customer_info.phone}`, 20, 110);
-//         doc.text(`Address: ${orderData.delivery_info.address}`, 20, 120);
-        
-//         // Order Info
-//         doc.text(`Order #: ${orderData.order_id}`, 20, 140);
-//         doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 150);
-//         doc.text(`Status: ${orderData.status}`, 20, 160);
-        
-//         // Order Items
-//         doc.setFontSize(14);
-//         doc.text('ORDER SUMMARY', 20, 180);
-        
-//         doc.setFontSize(10);
-//         let yPosition = 190;
-        
-//         orderData.order_summary.items.forEach(item => {
-//             doc.text(`${item.product_name}`, 20, yPosition);
-//             doc.text(`PKR ${item.unit_price.toLocaleString()} x ${item.quantity}`, 160, yPosition);
-//             doc.text(`PKR ${item.total_price.toLocaleString()}`, 190, yPosition);
-//             yPosition += 10;
-//         });
-        
-//         // Total
-//         doc.setFontSize(12);
-//         doc.text('TOTAL:', 160, yPosition + 20);
-//         doc.text(`PKR ${orderData.order_summary.total.toLocaleString()}`, 190, yPosition + 20);
-        
-//         doc.save(`invoice-${orderData.order_id}.pdf`);
+//     const doc = new jsPDF();
+    
+//     // Set document properties
+//     doc.setProperties({
+//         title: `Invoice #${orderData.order_id}`,
+//         subject: 'Invoice from GOHAR COLLECTION',
+//         author: 'GOHAR COLLECTION',
+//     });
+
+//     // Add logo or header
+//     doc.setFillColor(40, 40, 40);
+//     doc.rect(0, 0, 210, 30, 'F');
+//     doc.setTextColor(255, 255, 255);
+//     doc.setFontSize(20);
+//     doc.text('GOHAR COLLECTION', 105, 20, { align: 'center' });
+    
+//     // Invoice title and details
+//     doc.setFontSize(12);
+//     doc.setTextColor(100, 100, 100);
+//     doc.text('INVOICE', 20, 45);
+//     doc.setFontSize(10);
+//     doc.text(`Date: ${new Date().toLocaleDateString()}`, 160, 45);
+//     doc.text(`Invoice #: ${orderData.order_id}`, 160, 50);
+//     doc.text(`Status: ${orderData.status}`, 160, 55);
+    
+//     // Company and customer info
+//     doc.setFontSize(10);
+//     doc.setTextColor(0, 0, 0);
+    
+//     // Company info
+//     doc.text('From:', 20, 65);
+//     doc.setFont(undefined, 'bold');
+//     doc.text('GOHAR COLLECTION', 20, 70);
+//     doc.setFont(undefined, 'normal');
+//     doc.text('Sector D, DHA 2, ISB.', 20, 75);
+//     doc.text('contact@luxury.com', 20, 80);
+    
+//     // Customer info
+//     doc.text('To:', 20, 95);
+//     doc.setFont(undefined, 'bold');
+//     doc.text(orderData.customer_info.name, 20, 100);
+//     doc.setFont(undefined, 'normal');
+//     doc.text(orderData.delivery_info.address, 20, 105);
+//     doc.text(orderData.customer_info.phone, 20, 110);
+//     doc.text(orderData.customer_info.email, 20, 115);
+    
+//     // Items table header
+//     doc.setFillColor(240, 240, 240);
+//     doc.rect(20, 130, 170, 8, 'F');
+//     doc.setTextColor(0, 0, 0);
+//     doc.setFont(undefined, 'bold');
+//     doc.text('Item', 20, 135);
+//     doc.text('Unit Price', 100, 135);
+//     doc.text('Qty', 140, 135);
+//     doc.text('Total', 170, 135);
+    
+//     // Items list
+//     doc.setFont(undefined, 'normal');
+//     let yPosition = 145;
+    
+//     orderData.order_summary.items.forEach(item => {
+//         doc.text(item.product_name, 20, yPosition);
+//         doc.text(`PKR ${item.unit_price.toLocaleString()}`, 100, yPosition);
+//         doc.text(`${item.quantity}`, 140, yPosition);
+//         doc.text(`PKR ${item.total_price.toLocaleString()}`, 170, yPosition);
+//         yPosition += 10;
+//     });
+    
+//     // Total section
+//     doc.setFont(undefined, 'bold');
+//     doc.text('Subtotal:', 140, yPosition + 10);
+//     doc.text(`PKR ${orderData.order_summary.total.toLocaleString()}`, 170, yPosition + 10);
+    
+//     doc.text('Shipping:', 140, yPosition + 20);
+//     doc.text('PKR 0', 170, yPosition + 20);
+    
+//     doc.text('Tax:', 140, yPosition + 30);
+//     doc.text('PKR 0', 170, yPosition + 30);
+    
+//     doc.setFontSize(12);
+//     doc.text('Total Amount:', 140, yPosition + 45);
+//     doc.text(`PKR ${orderData.order_summary.total.toLocaleString()}`, 170, yPosition + 45);
+    
+//     // Footer
+//     doc.setFontSize(8);
+//     doc.setTextColor(100, 100, 100);
+//     doc.text('Thank you for your business!', 105, 280, { align: 'center' });
+//     doc.text('Terms & Conditions: Payment due within 15 days', 105, 285, { align: 'center' });
+//     doc.text('GOHAR COLLECTION | Sector D, DHA 2, ISB. | contact@luxury.com', 105, 290, { align: 'center' });
+    
+//     doc.save(`invoice-${orderData.order_id}.pdf`);
+// };
+
+//     const prepareOrderDataForConfirmation = (responseData) => {
+//         return {
+//             order_id: responseData.order_id,
+//             customer_info: {
+//                 name: form.customer_name,
+//                 email: form.customer_email,
+//                 phone: form.customer_phone
+//             },
+//             delivery_info: {
+//                 address: form.delivery_address,
+//                 city: form.city,
+//                 estimated_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString()
+//             },
+//             payment_method: form.payment_method,
+//             payment_status: true,
+//             status: 'Confirmed',
+//             order_summary: {
+//                 items: cartItems.map(item => ({
+//                     product_name: item.name,
+//                     unit_price: getUnitPrice(item),
+//                     quantity: item.quantity || 1,
+//                     total_price: getUnitPrice(item) * (item.quantity || 1)
+//                 })),
+//                 subtotal: getTotalPrice(),
+//                 total: getTotalPrice()
+//             }
+//         };
 //     };
 
 //     const handleSubmit = async (e) => {
@@ -138,8 +212,13 @@
 //             });
 
 //             // On success
-//             generateInvoice(response.data.data);
+//             const orderResponse = response.data.data;
+//             generateInvoice(orderResponse);
 //             clearCart();
+
+//             // Prepare and store order data for confirmation page
+//             const confirmationData = prepareOrderDataForConfirmation(orderResponse);
+//             localStorage.setItem('latestOrder', JSON.stringify(confirmationData));
 
 //             toast.success('Order placed successfully!', {
 //                 position: "top-center",
@@ -150,17 +229,15 @@
 //                 draggable: true,
 //                 progress: undefined,
 //                 theme: "colored",
+//                 onClose: () => {
+//                     router.push('/orderconfirmation');
+//                 }
 //             });
-
-//             setTimeout(() => {
-//                 router.push('/order-confirmation');
-//             }, 3500);
 
 //         } catch (error) {
 //             let errorMsg = 'Failed to place order';
             
 //             if (error.response) {
-//                 // Server responded with error status
 //                 if (error.response.status === 400) {
 //                     errorMsg = error.response.data.message || 'Validation error';
 //                 } else if (error.response.status === 401) {
@@ -171,10 +248,8 @@
 //                     errorMsg = error.response.data.message || `Server error: ${error.response.status}`;
 //                 }
 //             } else if (error.request) {
-//                 // Request was made but no response
 //                 errorMsg = 'No response from server - please try again';
 //             } else {
-//                 // Other errors
 //                 errorMsg = error.message || 'Unknown error occurred';
 //             }
 
@@ -235,7 +310,7 @@
 //                                                 name="customer_name"
 //                                                 value={form.customer_name}
 //                                                 onChange={handleChange}
-//                                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+//                                                 className="w-full px-4 py-2 border border-gray-300  text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
 //                                                 required
 //                                             />
 //                                         </div>
@@ -247,7 +322,7 @@
 //                                                 name="customer_email"
 //                                                 value={form.customer_email}
 //                                                 onChange={handleChange}
-//                                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+//                                                 className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
 //                                                 required
 //                                             />
 //                                         </div>
@@ -259,7 +334,7 @@
 //                                                 name="customer_phone"
 //                                                 value={form.customer_phone}
 //                                                 onChange={handleChange}
-//                                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+//                                                 className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
 //                                                 required
 //                                             />
 //                                         </div>
@@ -271,7 +346,7 @@
 //                                                 name="delivery_address"
 //                                                 value={form.delivery_address}
 //                                                 onChange={handleChange}
-//                                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+//                                                 className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
 //                                                 required
 //                                             />
 //                                         </div>
@@ -283,7 +358,7 @@
 //                                                 name="city"
 //                                                 value={form.city}
 //                                                 onChange={handleChange}
-//                                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+//                                                 className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
 //                                                 required
 //                                             />
 //                                         </div>
@@ -477,6 +552,7 @@ const CheckoutPage = () => {
         city: '',
         payment_method: 'credit_card',
     });
+    const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
 
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
@@ -489,6 +565,20 @@ const CheckoutPage = () => {
             }));
         }
     }, []);
+
+    // Function to get the main image URL for a product
+    const getMainImage = (item) => {
+        // If the item has image_urls array (like in PublicProducts)
+        if (item.image_urls && item.image_urls.length > 0) {
+            return `${baseURL}${item.image_urls[0].startsWith('/') ? '' : '/'}${item.image_urls[0]}`;
+        }
+        // Fallback to the image property if it exists
+        if (item.image) {
+            return `${baseURL}${item.image.startsWith('/') ? '' : '/'}${item.image}`;
+        }
+        // Default image if none available
+        return '/default-product-image.jpg';
+    };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -509,98 +599,98 @@ const CheckoutPage = () => {
     };
 
     const generateInvoice = (orderData) => {
-    const doc = new jsPDF();
-    
-    // Set document properties
-    doc.setProperties({
-        title: `Invoice #${orderData.order_id}`,
-        subject: 'Invoice from GOHAR COLLECTION',
-        author: 'GOHAR COLLECTION',
-    });
+        const doc = new jsPDF();
+        
+        // Set document properties
+        doc.setProperties({
+            title: `Invoice #${orderData.order_id}`,
+            subject: 'Invoice from GOHAR COLLECTION',
+            author: 'GOHAR COLLECTION',
+        });
 
-    // Add logo or header
-    doc.setFillColor(40, 40, 40);
-    doc.rect(0, 0, 210, 30, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.text('GOHAR COLLECTION', 105, 20, { align: 'center' });
-    
-    // Invoice title and details
-    doc.setFontSize(12);
-    doc.setTextColor(100, 100, 100);
-    doc.text('INVOICE', 20, 45);
-    doc.setFontSize(10);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 160, 45);
-    doc.text(`Invoice #: ${orderData.order_id}`, 160, 50);
-    doc.text(`Status: ${orderData.status}`, 160, 55);
-    
-    // Company and customer info
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    
-    // Company info
-    doc.text('From:', 20, 65);
-    doc.setFont(undefined, 'bold');
-    doc.text('GOHAR COLLECTION', 20, 70);
-    doc.setFont(undefined, 'normal');
-    doc.text('Sector D, DHA 2, ISB.', 20, 75);
-    doc.text('contact@luxury.com', 20, 80);
-    
-    // Customer info
-    doc.text('To:', 20, 95);
-    doc.setFont(undefined, 'bold');
-    doc.text(orderData.customer_info.name, 20, 100);
-    doc.setFont(undefined, 'normal');
-    doc.text(orderData.delivery_info.address, 20, 105);
-    doc.text(orderData.customer_info.phone, 20, 110);
-    doc.text(orderData.customer_info.email, 20, 115);
-    
-    // Items table header
-    doc.setFillColor(240, 240, 240);
-    doc.rect(20, 130, 170, 8, 'F');
-    doc.setTextColor(0, 0, 0);
-    doc.setFont(undefined, 'bold');
-    doc.text('Item', 20, 135);
-    doc.text('Unit Price', 100, 135);
-    doc.text('Qty', 140, 135);
-    doc.text('Total', 170, 135);
-    
-    // Items list
-    doc.setFont(undefined, 'normal');
-    let yPosition = 145;
-    
-    orderData.order_summary.items.forEach(item => {
-        doc.text(item.product_name, 20, yPosition);
-        doc.text(`PKR ${item.unit_price.toLocaleString()}`, 100, yPosition);
-        doc.text(`${item.quantity}`, 140, yPosition);
-        doc.text(`PKR ${item.total_price.toLocaleString()}`, 170, yPosition);
-        yPosition += 10;
-    });
-    
-    // Total section
-    doc.setFont(undefined, 'bold');
-    doc.text('Subtotal:', 140, yPosition + 10);
-    doc.text(`PKR ${orderData.order_summary.total.toLocaleString()}`, 170, yPosition + 10);
-    
-    doc.text('Shipping:', 140, yPosition + 20);
-    doc.text('PKR 0', 170, yPosition + 20);
-    
-    doc.text('Tax:', 140, yPosition + 30);
-    doc.text('PKR 0', 170, yPosition + 30);
-    
-    doc.setFontSize(12);
-    doc.text('Total Amount:', 140, yPosition + 45);
-    doc.text(`PKR ${orderData.order_summary.total.toLocaleString()}`, 170, yPosition + 45);
-    
-    // Footer
-    doc.setFontSize(8);
-    doc.setTextColor(100, 100, 100);
-    doc.text('Thank you for your business!', 105, 280, { align: 'center' });
-    doc.text('Terms & Conditions: Payment due within 15 days', 105, 285, { align: 'center' });
-    doc.text('GOHAR COLLECTION | Sector D, DHA 2, ISB. | contact@luxury.com', 105, 290, { align: 'center' });
-    
-    doc.save(`invoice-${orderData.order_id}.pdf`);
-};
+        // Add logo or header
+        doc.setFillColor(40, 40, 40);
+        doc.rect(0, 0, 210, 30, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(20);
+        doc.text('GOHAR COLLECTION', 105, 20, { align: 'center' });
+        
+        // Invoice title and details
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text('INVOICE', 20, 45);
+        doc.setFontSize(10);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 160, 45);
+        doc.text(`Invoice #: ${orderData.order_id}`, 160, 50);
+        doc.text(`Status: ${orderData.status}`, 160, 55);
+        
+        // Company and customer info
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        
+        // Company info
+        doc.text('From:', 20, 65);
+        doc.setFont(undefined, 'bold');
+        doc.text('GOHAR COLLECTION', 20, 70);
+        doc.setFont(undefined, 'normal');
+        doc.text('Sector D, DHA 2, ISB.', 20, 75);
+        doc.text('contact@luxury.com', 20, 80);
+        
+        // Customer info
+        doc.text('To:', 20, 95);
+        doc.setFont(undefined, 'bold');
+        doc.text(orderData.customer_info.name, 20, 100);
+        doc.setFont(undefined, 'normal');
+        doc.text(orderData.delivery_info.address, 20, 105);
+        doc.text(orderData.customer_info.phone, 20, 110);
+        doc.text(orderData.customer_info.email, 20, 115);
+        
+        // Items table header
+        doc.setFillColor(240, 240, 240);
+        doc.rect(20, 130, 170, 8, 'F');
+        doc.setTextColor(0, 0, 0);
+        doc.setFont(undefined, 'bold');
+        doc.text('Item', 20, 135);
+        doc.text('Unit Price', 100, 135);
+        doc.text('Qty', 140, 135);
+        doc.text('Total', 170, 135);
+        
+        // Items list
+        doc.setFont(undefined, 'normal');
+        let yPosition = 145;
+        
+        orderData.order_summary.items.forEach(item => {
+            doc.text(item.product_name, 20, yPosition);
+            doc.text(`PKR ${item.unit_price.toLocaleString()}`, 100, yPosition);
+            doc.text(`${item.quantity}`, 140, yPosition);
+            doc.text(`PKR ${item.total_price.toLocaleString()}`, 170, yPosition);
+            yPosition += 10;
+        });
+        
+        // Total section
+        doc.setFont(undefined, 'bold');
+        doc.text('Subtotal:', 140, yPosition + 10);
+        doc.text(`PKR ${orderData.order_summary.total.toLocaleString()}`, 170, yPosition + 10);
+        
+        doc.text('Shipping:', 140, yPosition + 20);
+        doc.text('PKR 0', 170, yPosition + 20);
+        
+        doc.text('Tax:', 140, yPosition + 30);
+        doc.text('PKR 0', 170, yPosition + 30);
+        
+        doc.setFontSize(12);
+        doc.text('Total Amount:', 140, yPosition + 45);
+        doc.text(`PKR ${orderData.order_summary.total.toLocaleString()}`, 170, yPosition + 45);
+        
+        // Footer
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        doc.text('Thank you for your business!', 105, 280, { align: 'center' });
+        doc.text('Terms & Conditions: Payment due within 15 days', 105, 285, { align: 'center' });
+        doc.text('GOHAR COLLECTION | Sector D, DHA 2, ISB. | contact@luxury.com', 105, 290, { align: 'center' });
+        
+        doc.save(`invoice-${orderData.order_id}.pdf`);
+    };
 
     const prepareOrderDataForConfirmation = (responseData) => {
         return {
@@ -623,7 +713,8 @@ const CheckoutPage = () => {
                     product_name: item.name,
                     unit_price: getUnitPrice(item),
                     quantity: item.quantity || 1,
-                    total_price: getUnitPrice(item) * (item.quantity || 1)
+                    total_price: getUnitPrice(item) * (item.quantity || 1),
+                    image_url: getMainImage(item) // Include image URL in order data
                 })),
                 subtotal: getTotalPrice(),
                 total: getTotalPrice()
@@ -909,7 +1000,7 @@ const CheckoutPage = () => {
                                                     <div className="flex items-center">
                                                         <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 mr-4">
                                                             <img
-                                                                src={`http://localhost:8000${item.image}`}
+                                                                src={getMainImage(item)}
                                                                 alt={item.name}
                                                                 className="h-full w-full object-cover object-center"
                                                             />
@@ -917,6 +1008,8 @@ const CheckoutPage = () => {
                                                         <div>
                                                             <h4 className="text-sm text-gray-900 font-medium">{item.name}</h4>
                                                             <p className="text-gray-700 text-sm">Qty: {item.quantity || 1}</p>
+                                                            {item.color && <p className="text-gray-500 text-xs">Color: {item.color}</p>}
+                                                            {item.size && <p className="text-gray-500 text-xs">Size: {item.size}</p>}
                                                         </div>
                                                     </div>
                                                     <div className="text-right">
