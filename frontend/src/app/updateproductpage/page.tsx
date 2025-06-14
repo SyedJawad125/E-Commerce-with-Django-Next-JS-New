@@ -698,7 +698,7 @@ const UpdateProduct = () => {
                 <div className="mb-6">
                   <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Current Images</h4>
                   {existingImages.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
                       {existingImages.map((img, index) => (
                         <div key={`existing-${index}`} className="relative group">
                           <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden">

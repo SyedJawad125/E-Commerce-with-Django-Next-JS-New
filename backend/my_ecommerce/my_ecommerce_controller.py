@@ -2020,6 +2020,7 @@ class PublicReviewController:
 
 
 from django.db.models import Q
+
 class PruductSearchController:
     serializer_class = PublicproductSerializer
     serializer_class1 = PubliccategorySerializer
