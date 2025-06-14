@@ -2019,45 +2019,62 @@ class PublicReviewController:
 
 
 
-from django.db.models import Q
 
-class PruductSearchController:
-    serializer_class = PublicproductSerializer
-    serializer_class1 = PubliccategorySerializer
+# In my_ecommerce_controller.py
+from django.db.models import Q, Case, When, IntegerField
+from rest_framework.pagination import PageNumberPagination
 
-    filterset_class = PublicproductFilter
+class LuxurySearchPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
+class CategorySearchController:
+    serializer_class = PubliccategorySerializer
+    filterset_class = PubliccategoryFilter
+    pagination_class = LuxurySearchPagination
 
-    def get_productsearch(self, request):
+    def get_categorysearch(self, request):
         search_query = request.GET.get('q', '').strip()
         
         if not search_query:
             return create_response([], "EMPTY_QUERY", 200)
         
         try:
-            # Search products
-            products = Product.objects.filter(
+            # Enhanced category search with ranking
+            categories = Category.objects.filter(
                 Q(name__icontains=search_query) |
                 Q(description__icontains=search_query) |
                 Q(tags__name__icontains=search_query)
-            ).distinct()[:10]  # Limit results
+            ).annotate(
+                search_rank=Case(
+                    When(name__istartswith=search_query, then=3),
+                    When(name__icontains=search_query, then=2),
+                    When(description__icontains=search_query, then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ).order_by('-search_rank', '-created_at').distinct()
             
-            # Search categories
-            categories = Category.objects.filter(
-                Q(name__icontains=search_query) |
-                Q(description__icontains=search_query)
-            ).distinct()[:5]
+            # Paginate results
+            paginator = self.pagination_class()
+            paginated_categories = paginator.paginate_queryset(categories, request)
             
             # Serialize results
-            product_data = PublicproductSerializer(products, many=True, context={'request': request}).data
-            category_data = PubliccategorySerializer(categories, many=True, context={'request': request}).data
+            category_data = self.serializer_class(
+                paginated_categories, 
+                many=True, 
+                context={'request': request}
+            ).data
             
-            # Combine results
-            results = []
-            for category in category_data:
-                results.append({**category, 'type': 'category'})
-            for product in product_data:
-                results.append({**product, 'type': 'product'})
+            # Format results
+            results = {
+                'categories': category_data,
+                'search_meta': {
+                    'query': search_query,
+                    'category_count': categories.count(),
+                }
+            }
             
             return create_response(results, "SUCCESSFUL", 200)
             
@@ -2067,3 +2084,17 @@ class PruductSearchController:
                 "SERVER_ERROR",
                 500
             )
+
+    def get_suggestions(self, request):
+        query = request.GET.get('q', '').strip()
+        if not query:
+            return create_response([], "EMPTY_QUERY", 200)
+            
+        # Get category suggestions only
+        suggestions = {
+            'popular_categories': list(Category.objects.filter(
+                Q(name__icontains=query)
+            ).order_by('-views')[:5].values('name', 'slug')),
+            'trending_categories': list(Category.objects.order_by('-views')[:3].values('name', 'slug'))
+        }
+        return create_response(suggestions, "SUCCESSFUL", 200)
