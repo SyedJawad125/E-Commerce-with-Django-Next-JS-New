@@ -2019,7 +2019,50 @@ class PublicReviewController:
 
 
 
+from django.db.models import Q
+class PruductSearchController:
+    serializer_class = PublicproductSerializer
+    serializer_class1 = PubliccategorySerializer
+
+    filterset_class = PublicproductFilter
 
 
-
+    def get_productsearch(self, request):
+        search_query = request.GET.get('q', '').strip()
         
+        if not search_query:
+            return create_response([], "EMPTY_QUERY", 200)
+        
+        try:
+            # Search products
+            products = Product.objects.filter(
+                Q(name__icontains=search_query) |
+                Q(description__icontains=search_query) |
+                Q(tags__name__icontains=search_query)
+            ).distinct()[:10]  # Limit results
+            
+            # Search categories
+            categories = Category.objects.filter(
+                Q(name__icontains=search_query) |
+                Q(description__icontains=search_query)
+            ).distinct()[:5]
+            
+            # Serialize results
+            product_data = PublicproductSerializer(products, many=True, context={'request': request}).data
+            category_data = PubliccategorySerializer(categories, many=True, context={'request': request}).data
+            
+            # Combine results
+            results = []
+            for category in category_data:
+                results.append({**category, 'type': 'category'})
+            for product in product_data:
+                results.append({**product, 'type': 'product'})
+            
+            return create_response(results, "SUCCESSFUL", 200)
+            
+        except Exception as e:
+            return create_response(
+                {"error": str(e)},
+                "SERVER_ERROR",
+                500
+            )

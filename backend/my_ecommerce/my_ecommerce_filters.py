@@ -22,6 +22,8 @@ class ProductFilter(FilterSet):
        
         
 
+import django_filters
+from django.db.models import Q
 
 class PublicproductFilter(FilterSet):
     id = CharFilter(field_name='id')
@@ -34,7 +36,17 @@ class PublicproductFilter(FilterSet):
     description = CharFilter(field_name='description', lookup_expr='icontains')
     category = CharFilter(field_name='prod_has_category')
     tags = CharFilter(field_name='tags__name', lookup_expr='iexact')
+    
+    # Add this new search filter
+    search = django_filters.CharFilter(method='custom_search')
 
+    def custom_search(self, queryset, name, value):
+        return queryset.filter(
+            Q(name__icontains=value) |
+            Q(description__icontains=value) |
+            Q(tags__name__icontains=value)
+        ).distinct()
+    
     class Meta:
         model = Product
         exclude = ['image']

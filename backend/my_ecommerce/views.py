@@ -6,7 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 #from .blog_serializer import BlogSerializer
 from utils.base_authentication import JWTAuthentication
-from .my_ecommerce_controller import CategoryController, ContactController, EmployeeController, ProductController, OrderController, ProductTagController, PublicOrderController, PublicReviewController, PublicSalesproductController, \
+from .my_ecommerce_controller import CategoryController, ContactController, EmployeeController, ProductController, OrderController, ProductTagController, PruductSearchController, PublicOrderController, PublicReviewController, PublicSalesproductController, \
     PublicproductController, PubliccategoryController, ReviewController, SalesProductController, SlidercategoryController, SliderproductController
 
 # from rest_framework.permissions import IsAdminUser
@@ -28,6 +28,7 @@ contact_controller = ContactController()
 employee_controller = EmployeeController()
 review_controller = ReviewController()
 publicreview_controller = PublicReviewController()
+productsearch_controller = PruductSearchController()
 
 
 
@@ -272,3 +273,9 @@ class PubliceReviewViews(ModelViewSet):
     
     def get_publicreview(self, request):
         return publicreview_controller.get_publicreview(request)
+
+
+class ProductSearchViews(ModelViewSet):
+
+    def get_productsearch(self, request):
+        return productsearch_controller.get_productsearch(request)

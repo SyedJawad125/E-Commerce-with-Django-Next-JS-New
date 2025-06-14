@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CategoryViews, ContactViews, EmployeeViews, ProductTagViews, ProductViews, OrderViews, PublicOrderViews, PublicSalesProductViews, PubliceReviewViews, PublicproductViews, PubliccategoryViews, ReviewViews, SalesProductViews, \
+from .views import CategoryViews, ContactViews, EmployeeViews, ProductSearchViews, ProductTagViews, ProductViews, OrderViews, PublicOrderViews, PublicSalesProductViews, PubliceReviewViews, PublicproductViews, PubliccategoryViews, ReviewViews, SalesProductViews, \
     SlidercategoryViews, SliderproductViews,EmployeeViews
 
 from django.conf import settings
@@ -62,7 +62,8 @@ urlpatterns = [
 
     path('publicreview', PubliceReviewViews.as_view({"get": "get_publicreview",
                                                 "post": "post_publicreview"})),
-
+    
+    path('productsearch', ProductSearchViews.as_view({"get": "get_productsearch"})),
 
 ]   
 if settings.DEBUG:
