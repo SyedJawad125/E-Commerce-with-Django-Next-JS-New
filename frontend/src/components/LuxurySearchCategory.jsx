@@ -67,7 +67,7 @@ const LuxuryCategorySearch = () => {
   }, [])
 
   const handleResultClick = (category) => {
-    router.push(`/categorywiseproduct?categoryId=${category.id}&categoryName=${encodeURIComponent(category.name)}`)
+    router.push(`/categorywiseproductpage?categoryId=${category.id}&categoryName=${encodeURIComponent(category.name)}`)
     setIsFocused(false)
     setSearchQuery('')
   }

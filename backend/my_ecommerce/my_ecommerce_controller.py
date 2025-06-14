@@ -2036,16 +2036,15 @@ class CategorySearchController:
 
     def get_categorysearch(self, request):
         search_query = request.GET.get('q', '').strip()
-        
+    
         if not search_query:
             return create_response([], "EMPTY_QUERY", 200)
         
         try:
-            # Enhanced category search with ranking
+            # Only search by fields that exist in your model
             categories = Category.objects.filter(
                 Q(name__icontains=search_query) |
-                Q(description__icontains=search_query) |
-                Q(tags__name__icontains=search_query)
+                Q(description__icontains=search_query)
             ).annotate(
                 search_rank=Case(
                     When(name__istartswith=search_query, then=3),

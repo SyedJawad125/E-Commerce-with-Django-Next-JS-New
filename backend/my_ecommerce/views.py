@@ -274,12 +274,13 @@ class PubliceReviewViews(ModelViewSet):
     def get_publicreview(self, request):
         return publicreview_controller.get_publicreview(request)
 
-
-class CategorySearchViews(ModelViewSet):  # Changed from ModelViewSet to ViewSet
-    # controller = CategorySearchController()
+from rest_framework.viewsets import ViewSet
+from .my_ecommerce_controller import CategorySearchController
+class CategorySearchViews(ViewSet):  # Changed from ModelViewSet to ViewSet
+    controller = CategorySearchController()
     
     def list(self, request):  # This will handle GET /categorysearch/
-        return categorysearch_controller.get_categorysearch(request)
+        return self.controller.get_categorysearch(request)
     
     def suggestions(self, request):  # This will handle GET /categorysearch/suggestions/
-        return categorysearch_controller.get_suggestions(request)
+        return self.controller.get_suggestions(request)
