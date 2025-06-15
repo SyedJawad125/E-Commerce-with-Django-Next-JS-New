@@ -618,35 +618,43 @@ const CategoryWiseProductCom = () => {
   const categoryId = searchParams.get('categoryId')
   const categoryName = searchParams.get('categoryName')
 
-  useEffect(() => {
-    if (categoryId) {
-      const fetchData = async () => {
-        try {
-          setIsLoading(true)
-          
-          // Fetch category details
+ useEffect(() => {
+  if (categoryId) {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true)
+        
+        // Use categoryName from URL if available, otherwise fetch
+        if (!categoryName) {
           const categoryRes = await AxiosInstance.get(`/ecommerce/publiccategories/${categoryId}`)
           setCategory(categoryRes.data.data)
-          
-          // Fetch products
-          const productsRes = await AxiosInstance.get(`/ecommerce/publicproduct?category=${categoryId}`)
-          const processedProducts = productsRes.data.data.data.map(product => ({
-            ...product,
-            mainImage: product.image_urls?.[0] || '/default-product.jpg',
-            rating: Math.min(5, Math.max(0, product.rating || 0)) // Ensure rating is between 0-5
-          }))
-          setProducts(processedProducts)
-          
-        } catch (error) {
-          console.error('Error fetching data:', error)
-        } finally {
-          setIsLoading(false)
+        } else {
+          setCategory({
+            id: categoryId,
+            name: decodeURIComponent(categoryName),
+            // Add other default category properties if needed
+          })
         }
+        
+        // Fetch products
+        const productsRes = await AxiosInstance.get(`/ecommerce/publicproduct?category=${categoryId}`)
+        const processedProducts = productsRes.data.data.data.map(product => ({
+          ...product,
+          mainImage: product.image_urls?.[0] || '/default-product.jpg',
+          rating: Math.min(5, Math.max(0, product.rating || 0))
+        }))
+        setProducts(processedProducts)
+        
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        setIsLoading(false)
       }
-      
-      fetchData()
     }
-  }, [categoryId])
+    
+    fetchData()
+  }
+}, [categoryId, categoryName]) // Add categoryName to dependencies
 
   const handleSortChange = (e) => {
     setSortOption(e.target.value)

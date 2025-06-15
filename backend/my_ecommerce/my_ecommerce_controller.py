@@ -2042,19 +2042,22 @@ class CategorySearchController:
         
         try:
             # Only search by fields that exist in your model
-            categories = Category.objects.filter(
-                Q(name__icontains=search_query) |
-                Q(description__icontains=search_query)
-            ).annotate(
-                search_rank=Case(
-                    When(name__istartswith=search_query, then=3),
-                    When(name__icontains=search_query, then=2),
-                    When(description__icontains=search_query, then=1),
-                    default=0,
-                    output_field=IntegerField(),
-                )
-            ).order_by('-search_rank', '-created_at').distinct()
+            # categories = Category.objects.filter(
+            #     Q(name__icontains=search_query) |
+            #     Q(description__icontains=search_query)
+            # ).annotate(
+            #     search_rank=Case(
+            #         When(name__istartswith=search_query, then=3),
+            #         When(name__icontains=search_query, then=2),
+            #         When(description__icontains=search_query, then=1),
+            #         default=0,
+            #         output_field=IntegerField(),
+            #     )
+            # ).order_by('-search_rank', '-created_at').distinct()
             
+
+            categories = Category.objects.filter(name__icontains=search_query).order_by('-created_at').distinct()
+
             # Paginate results
             paginator = self.pagination_class()
             paginated_categories = paginator.paginate_queryset(categories, request)

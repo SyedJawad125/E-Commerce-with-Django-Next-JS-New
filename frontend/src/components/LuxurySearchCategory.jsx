@@ -25,9 +25,8 @@ const LuxuryCategorySearch = () => {
 
   const fetchResults = async (query) => {
     try {
-      const response = await AxiosInstance.fetch(`/ecommerce/categorysearch?q=${query}`)
-      const data = await response.json()
-      setResults(data.data)
+      const response = await AxiosInstance.get(`/ecommerce/categorysearch?q=${query}`)
+      setResults(response.data.data)
     } catch (error) {
       console.error('Search error:', error)
     }
@@ -128,7 +127,7 @@ const LuxuryCategorySearch = () => {
                 {suggestions.trending_categories.map((category) => (
                   <div
                     key={category.slug}
-                    onClick={() => router.push(`/categorywiseproduct?categoryId=${category.id}&categoryName=${encodeURIComponent(category.name)}`)}
+                    onClick={() => router.push(`/categorywiseproductpage?categoryId=${category.id}&categoryName=${encodeURIComponent(category.name)}`)}
                     className="flex items-center justify-between p-2 hover:bg-gray-50 cursor-pointer rounded"
                   >
                     <span className="font-medium">{category.name}</span>
@@ -142,43 +141,31 @@ const LuxuryCategorySearch = () => {
           {/* Results Panel */}
           {results && searchQuery.length >= 3 && (
             <div className="divide-y divide-gray-100">
-              {results.categories.length > 0 ? (
-                <>
-                  <div className="px-4 py-2 bg-gray-50">
-                    <h3 className="text-sm font-medium text-gray-700">
-                      Collections ({results.search_meta.category_count})
-                    </h3>
-                  </div>
-                  <div className="divide-y divide-gray-100">
-                    {results.categories.map((category) => (
-                      <div
-                        key={category.id}
-                        onClick={() => handleResultClick(category)}
-                        className="flex items-center p-4 hover:bg-amber-50 cursor-pointer transition-colors"
-                      >
-                        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                          {category.image_url ? (
-                            <img 
-                              src={category.image_url} 
-                              alt="" 
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <span className="text-gray-400 text-xs">No Image</span>
-                          )}
-                        </div>
-                        <div className="ml-3">
-                          <p className="text-sm font-medium text-gray-900">
-                            {category.name}
-                          </p>
-                          <p className="text-sm text-gray-500 truncate">
-                            {category.description}
-                          </p>
-                        </div>
+               {results?.categories?.length > 0 ? (
+                    <div>
+                      <div className="px-4 py-2 bg-amber-50 text-amber-800 font-medium">
+                        COLLECTIONS ({results.search_meta.category_count})
                       </div>
-                    ))}
-                  </div>
-                </>
+                      {results.categories.map(category => (
+                    <div
+                      key={category.id}
+                      onClick={() => handleResultClick(category)}
+                      className="flex items-center p-4 hover:bg-amber-50 cursor-pointer border-b border-gray-100"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden mr-3">
+                        {category.image ? (
+                          <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="text-amber-600 text-xs">LUXE</div>
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">{category.name}</div>
+                        <div className="text-xs text-gray-500">{category.description}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <div className="p-4 text-center text-gray-500">
                   No collections found for "{searchQuery}"
