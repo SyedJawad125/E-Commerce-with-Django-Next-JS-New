@@ -925,7 +925,7 @@ const CategoryWiseProductCom = () => {
                 <h3 className="text-xl font-light text-gray-600 mb-2">No products found</h3>
                 <p className="text-gray-500 mb-6">We couldn't find any products in this collection</p>
                 <button
-                  onClick={() => router.push('/collections')}
+                  onClick={() => router.push('/publiccategories')}
                   className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"
                 >
                   Browse Collections
