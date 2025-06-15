@@ -802,7 +802,7 @@ const CategoryWiseProductCom = () => {
               id="sort"
               value={sortOption}
               onChange={handleSortChange}
-              className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="border border-gray-300 text-black rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500"
             >
               <option value="featured">Featured</option>
               <option value="price-low">Price: Low to High</option>
@@ -818,7 +818,7 @@ const CategoryWiseProductCom = () => {
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row">
           {/* Sidebar Filters (Desktop) */}
-          <div className="hidden md:block w-64 pr-8">
+          <div className="hidden md:block w-60 pr-8 -ml-10">
             <div className="space-y-6">
               <div>
                 <h3 className="font-medium text-gray-900 mb-3">Price Range</h3>
