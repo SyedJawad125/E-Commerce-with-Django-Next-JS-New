@@ -1996,97 +1996,121 @@ const NavbarCom = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [lastScrollY])
 
-  useEffect(() => {
-    const savedSearches = typeof window !== 'undefined' ? localStorage.getItem('recentSearches') : null
-    if (savedSearches) {
-      setRecentSearches(JSON.parse(savedSearches))
-    }
-  }, [])
+ useEffect(() => {
+  const savedSearches = typeof window !== 'undefined' ? localStorage.getItem('recentSearches') : null;
+  if (savedSearches) {
+    setRecentSearches(JSON.parse(savedSearches));
+  }
+}, []);
 
-  const fetchSearchResults = useCallback(async (query) => {
-    if (!query.trim()) {
-      setSearchResults(null)
-      return
-    }
+// Debounce function to limit how often we call the API
+const debounce = (func, delay) => {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => func.apply(this, args), delay);
+  };
+};
 
-    try {
-      setIsLoading(true)
-      const response = await AxiosInstance.get(`/ecommerce/categorysearch?q=${encodeURIComponent(query)}`)
-      setSearchResults(response.data.data)
-      
-      // Update recent searches if we got results
-      if (response.data.data?.categories?.length > 0) {
+const fetchSearchResults = useCallback(async (query) => {
+  if (!query.trim()) {
+    setSearchResults(null);
+    return;
+  }
+
+  try {
+    setIsLoading(true);
+    const response = await AxiosInstance.get(`/ecommerce/categorysearch?q=${encodeURIComponent(query)}`);
+    setSearchResults(response.data.data);
+    
+    // Update recent searches if we got results
+    if (response.data.data?.categories?.length > 0) {
+      setRecentSearches(prev => {
         const newRecent = [
           query,
-          ...recentSearches.filter(s => s.toLowerCase() !== query.toLowerCase())
-        ].slice(0, 5)
-        setRecentSearches(newRecent)
-        localStorage.setItem('recentSearches', JSON.stringify(newRecent))
-      }
-    } catch (error) {
-      console.error('Error fetching search results:', error)
-      setSearchResults(null)
-    } finally {
-      setIsLoading(false)
+          ...prev.filter(s => s.toLowerCase() !== query.toLowerCase())
+        ].slice(0, 5);
+        localStorage.setItem('recentSearches', JSON.stringify(newRecent));
+        return newRecent;
+      });
     }
-  }, [recentSearches])
+  } catch (error) {
+    console.error('Error fetching search results:', error);
+    setSearchResults(null);
+  } finally {
+    setIsLoading(false);
+  }
+}, []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery.trim()) {
-        fetchSearchResults(searchQuery)
-      } else {
-        setSearchResults(null)
-      }
-    }, 300)
-
-    return () => clearTimeout(timer)
-  }, [searchQuery, fetchSearchResults])
-
-  const handleSearch = async (e) => {
-    e.preventDefault()
-    if (!searchQuery.trim()) return
-
-    try {
-      setIsLoading(true)
-      const response = await AxiosInstance.get(`/ecommerce/categorysearch?q=${encodeURIComponent(searchQuery)}`)
-      const data = response.data.data
-      
-      if (data?.categories?.length > 0) {
-        const firstCategory = data.categories[0]
-        router.push(`/categorywiseproductpage?categoryId=${firstCategory.id}&categoryName=${encodeURIComponent(firstCategory.name)}`)
-      } else {
-        router.push(`/publicproducts?search=${encodeURIComponent(searchQuery)}`)
-      }
-    } catch (error) {
-      console.error('Search error:', error)
-      router.push(`/publicproducts?search=${encodeURIComponent(searchQuery)}`)
-    } finally {
-      setIsLoading(false)
-      setShowSearchResults(false)
-      setSearchQuery('')
+// Create a debounced version of the search function
+const debouncedSearch = useCallback(
+  debounce((query) => {
+    if (query.trim()) {
+      fetchSearchResults(query);
+    } else {
+      setSearchResults(null);
     }
-  }
+  }, 300), // 300ms delay
+  [fetchSearchResults]
+);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && searchQuery) {
-      handleSearch(e)
+useEffect(() => {
+  debouncedSearch(searchQuery);
+  return () => {
+    // Cancel any pending debounced calls when component unmounts or searchQuery changes
+    debouncedSearch.cancel?.();
+  };
+}, [searchQuery, debouncedSearch]);
+
+const handleSearch = async (e) => {
+  e.preventDefault();
+  const query = searchQuery.trim();
+  if (!query) return;
+
+  try {
+    setIsLoading(true);
+    // Cancel any pending debounced searches
+    debouncedSearch.cancel?.();
+    
+    const response = await AxiosInstance.get(`/ecommerce/categorysearch?q=${encodeURIComponent(query)}`);
+    const data = response.data.data;
+    
+    if (data?.categories?.length > 0) {
+      const firstCategory = data.categories[0];
+      router.push(`/categorywiseproductpage?categoryId=${firstCategory.id}&categoryName=${encodeURIComponent(firstCategory.name)}`);
+    } else {
+      router.push(`/publicproducts?search=${encodeURIComponent(query)}`);
     }
-    if (e.key === 'Escape') {
-      setShowSearchResults(false)
-    }
+  } catch (error) {
+    console.error('Search error:', error);
+    router.push(`/publicproducts?search=${encodeURIComponent(query)}`);
+  } finally {
+    setIsLoading(false);
+    setShowSearchResults(false);
+    setSearchQuery('');
   }
+};
 
-  const handleSearchFocus = () => {
-    setShowSearchResults(true)
+const handleKeyDown = (e) => {
+  if (e.key === 'Enter' && searchQuery.trim()) {
+    handleSearch(e);
   }
-
-  const clearSearch = () => {
-    setSearchQuery('')
-    setSearchResults(null)
-    setShowSearchResults(false)
+  if (e.key === 'Escape') {
+    setShowSearchResults(false);
   }
+};
 
+const handleSearchFocus = () => {
+  setShowSearchResults(true);
+};
+
+const clearSearch = () => {
+  setSearchQuery('');
+  setSearchResults(null);
+  setShowSearchResults(false);
+  // Cancel any pending debounced searches
+  debouncedSearch.cancel?.();
+};
   const closeMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(false)
   }, [])

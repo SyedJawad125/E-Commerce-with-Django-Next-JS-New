@@ -280,6 +280,18 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 // 'use client'
 // import { useEffect, useState } from 'react'
 // import { useRouter, useSearchParams } from 'next/navigation'
@@ -612,55 +624,82 @@ const CategoryWiseProductCom = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [sortOption, setSortOption] = useState('featured')
   const [priceRange, setPriceRange] = useState([0, 1000])
-  const [selectedColors, setSelectedColors] = useState([])
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   
   const categoryId = searchParams.get('categoryId')
   const categoryName = searchParams.get('categoryName')
+  const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'
 
- useEffect(() => {
-  if (categoryId) {
+  useEffect(() => {
+    if (!categoryId) {
+      router.push('/publiccategories')
+      return
+    }
+
     const fetchData = async () => {
       try {
         setIsLoading(true)
         
-        // Use categoryName from URL if available, otherwise fetch
+        // Fetch category details if name isn't provided
         if (!categoryName) {
-          const categoryRes = await AxiosInstance.get(`/ecommerce/publiccategories/${categoryId}`)
-          setCategory(categoryRes.data.data)
+          try {
+            const categoryRes = await AxiosInstance.get(`/ecommerce/publiccategories/${categoryId}`)
+            setCategory(categoryRes.data.data)
+          } catch (error) {
+            console.error('Error fetching category:', error)
+            setCategory({
+              id: categoryId,
+              name: 'Collection',
+              description: 'Premium items collection'
+            })
+          }
         } else {
           setCategory({
             id: categoryId,
             name: decodeURIComponent(categoryName),
-            // Add other default category properties if needed
+            description: 'Discover our exquisite selection'
           })
         }
         
-        // Fetch products
-        const productsRes = await AxiosInstance.get(`/ecommerce/publicproduct?category=${categoryId}`)
-        const processedProducts = productsRes.data.data.data.map(product => ({
-          ...product,
-          mainImage: product.image_urls?.[0] || '/default-product.jpg',
-          rating: Math.min(5, Math.max(0, product.rating || 0))
-        }))
-        setProducts(processedProducts)
+        // Fetch products with proper error handling
+        try {
+          const productsRes = await AxiosInstance.get(`/ecommerce/publicproduct`, {
+            params: { category: categoryId }
+          })
+          
+          // Handle different response structures
+          const productsData = productsRes.data.data?.data || productsRes.data.data || []
+          
+          const processedProducts = productsData.map(product => ({
+            ...product,
+            mainImage: product.image_urls?.[0] 
+              ? `${baseURL}${product.image_urls[0].startsWith('/') ? '' : '/'}${product.image_urls[0]}`
+              : '/default-product.jpg',
+            rating: Math.min(5, Math.max(0, product.rating || 0))
+          }))
+          
+          setProducts(processedProducts)
+        } catch (error) {
+          console.error('Error fetching products:', error)
+          setProducts([])
+        }
         
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error('Error in fetchData:', error)
       } finally {
         setIsLoading(false)
       }
     }
     
     fetchData()
-  }
-}, [categoryId, categoryName]) // Add categoryName to dependencies
+  }, [categoryId, categoryName, router])
 
   const handleSortChange = (e) => {
-    setSortOption(e.target.value)
-    // Implement sorting logic here
+    const value = e.target.value
+    setSortOption(value)
+    
     let sortedProducts = [...products]
-    switch(e.target.value) {
+    switch(value) {
       case 'price-low':
         sortedProducts.sort((a, b) => a.price - b.price)
         break
@@ -668,21 +707,26 @@ const CategoryWiseProductCom = () => {
         sortedProducts.sort((a, b) => b.price - a.price)
         break
       case 'rating':
-        sortedProducts.sort((a, b) => b.rating - a.rating)
+        sortedProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0))
         break
       case 'newest':
-        sortedProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        sortedProducts.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
         break
       default:
-        // featured - default sorting
+        // Default sorting (featured)
         break
     }
     setProducts(sortedProducts)
   }
 
-  const handleProductClick = (productId) => {
-    router.push(`/productdetailpage?ProductId=${productId}`)
-  }
+  const handleProductClick = (product) => {
+        const query = new URLSearchParams({
+            ProductId: product.id.toString(),
+            productData: JSON.stringify(product)
+        }).toString();
+
+        router.push(`/productdetailpage?${query}`);
+    };
 
   const renderStars = (rating) => {
     const stars = []
@@ -716,7 +760,7 @@ const CategoryWiseProductCom = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-amber-900 to-amber-700 py-20 px-4 sm:px-6 lg:px-8">
+      <div className="relative bg-gradient-to-r bg-gray-500 py-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <button
             onClick={() => router.back()}
@@ -727,7 +771,7 @@ const CategoryWiseProductCom = () => {
           </button>
           
           <h1 className="text-4xl md:text-5xl font-serif font-light text-white mb-4">
-            {categoryName || category?.name || 'Luxury Collection'}
+            {category?.name || decodeURIComponent(categoryName) || 'Luxury Collection'}
           </h1>
           <p className="text-xl text-amber-100 max-w-3xl mx-auto">
             {category?.description || 'Discover our exquisite selection of premium items'}
@@ -770,29 +814,6 @@ const CategoryWiseProductCom = () => {
         </div>
       </div>
 
-      {/* Filter Panel (Mobile) */}
-      {isFilterOpen && (
-        <div className="bg-white p-4 border-b border-gray-200 md:hidden">
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-medium text-gray-900 mb-2">Price Range</h3>
-              <div className="flex items-center justify-between space-x-4">
-                <input
-                  type="range"
-                  min="0"
-                  max="1000"
-                  step="50"
-                  value={priceRange[1]}
-                  onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                  className="w-full"
-                />
-                <span className="text-sm text-gray-600">${priceRange[1]}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Main Content */}
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row">
@@ -832,12 +853,16 @@ const CategoryWiseProductCom = () => {
                     {/* Product Image */}
                     <div 
                       className="aspect-square bg-gray-100 relative overflow-hidden cursor-pointer"
-                      onClick={() => handleProductClick(product.id)}
+                      onClick={() => handleProductClick(product)}
                     >
                       <img
                         src={product.mainImage}
                         alt={product.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        onError={(e) => {
+                          e.target.onerror = null
+                          e.target.src = '/default-product.jpg'
+                        }}
                       />
                       
                       {/* Quick Actions */}
@@ -862,27 +887,29 @@ const CategoryWiseProductCom = () => {
                     <div className="p-4">
                       <h3 
                         className="text-lg font-medium text-gray-900 mb-1 cursor-pointer hover:text-amber-700 transition-colors"
-                        onClick={() => handleProductClick(product.id)}
+                        onClick={() => handleProductClick(product)}
                       >
                         {product.name}
                       </h3>
                       
                       {/* Rating */}
-                      <div className="flex items-center mb-2">
-                        <div className="flex mr-2">
-                          {renderStars(product.rating)}
+                      {product.rating > 0 && (
+                        <div className="flex items-center mb-2">
+                          <div className="flex mr-2">
+                            {renderStars(product.rating)}
+                          </div>
+                          <span className="text-xs text-gray-500">({product.review_count || 0})</span>
                         </div>
-                        <span className="text-xs text-gray-500">({product.review_count || 0})</span>
-                      </div>
+                      )}
                       
                       {/* Price */}
                       <div className="flex items-center">
                         <span className="text-lg font-medium text-amber-700">
-                          Rs. {product.price.toFixed(2)}
+                          Rs. {product.price?.toFixed(2) || '0.00'}
                         </span>
                         {product.original_price > product.price && (
                           <span className="ml-2 text-sm text-gray-500 line-through">
-                            Rs. {product.original_price.toFixed(2)}
+                            Rs. {product.original_price?.toFixed(2)}
                           </span>
                         )}
                       </div>
