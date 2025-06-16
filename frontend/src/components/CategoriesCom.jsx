@@ -630,11 +630,10 @@ const CategoryCom = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(false);
   const [pagination, setPagination] = useState({
-    currentPage: 1,
-    limit: 12,
-    offset: 0,
-    totalPages: 1,
     count: 0,
+    total_pages: 1,
+    current_page: 1,
+    limit: 12,
     next: false,
     previous: false
   });
@@ -643,25 +642,26 @@ const CategoryCom = () => {
     const fetchCategories = async () => {
       try {
         setIsLoading(true);
-        const { currentPage, limit, offset } = pagination;
+        const { current_page, limit } = pagination;
+        
         const res = await AxiosInstance.get('/ecommerce/category', {
           params: {
-            page: currentPage,
+            page: current_page,
             limit: limit,
-            offset: offset,
             search: searchTerm
           }
         });
-        
+
         if (res?.data?.data) {
           setCategories(res.data.data.categories || []);
-          setPagination(prev => ({
-            ...prev,
+          setPagination({
             count: res.data.data.count,
-            totalPages: res.data.data.total_pages,
+            total_pages: res.data.data.total_pages,
+            current_page: res.data.data.current_page,
+            limit: res.data.data.limit,
             next: res.data.data.next,
             previous: res.data.data.previous
-          }));
+          });
         }
       } catch (error) {
         console.error('Error fetching categories:', error);
@@ -681,12 +681,12 @@ const CategoryCom = () => {
     };
 
     fetchCategories();
-  }, [pagination.currentPage, pagination.limit, pagination.offset, searchTerm, refreshKey]);
+  }, [pagination.current_page, pagination.limit, searchTerm, refreshKey]);
 
   const deleteCategory = async (id) => {
     try {
       await AxiosInstance.delete(`/ecommerce/category?id=${id}`);
-      setRefreshKey(prev => !prev); // This will trigger a refresh
+      setRefreshKey(prev => !prev);
       toast.success('Category deleted successfully', {
         position: "top-center",
         autoClose: 2000,
@@ -711,19 +711,19 @@ const CategoryCom = () => {
     }
   };
 
-  const updateCategory = (categoryid) => {
-    router.push(`/updatecategorypage?categoryid=${categoryid}`);
+  const updateCategory = (categoryId) => {
+    router.push(`/updatecategorypage?categoryid=${categoryId}`);
   };
 
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
-    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    setPagination(prev => ({ ...prev, current_page: 1 }));
   };
 
   const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= pagination.totalPages) {
-      setPagination(prev => ({ ...prev, currentPage: newPage }));
+    if (newPage >= 1 && newPage <= pagination.total_pages) {
+      setPagination(prev => ({ ...prev, current_page: newPage }));
     }
   };
 
@@ -732,17 +732,7 @@ const CategoryCom = () => {
     setPagination(prev => ({ 
       ...prev, 
       limit: newLimit,
-      currentPage: 1,
-      offset: 0
-    }));
-  };
-
-  const handleOffsetChange = (e) => {
-    const newOffset = Math.max(0, parseInt(e.target.value)) || 0;
-    setPagination(prev => ({ 
-      ...prev, 
-      offset: newOffset,
-      currentPage: 1
+      current_page: 1
     }));
   };
 
@@ -787,7 +777,6 @@ const CategoryCom = () => {
 
           <div className="text-amber-400 font-light">
             Showing {categories.length} of {pagination.count} categories
-            {pagination.offset > 0 && ` (offset: ${pagination.offset})`}
           </div>
           
           <div className="flex flex-col md:flex-row gap-4 w-full md:w-2/3">
@@ -817,16 +806,6 @@ const CategoryCom = () => {
                 <option value="36">36 per page</option>
                 <option value="48">48 per page</option>
               </select>
-              
-              <input
-                type="number"
-                value={pagination.offset}
-                onChange={handleOffsetChange}
-                min="0"
-                max={pagination.count}
-                placeholder="Offset"
-                className="bg-gray-700 text-white rounded-full px-3 py-2 w-20 border border-gray-600 focus:outline-none focus:ring-amber-500"
-              />
             </div>
           </div>
         </div>
@@ -912,17 +891,17 @@ const CategoryCom = () => {
           </>
         )}
 
-        {/* Enhanced Pagination */}
-        {pagination.totalPages > 1 && (
+        {/* Pagination */}
+        {pagination.total_pages > 1 && (
           <div className="flex flex-col md:flex-row justify-between items-center mt-16 gap-4">
             <div className="text-gray-400 text-sm">
-              Page {pagination.currentPage} of {pagination.totalPages} • Total {pagination.count} categories
+              Page {pagination.current_page} of {pagination.total_pages} • Total {pagination.count} categories
             </div>
             
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handlePageChange(1)}
-                disabled={pagination.currentPage === 1}
+                disabled={pagination.current_page === 1}
                 className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors"
                 aria-label="First page"
               >
@@ -932,7 +911,7 @@ const CategoryCom = () => {
               </button>
               
               <button
-                onClick={() => handlePageChange(pagination.currentPage - 1)}
+                onClick={() => handlePageChange(pagination.current_page - 1)}
                 disabled={!pagination.previous}
                 className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors"
                 aria-label="Previous page"
@@ -943,16 +922,16 @@ const CategoryCom = () => {
               </button>
               
               <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                {Array.from({ length: Math.min(5, pagination.total_pages) }, (_, i) => {
                   let pageNum;
-                  if (pagination.totalPages <= 5) {
+                  if (pagination.total_pages <= 5) {
                     pageNum = i + 1;
-                  } else if (pagination.currentPage <= 3) {
+                  } else if (pagination.current_page <= 3) {
                     pageNum = i + 1;
-                  } else if (pagination.currentPage >= pagination.totalPages - 2) {
-                    pageNum = pagination.totalPages - 4 + i;
+                  } else if (pagination.current_page >= pagination.total_pages - 2) {
+                    pageNum = pagination.total_pages - 4 + i;
                   } else {
-                    pageNum = pagination.currentPage - 2 + i;
+                    pageNum = pagination.current_page - 2 + i;
                   }
                   
                   return (
@@ -960,7 +939,7 @@ const CategoryCom = () => {
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
                       className={`w-8 h-8 rounded-full text-sm transition-colors ${
-                        pagination.currentPage === pageNum
+                        pagination.current_page === pageNum
                           ? 'bg-amber-600 text-white'
                           : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
                       }`}
@@ -973,7 +952,7 @@ const CategoryCom = () => {
               </div>
               
               <button
-                onClick={() => handlePageChange(pagination.currentPage + 1)}
+                onClick={() => handlePageChange(pagination.current_page + 1)}
                 disabled={!pagination.next}
                 className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors"
                 aria-label="Next page"
@@ -984,8 +963,8 @@ const CategoryCom = () => {
               </button>
               
               <button
-                onClick={() => handlePageChange(pagination.totalPages)}
-                disabled={pagination.currentPage === pagination.totalPages}
+                onClick={() => handlePageChange(pagination.total_pages)}
+                disabled={pagination.current_page === pagination.total_pages}
                 className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors"
                 aria-label="Last page"
               >

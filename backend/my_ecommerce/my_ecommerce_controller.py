@@ -625,7 +625,7 @@ class CategoryController:
                 "offset": offset,
                 "next": paginated_data.has_next(),
                 "previous": paginated_data.has_previous(),
-                "data": serialized_data,
+                "categories": serialized_data,
             }
             
             return create_response(response_data, "SUCCESSFUL", 200)
