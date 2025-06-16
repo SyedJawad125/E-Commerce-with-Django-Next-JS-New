@@ -1162,7 +1162,7 @@ class OrderController:
                     "offset": offset,
                     "next": paginated_data.has_next(),
                     "previous": paginated_data.has_previous(),
-                    "orders": formatted_orders  # Move this to top level
+                    "orders": formatted_orders  # This matches frontend expectation
                 }
             }
             return Response(response_data, status=200)
