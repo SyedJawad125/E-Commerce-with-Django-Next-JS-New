@@ -26,31 +26,39 @@ const UpdateCategory = () => {
 
   // Fetch category data based on categoryId
   useEffect(() => {
-    const fetchCategoryData = async () => {
-      if (categoryId) {
-        try {
-          const res = await AxiosInstance.get(`/ecommerce/category?id=${categoryId}`);
-          const categoryData = res?.data?.data?.data[0];
-          if (categoryData) {
-            setFormData({
-              name: categoryData.name,
-              description: categoryData.description
-            });
+  const fetchCategoryData = async () => {
+    if (categoryId) {
+      try {
+        const res = await AxiosInstance.get(`/ecommerce/category?id=${categoryId}`);
+        console.log("Full API Response:", res);
+        
+        // More defensive approach to accessing nested data
+        const categoryData = res?.data?.data?.data?.[0] || 
+                            res?.data?.data?.[0] || 
+                            res?.data?.[0] || 
+                            res?.data;
+        
+        if (categoryData) {
+          setFormData({
+            name: categoryData.name || '',
+            description: categoryData.description || ''
+          });
 
-            if (categoryData.image) {
-              const baseUrl = 'http://127.0.0.1:8000/';
-              setImagePreview(`${baseUrl}${categoryData.image}`);
-            }
+          if (categoryData.image) {
+            const baseUrl = 'http://127.0.0.1:8000/';
+            setImagePreview(`${baseUrl}${categoryData.image}`);
           }
-        } catch (error) {
-          console.error('Error fetching category data:', error);
+        } else {
+          console.error('No category data found in response');
         }
+      } catch (error) {
+        console.error('Error fetching category data:', error);
       }
-    };
+    }
+  };
 
-    fetchCategoryData();
-  }, [categoryId]);
-
+  fetchCategoryData();
+}, [categoryId]);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
