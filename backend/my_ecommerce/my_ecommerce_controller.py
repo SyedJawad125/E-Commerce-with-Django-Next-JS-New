@@ -1047,13 +1047,14 @@ class OrderController:
             instances = self.serializer_class.Meta.model.objects.all()
             
             # Apply filters
-            filtered_data = self.filterset_class(request.GET, queryset=instances)
+            # filtered_data = self.filterset_class(request.GET, queryset=instances)
+            filtered_data = self.filterset_class(request.query_params, queryset=instances)
             data = filtered_data.qs
             
             # Get pagination parameters from request
-            page = request.GET.get('page', 1)
-            limit = request.GET.get('limit', 10)  # Default to 10 items per page
-            offset = request.GET.get('offset', 0)
+            page = request.query_params.get('page', 1)
+            limit = request.query_params.get('limit', 10)  # Default to 10 items per page
+            offset = request.query_params.get('offset', 0)
             
             try:
                 page = int(page)
@@ -1149,7 +1150,7 @@ class OrderController:
                     'status': order.status
                 }
                 formatted_orders.append(formatted_order)
-            
+
             response_data = {
                 "status_code": 200,
                 "message": "Successful",
@@ -1161,7 +1162,7 @@ class OrderController:
                     "offset": offset,
                     "next": paginated_data.has_next(),
                     "previous": paginated_data.has_previous(),
-                    "orders": formatted_orders
+                    "orders": formatted_orders  # Move this to top level
                 }
             }
             return Response(response_data, status=200)
