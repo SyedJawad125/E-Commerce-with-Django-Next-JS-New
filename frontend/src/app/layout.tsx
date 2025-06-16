@@ -39,7 +39,51 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
 
 
 
+// import type { Metadata } from 'next';
+// import { Inter } from 'next/font/google';
+// import './globals.css';
+// import { ReactNode } from 'react';
+// import { CartProvider } from '@/components/CartContext';
+// import { ToastContainer } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+// import AuthProvider from '@/components/AuthProvider';
 
+// const inter = Inter({ subsets: ['latin'] });
+
+// export const metadata: Metadata = {
+//   title: 'My Application',
+//   description: 'My awesome app built with Next.js 14',
+// };
+
+// interface RootLayoutProps {
+//   children: ReactNode;
+// }
+
+// export default function RootLayout({ children }: RootLayoutProps) {
+//   return (
+//     <AuthProvider>
+//       <CartProvider>
+//         <html lang="en" className={inter.className}>
+//           <body>
+//             {children}
+//             <ToastContainer 
+//               position="top-right"
+//               autoClose={5000}
+//               hideProgressBar={false}
+//               newestOnTop={false}
+//               closeOnClick
+//               rtl={false}
+//               pauseOnFocusLoss
+//               draggable
+//               pauseOnHover
+//               theme="light"
+//             />
+//           </body>
+//         </html>
+//       </CartProvider>
+//     </AuthProvider>
+//   );
+// }
 
 
 // import type { Metadata } from "next";
