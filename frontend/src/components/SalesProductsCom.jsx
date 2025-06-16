@@ -407,7 +407,7 @@ const SalesProductsCom = () => {
 
     const fetchCategories = async () => {
       try {
-        const res = await AxiosInstance.get('/ecommerce/categories');
+        const res = await AxiosInstance.get('/ecommerce/category');
         if (res?.data?.data) {
           setCategories(res.data.data);
         }
