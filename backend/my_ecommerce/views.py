@@ -252,7 +252,6 @@ class EmployeeViews(ModelViewSet):
     @permission_required(['delete_employee'])
     def delete_employee(self, request):
         return employee_controller.delete_employee(request)
-    
 
 
 class ReviewViews(ModelViewSet):

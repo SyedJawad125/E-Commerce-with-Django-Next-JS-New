@@ -320,7 +320,8 @@ const PublicProducts = () => {
             const params = new URLSearchParams({
                 page: page.toString(),
                 limit: limit.toString(),
-                offset: offset.toString()
+                offset: offset.toString(),
+                tags: 'Regular Products'
             });
 
             const productsRes = await AxiosInstance.get(`/ecommerce/publicproduct?${params}`);
