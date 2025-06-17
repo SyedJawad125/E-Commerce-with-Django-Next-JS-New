@@ -288,39 +288,34 @@ const AddProduct = () => {
   const [images, setImages] = useState<File[]>([]);
   const [categoryRecords, setCategoryRecords] = useState<Category[]>([]);
   const [tagsRecords, setTagsRecords] = useState<Tag[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch categories and tags in parallel
-        const [categoriesRes, tagsRes] = await Promise.all([
-          AxiosInstance.get('/ecommerce/category'),
-          AxiosInstance.get('/ecommerce/producttag')
-        ]);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setIsLoadingCategories(true);
+      // Fetch categories and tags in parallel
+      const [categoriesRes, tagsRes] = await Promise.all([
+        AxiosInstance.get('/ecommerce/dropdownlistcategory'),
+        AxiosInstance.get('/ecommerce/producttag')
+      ]);
 
-        if (categoriesRes?.data?.data?.data) {
-          setCategoryRecords(categoriesRes.data.data.data);
-        }
-        if (tagsRes?.data?.data?.data) {
-          setTagsRecords(tagsRes.data.data.data);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        toast.error('Failed to load categories and tags', {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "dark",
-        });
+      if (categoriesRes?.data?.data?.data) {
+        setCategoryRecords(categoriesRes.data.data.data);
       }
-    };
+      if (tagsRes?.data?.data?.data) {
+        setTagsRecords(tagsRes.data.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      toast.error('Failed to load categories and tags');
+    } finally {
+      setIsLoadingCategories(false);
+    }
+  };
 
-    fetchData();
-  }, []);
+  fetchData();
+}, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -372,7 +367,7 @@ const AddProduct = () => {
       return;
     }
 
-    setIsLoading(true);
+    setIsLoadingCategories(true);
     
     try {
       const formDataToSend = new FormData();
@@ -421,7 +416,7 @@ const AddProduct = () => {
         theme: "dark",
       });
     } finally {
-      setIsLoading(false);
+      setIsLoadingCategories(false);
     }
   };
 
@@ -536,28 +531,34 @@ const AddProduct = () => {
                 </select>
               </div>
               
-              {/* Category */}
-              <div>
-                <label htmlFor="prod_has_category" className="block text-sm font-medium text-gray-700 mb-1">
-                  Category <span className="text-red-500">*</span>
-                </label>
-                <select
-                  id="prod_has_category"
-                  name="prod_has_category"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                  value={formData.prod_has_category}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select a category</option>
-                  {categoryRecords.map((item) => (
-                    <option value={item.id} key={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
+              // Category dropdown
+                <div>
+                  <label htmlFor="prod_has_category" className="block text-sm font-medium text-gray-700 mb-1">
+                    Category <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="prod_has_category"
+                    name="prod_has_category"
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                    value={formData.prod_has_category}
+                    onChange={handleChange}
+                    required
+                    disabled={isLoadingCategories}
+                  >
+                    {isLoadingCategories ? (
+                      <option value="">Loading categories...</option>
+                    ) : (
+                      <>
+                        <option value="">Select a category</option>
+                        {categoryRecords.map((item) => (
+                          <option value={item.id} key={item.id}>
+                            {item.name}
+                          </option>
+                        ))}
+                      </>
+                    )}
+                  </select>
+                </div>
               {/* Upload Images */}
               <div className="md:col-span-2">
                 <label htmlFor="images" className="block text-sm font-medium text-gray-700 mb-1">
@@ -625,10 +626,10 @@ const AddProduct = () => {
               </button>
               <button
                 type="submit"
-                disabled={isLoading || images.length === 0}
-                className={`px-6 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${isLoading || images.length === 0 ? 'opacity-75 cursor-not-allowed' : ''}`}
+                disabled={isLoadingCategories || images.length === 0}
+                className={`px-6 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${isLoadingCategories || images.length === 0 ? 'opacity-75 cursor-not-allowed' : ''}`}
               >
-                {isLoading ? 'Adding...' : 'Add Product'}
+                {isLoadingCategories ? 'Adding...' : 'Add Product'}
               </button>
             </div>
           </form>

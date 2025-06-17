@@ -2,7 +2,7 @@ from venv import logger
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.auth import authenticate
-from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, EmployeeFilter, ProductFilter, OrderFilter, ProductTagFilter, PublicOrderFilter, PublicReviewFilter, PublicSalesProductFilter, \
+from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, DropDownListCategoryFilter, EmployeeFilter, ProductFilter, OrderFilter, ProductTagFilter, PublicOrderFilter, PublicReviewFilter, PublicSalesProductFilter, \
     PublicproductFilter, PubliccategoryFilter, ReviewFilter, SlidercategoryFilter, SliderproductFilter
 from my_ecommerce.my_ecommerce_serializer import *
 from my_ecommerce.models import Product
@@ -744,8 +744,55 @@ class PubliccategoryController:
 
         except Exception as e:
             return Response({'error': str(e)}, status=500)
-    
+        
+class PubliccategoryController:
+    serializer_class = PubliccategorySerializer
+    filterset_class = PubliccategoryFilter
 
+
+    def get_publiccategory(self, request):
+        try:
+
+            instances = self.serializer_class.Meta.model.objects.all()
+
+            filtered_data = self.filterset_class(request.GET, queryset=instances)
+            data = filtered_data.qs
+
+            paginated_data, count = paginate_data(data, request)
+
+            serialized_data = self.serializer_class(paginated_data, many=True).data
+            response_data = {
+                "count": count,
+                "data": serialized_data,
+            }
+            return create_response(response_data, "SUCCESSFUL", 200)
+        except Exception as e:
+            return Response({'error': str(e)}, 500)
+
+class DropDownListCategoryController:
+    serializer_class = DropDownListCategorySerializer
+    filterset_class = DropDownListCategoryFilter
+
+
+    def get_dropdownlistcategory(self, request):
+        try:
+
+            instances = self.serializer_class.Meta.model.objects.all()
+
+            filtered_data = self.filterset_class(request.GET, queryset=instances)
+            data = filtered_data.qs
+
+            paginated_data, count = paginate_data(data, request)
+
+            serialized_data = self.serializer_class(paginated_data, many=True).data
+            response_data = {
+                "count": count,
+                "data": serialized_data,
+            }
+            return create_response(response_data, "SUCCESSFUL", 200)
+        except Exception as e:
+            return Response({'error': str(e)}, 500)
+        
 class SlidercategoryController:
     serializer_class = SlidercategorySerializer
     filterset_class = SlidercategoryFilter

@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import CategorySearchViews, CategoryViews, ContactViews, EmployeeViews, CategorySearchViews, ProductTagViews, ProductViews, OrderViews, PublicOrderViews, PublicSalesProductViews, PubliceReviewViews, PublicproductViews, PubliccategoryViews, ReviewViews, SalesProductViews, \
-    SlidercategoryViews, SliderproductViews,EmployeeViews
+from .views import CategorySearchViews, CategoryViews, ContactViews, EmployeeViews, CategorySearchViews, \
+    ProductTagViews, ProductViews, OrderViews, PublicOrderViews, PublicSalesProductViews, PubliceReviewViews, \
+    PublicproductViews, PubliccategoryViews, ReviewViews, SalesProductViews, \
+    SlidercategoryViews, SliderproductViews, EmployeeViews, DropDownListCategoryViews
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -29,6 +31,7 @@ urlpatterns = [
 
     path('publiccategory', PubliccategoryViews.as_view({"get": "get_publiccategory"})),
 
+    path('dropdownlistcategory', DropDownListCategoryViews.as_view({"get": "get_dropdownlistcategory"})),
 
     path('slidercategory', SlidercategoryViews.as_view({"get": "get_slidercategory"})),
 

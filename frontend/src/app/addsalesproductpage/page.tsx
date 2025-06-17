@@ -25,7 +25,7 @@ const AddSalesProduct = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await AxiosInstance.get('/ecommerce/category');
+        const res = await AxiosInstance.get('/ecommerce/dropdownlistcategory');
         if (res) {
           setCategoryRecords(res.data.data.data);
         }

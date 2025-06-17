@@ -6,7 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 #from .blog_serializer import BlogSerializer
 from utils.base_authentication import JWTAuthentication
-from .my_ecommerce_controller import CategoryController, CategorySearchController, ContactController, EmployeeController, ProductController, OrderController, ProductTagController, CategorySearchController, PublicOrderController, PublicReviewController, PublicSalesproductController, \
+from .my_ecommerce_controller import CategoryController, CategorySearchController, ContactController, DropDownListCategoryController, EmployeeController, ProductController, OrderController, ProductTagController, CategorySearchController, PublicOrderController, PublicReviewController, PublicSalesproductController, \
     PublicproductController, PubliccategoryController, ReviewController, SalesProductController, SlidercategoryController, SliderproductController
 
 # from rest_framework.permissions import IsAdminUser
@@ -20,6 +20,7 @@ publicsalesproduct_controller = PublicSalesproductController()
 sliderproduct_controller = SliderproductController()
 category_controller = CategoryController()
 publiccategory_controller = PubliccategoryController()
+dropdownlistcategory_controller = DropDownListCategoryController()
 slidercategory_controller = SlidercategoryController()
 order_controller = OrderController()
 publicorder_controller = PublicOrderController()
@@ -157,6 +158,11 @@ class PubliccategoryViews(ModelViewSet):
     # authentication_classes = [JWTAuthentication]
     def get_publiccategory(self, request):
         return publiccategory_controller.get_publiccategory(request)
+    
+class DropDownListCategoryViews(ModelViewSet):
+    authentication_classes = [JWTAuthentication]
+    def get_dropdownlistcategory(self, request):
+        return dropdownlistcategory_controller.get_dropdownlistcategory(request)
 
 class SlidercategoryViews(ModelViewSet):
     # authentication_classes = [JWTAuthentication]
