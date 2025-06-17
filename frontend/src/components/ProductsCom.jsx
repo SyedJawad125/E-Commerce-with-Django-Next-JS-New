@@ -1609,7 +1609,7 @@ const ProductsCom = () => {
         {/* Header Section */}
         <div className="flex justify-between items-center mb-12">
           <div>
-            <h1 className="text-4xl font-light text-white">LUXURY COLLECTION</h1>
+            <h1 className="text-4xl font-light text-white">LUXURY PRODUCTS</h1>
             <div className="w-20 h-1 bg-gradient-to-r from-amber-400 to-amber-600 mt-1"></div>
           </div>
           
