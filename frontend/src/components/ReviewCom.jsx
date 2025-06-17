@@ -496,6 +496,27 @@ const ReviewsPage = () => {
     router.push(`/updatereviewpage?reviewid=${reviewid}`);
   };
 
+
+  if (!permissions.read_reviews) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-6">
+          <div className="text-center p-8 max-w-md">
+            <h2 className="text-2xl text-amber-400 mb-4">Access Denied</h2>
+            <p className="text-gray-300 mb-6">
+              You don't have permission to view Reviews. Please contact your administrator.
+            </p>
+            <button 
+              onClick={() => router.push('/')}
+              className="px-6 py-2 bg-amber-600 rounded-full hover:bg-amber-700 text-white transition-colors"
+            >
+              Return to Dashboard
+            </button>
+          </div>
+          <ToastContainer position="top-right" autoClose={2000} />
+        </div>
+      );
+    }
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
       <ToastContainer 
@@ -523,6 +544,7 @@ const ReviewsPage = () => {
         
         {/* Stats and Search */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 bg-gray-800/50 p-4 rounded-xl gap-4">
+          {permissions.create_reviews && (
           <button
             className="px-6 py-3 bg-transparent border border-amber-500 text-amber-500 font-medium text-sm leading-tight uppercase rounded-full hover:bg-amber-500 hover:text-black focus:outline-none focus:ring-0 transition duration-150 ease-in-out transform hover:scale-105 flex items-center"
             onClick={() => router.push('/addreviewpage')}
@@ -532,6 +554,7 @@ const ReviewsPage = () => {
             </svg>
             Add Review
           </button>
+          )}
 
           <div className="text-amber-400 font-light">
             Showing {filteredReviews.length} of {pagination.count} reviews
@@ -633,6 +656,7 @@ const ReviewsPage = () => {
                     <p className="text-gray-300 mb-4">{review.comment}</p>
                     
                     <div className="flex justify-end space-x-3">
+                      {permissions.delete_reviews && (
                       <button
                         onClick={() => deleteReview(review.id)}
                         className="relative overflow-hidden px-4 py-2 bg-gradient-to-r from-red-600/30 to-red-700/20 border border-red-500/30 text-red-300 rounded-lg hover:from-red-600/40 hover:to-red-700/30 transition-all duration-300 group flex items-center shadow-lg shadow-red-500/10 hover:shadow-red-500/20"
@@ -644,7 +668,9 @@ const ReviewsPage = () => {
                         <span className="relative z-10 font-medium">Delete</span>
                         <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-red-400 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                       </button>
+                      )}
 
+                      {permissions.update_reviews && (
                       <button
                         onClick={() => updateRecord(review.id)}
                         className="relative overflow-hidden px-4 py-2 bg-gradient-to-r from-amber-600/30 to-amber-700/20 border border-amber-500/30 text-amber-300 rounded-lg hover:from-amber-600/40 hover:to-amber-700/30 transition-all duration-300 group flex items-center shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20"
@@ -656,6 +682,7 @@ const ReviewsPage = () => {
                         <span className="relative z-10 font-medium">Edit</span>
                         <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-amber-400 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                       </button>
+                      )}
                     </div>
                   </div>
                 ))}

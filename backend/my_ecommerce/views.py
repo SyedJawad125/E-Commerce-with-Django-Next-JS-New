@@ -257,15 +257,19 @@ class EmployeeViews(ModelViewSet):
 class ReviewViews(ModelViewSet):
     authentication_classes = [JWTAuthentication]
 
+    @permission_required(['create_reviews'])
     def post_review(self, request):
         return review_controller.create(request)
     
+    @permission_required(['read_reviews'])
     def get_review(self, request):
         return review_controller.get_review(request)
-
+    
+    @permission_required(['update_reviews'])
     def update_review(self, request):
         return review_controller.update_review(request)
-
+    
+    @permission_required(['delete_reviews'])
     def delete_review(self, request):
         return review_controller.delete_review(request)
     

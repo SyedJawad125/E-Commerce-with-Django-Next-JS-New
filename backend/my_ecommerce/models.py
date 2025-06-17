@@ -8,6 +8,10 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 # Create your models here.
 
+# Superuser: nicenick@gmail.com, nicenick
+# User: nicenick1992@gmail.com, adminuser
+
+
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
