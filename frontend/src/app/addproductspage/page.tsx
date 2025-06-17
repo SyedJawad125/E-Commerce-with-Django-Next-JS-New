@@ -283,7 +283,7 @@ const AddProduct = () => {
     price: '',
     prod_has_category: '', // Changed from prodHasCategory to match API expectation
     tags: '', // Changed from prodHasTag to match API expectation
-    group: 'General'
+    group: ''
   });
   const [images, setImages] = useState<File[]>([]);
   const [categoryRecords, setCategoryRecords] = useState<Category[]>([]);

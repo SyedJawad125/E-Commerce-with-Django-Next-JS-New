@@ -1435,10 +1435,10 @@ const UpdateProduct = () => {
         });
 
         // Corrected this part to match your interface
-        if (productData.image_urls && productData.image_urls.length > 0) {
-          setExistingImages(productData.image_urls);
-          const previews = productData.image_urls.map((img: ProductImage) => 
-            img.image_url.startsWith('http') ? img.image_url : `${baseURL}${img.image_url}`
+        if (productData.images && productData.images.length > 0) {
+          setExistingImages(productData.images);
+          const previews = productData.images.map((img: ProductImage) => 
+            img.images.startsWith('http') ? img.images : `${baseURL}${img.images}`
           );
           setNewImagePreviews(previews);
         }

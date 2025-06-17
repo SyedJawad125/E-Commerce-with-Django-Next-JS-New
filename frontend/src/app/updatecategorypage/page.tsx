@@ -29,7 +29,7 @@ const UpdateCategory = () => {
   const fetchCategoryData = async () => {
     if (categoryId) {
       try {
-        const res = await AxiosInstance.get(`/ecommerce/category?id=${categoryId}`);
+        const res = await AxiosInstance.get(`/ecommerce/dropdownlistcategory?id=${categoryId}`);
         console.log("Full API Response:", res);
         
         // More defensive approach to accessing nested data
