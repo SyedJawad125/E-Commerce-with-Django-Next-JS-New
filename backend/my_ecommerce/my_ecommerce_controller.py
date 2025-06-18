@@ -322,17 +322,32 @@ class SalesProductController:
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            request.data._mutable = True
-            request.data["created_by"] = request.user.guid
-            request.POST._mutable = False
+            # Attach created_by user
+            data = request.data.copy()
+            data["created_by"] = request.user.guid  # use guid if needed
 
-            serializer = SalesProductSerializer(data=request.data)
+            # Validate and save product
+            serializer = SalesProductSerializer(data=data)
             if serializer.is_valid():
-                instance = serializer.save()
+                product = serializer.save()
+
+                # Handle image uploads
+                images = request.FILES.getlist('images')
+                if len(images) > 5:
+                    return Response(
+                        {'error': 'You can upload a maximum of 5 images.'}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                for img in images:
+                    # Assuming you have a SalesProductImage model similar to ProductImage
+                    SalesProductImage.objects.create(product=product, images=img)
+
+                response_data = SalesProductSerializer(product).data
                 return Response(
                     {
                         "success": True,
-                        "data": SalesProductSerializer(instance).data
+                        "data": response_data
                     },
                     status=status.HTTP_201_CREATED
                 )
@@ -351,17 +366,15 @@ class SalesProductController:
     # mydata = Member.objects.filter(firstname__endswith='s').values()
     def get_salesproduct(self, request):
         try:
-            # Get all instances
             instances = self.serializer_class.Meta.model.objects.all()
-            
-            # Apply filters
+
             filtered_data = self.filterset_class(request.GET, queryset=instances)
             data = filtered_data.qs
-            
+
             # Get pagination parameters from request
             page = request.GET.get('page', 1)
-            limit = request.GET.get('limit', 12)  # Default to 10 items per page
-            offset = request.GET.get('offset', 0)
+            limit = request.GET.get('limit', 12)  # Default limit 10 items per page
+            offset = request.GET.get('offset', 0)  # Default offset 0
             
             try:
                 page = int(page)
@@ -409,35 +422,64 @@ class SalesProductController:
     
     def update_salesproduct(self, request):
         try:
-            if "id" in request.data:
-                # finding instance
-                instance = SalesProduct.objects.filter(id=request.data["id"]).first()
+            data = request.data.copy()
 
-                if instance:
-                    request.POST._mutable = True
-                    request.data["updated_by"] = request.user.guid
-                    request.POST._mutable = False
+            # Validate required fields
+            if "id" not in data:
+                return Response({"data": "ID NOT PROVIDED"}, status=400)
 
-                    # updating the instance/record
-                    serialized_data = SalesProductSerializer(instance, data=request.data, partial=True)
-                    # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
-                    if serialized_data.is_valid():
-                        response = serialized_data.save()
-                        response_data = SalesProductSerializer(response).data
-                        return Response({"data": response_data}, 200)
-                    else:
-                        error_message = get_first_error_message(serialized_data.errors, "UNSUCCESSFUL")
-                        return Response({'data': error_message}, 400)
-                    # else:
-                    #     return Response({'data': "Permission Denaied"}, 400)
-                else:
-                    return Response({"data": "NOT FOUND"}, 404)
-            else:
-                return Response({"data": "ID NOT PROVIDED"}, 400)
+            # Find product instance
+            product = SalesProduct.objects.filter(id=data["id"]).first()
+            if not product:
+                return Response({"data": "NOT FOUND"}, status=404)
+
+            # Add updated_by info
+            data["updated_by"] = request.user.guid
+
+            # Update product
+            serializer = SalesProductSerializer(product, data=data, partial=True)
+            if not serializer.is_valid():
+                error_message = get_first_error_message(serializer.errors, "UNSUCCESSFUL")
+                return Response({'data': error_message}, status=400)
+
+            product_instance = serializer.save()
+
+            # Handle deleted images
+            deleted_ids = []
+            if "deleted_images" in data:
+                try:
+                    deleted_ids = [int(i.strip()) for i in data["deleted_images"].split(",") if i.strip().isdigit()]
+                    SalesProductImage.objects.filter(id__in=deleted_ids, product=product_instance).delete()
+                except Exception as e:
+                    print(f"Error deleting images: {str(e)}")
+
+            # Handle uploaded images - maximum 5 images
+            uploaded_images = request.FILES.getlist('images')
+            if len(uploaded_images) > 5:
+                return Response({'error': 'You can upload a maximum of 5 images.'}, status=400)
+
+            for img in uploaded_images:
+                SalesProductImage.objects.create(
+                    product=product_instance, 
+                    images=img, 
+                    created_by=request.user
+                )
+
+            response_data = SalesProductSerializer(product_instance).data
+            response_data.update({
+                'message': 'Sales Product updated successfully',
+                'images_uploaded': len(uploaded_images),
+                'images_deleted': len(deleted_ids),
+                'total_images': SalesProductImage.objects.filter(product=product_instance).count()
+            })
+
+            return Response({"data": response_data}, status=200)
 
         except Exception as e:
-            return Response({'error': str(e)}, 500)
-
+            print(f"\n!!! ERROR in update_salesproduct: {str(e)}")
+            print(traceback.format_exc())
+            return Response({'error': str(e)}, status=500)
+        
     def delete_salesproduct(self, request):
         try:
             if "id" in request.query_params:
