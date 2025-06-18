@@ -179,7 +179,7 @@ class ProductController:
 
             # Handle uploaded images - THIS IS CORRECT FOR MULTIPLE IMAGES
             uploaded_images = request.FILES.getlist('images')  # This should get all images
-            if len(uploaded_images) > 5:
+            if len(uploaded_images) > 6:
                 return Response({'error': 'You can upload a maximum of 5 images.'}, status=400)
 
             for img in uploaded_images:

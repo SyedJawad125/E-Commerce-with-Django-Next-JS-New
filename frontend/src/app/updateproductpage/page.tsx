@@ -1361,6 +1361,7 @@ interface ProductTag {
 interface ProductImage {
   id: number;
   image_url: string;
+  images: string;
 }
 
 interface Product {
@@ -1504,7 +1505,7 @@ const UpdateProduct = () => {
     const newFilesArray = Array.from(files);
     const currentTotalImages = existingImages.length + newImages.length - imagesToDelete.length;
     
-    if (currentTotalImages + newFilesArray.length > 5) {
+    if (currentTotalImages + newFilesArray.length > 6) {
       toast.error(`You can upload a maximum of 5 images. You currently have ${currentTotalImages} image(s).`, {
         position: "top-center",
         autoClose: 3000,
@@ -1542,21 +1543,24 @@ const UpdateProduct = () => {
   };
 
   const removeImage = (index: number, isExisting: boolean) => {
-    if (isExisting) {
-      const imageToRemove = existingImages[index];
-      if (imageToRemove && imageToRemove.id) {
-        setImagesToDelete(prev => [...prev, imageToRemove.id]);
-      }
-      setExistingImages(prev => prev.filter((_, i) => i !== index));
-    } else {
-      const actualIndex = index - existingImages.length;
-      const imageUrlToRemove = newImagePreviews[index];
-      URL.revokeObjectURL(imageUrlToRemove);
-
-      setNewImages(prev => prev.filter((_, i) => i !== actualIndex));
-      setNewImagePreviews(prev => prev.filter((_, i) => i !== index));
+  if (isExisting) {
+    const imageToRemove = existingImages[index];
+    if (imageToRemove && imageToRemove.id) {
+      setImagesToDelete(prev => [...prev, imageToRemove.id]);
     }
-  };
+    // Remove from existing images and their previews
+    setExistingImages(prev => prev.filter((_, i) => i !== index));
+    setNewImagePreviews(prev => prev.filter((_, i) => i !== index));
+  } else {
+    const actualIndex = index - existingImages.length;
+    const imageUrlToRemove = newImagePreviews[index];
+    URL.revokeObjectURL(imageUrlToRemove);
+
+    // Remove from new images and their previews
+    setNewImages(prev => prev.filter((_, i) => i !== actualIndex));
+    setNewImagePreviews(prev => prev.filter((_, i) => i !== index));
+  }
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
