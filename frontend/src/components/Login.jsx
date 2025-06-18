@@ -227,11 +227,13 @@ const Login = () => {
         router.push('/admindashboard');
       }
     } catch (error) {
-      toast.error('Your email or password is incorrect', {
-        position: 'top-center',
-        autoClose: 3000,
-      });
-      console.error('Login error:', error);
+       toast.error('Your email or password is incorrect', {
+          position: 'top-center',
+          autoClose: 3000,
+        });
+     if (error.response?.status !== 400) {
+         console.error('Login error:', error);
+  }
     } finally {
       setIsLoading(false);
     }
