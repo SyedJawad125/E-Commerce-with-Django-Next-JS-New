@@ -163,7 +163,7 @@ class SalesProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SalesProduct
-        fields = ['id','name', 'description', 'original_price', 'discount_percent','final_price', 'image','created_by','updated_by','salesprod_has_category']
+        fields = ['id','name', 'description', 'original_price', 'discount_percent','final_price', 'images','created_by','updated_by','salesprod_has_category']
         read_only_fields = ['final_price', 'id']
         extra_kwargs = {
             'images': {'required': False, 'allow_null': True},

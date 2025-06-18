@@ -341,7 +341,7 @@ class SalesProductController:
 
                 for img in images:
                     # Assuming you have a SalesProductImage model similar to ProductImage
-                    SalesProductImage.objects.create(product=product, images=img)
+                    SalesProductImage.objects.create(sale_product=product, images=img)
 
                 response_data = SalesProductSerializer(product).data
                 return Response(
@@ -373,7 +373,7 @@ class SalesProductController:
 
             # Get pagination parameters from request
             page = request.GET.get('page', 1)
-            limit = request.GET.get('limit', 12)  # Default limit 10 items per page
+            limit = request.GET.get('limit', 24)  # Default limit 10 items per page
             offset = request.GET.get('offset', 0)  # Default offset 0
             
             try:
@@ -444,24 +444,33 @@ class SalesProductController:
 
             product_instance = serializer.save()
 
-            # Handle deleted images
+            # Handle deleted images - changed 'product' to 'sale_product'
             deleted_ids = []
             if "deleted_images" in data:
                 try:
                     deleted_ids = [int(i.strip()) for i in data["deleted_images"].split(",") if i.strip().isdigit()]
-                    SalesProductImage.objects.filter(id__in=deleted_ids, product=product_instance).delete()
+                    SalesProductImage.objects.filter(id__in=deleted_ids, sale_product=product_instance).delete()
                 except Exception as e:
                     print(f"Error deleting images: {str(e)}")
 
             # Handle uploaded images - maximum 5 images
             uploaded_images = request.FILES.getlist('images')
+            
+            # Check total images won't exceed 5 after upload
+            existing_images_count = SalesProductImage.objects.filter(sale_product=product_instance).count()
+            if existing_images_count - len(deleted_ids) + len(uploaded_images) > 5:
+                return Response(
+                    {'error': 'Total images cannot exceed 5. Please delete some images first.'}, 
+                    status=400
+                )
+
             if len(uploaded_images) > 5:
-                return Response({'error': 'You can upload a maximum of 5 images.'}, status=400)
+                return Response({'error': 'You can upload a maximum of 5 images at once.'}, status=400)
 
             for img in uploaded_images:
                 SalesProductImage.objects.create(
-                    product=product_instance, 
-                    images=img, 
+                    sale_product=product_instance,  # changed from 'product' to 'sale_product'
+                    images=img,
                     created_by=request.user
                 )
 
@@ -470,7 +479,7 @@ class SalesProductController:
                 'message': 'Sales Product updated successfully',
                 'images_uploaded': len(uploaded_images),
                 'images_deleted': len(deleted_ids),
-                'total_images': SalesProductImage.objects.filter(product=product_instance).count()
+                'total_images': SalesProductImage.objects.filter(sale_product=product_instance).count()
             })
 
             return Response({"data": response_data}, status=200)

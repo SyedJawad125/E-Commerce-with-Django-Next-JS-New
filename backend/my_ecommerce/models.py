@@ -134,7 +134,7 @@ def calculate_final_price(sender, instance, **kwargs):
 
 class SalesProductImage(models.Model):
     sale_product = models.ForeignKey(SalesProduct, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='sale_product_images/')
+    images = models.ImageField(upload_to='sale_product_images/')
     alt_text = models.CharField(max_length=100, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saleproductimage_created_by', null=True, blank=True)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saleproductimage_updated_by', null=True, blank=True)
