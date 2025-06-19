@@ -181,15 +181,22 @@ class SalesProductSerializer(serializers.ModelSerializer):
 
     
 class PublicSalesProductSerializer(ModelSerializer):
+    images = SalesProductImageSerializer(many=True, read_only=True)
+
     class Meta:
         model = SalesProduct
-        fields = ['id','name', 'description', 'original_price', 'discount_percent','final_price', 'image','created_by','updated_by','salesprod_has_category']
+        fields = ['id','name', 'description', 'original_price', 'discount_percent','final_price', 'images','created_by','updated_by','salesprod_has_category']
         read_only_fields = ['final_price', 'id']
+        extra_kwargs = {
+            'images': {'required': False, 'allow_null': True},
+        }
+
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
         data['category_name'] = instance.salesprod_has_category.name if instance.salesprod_has_category else None
+        data['image_urls'] = [img.images.url for img in instance.images.all()] if hasattr(instance, 'images') else []
         return data
     
 class CategorySerializer(ModelSerializer):
