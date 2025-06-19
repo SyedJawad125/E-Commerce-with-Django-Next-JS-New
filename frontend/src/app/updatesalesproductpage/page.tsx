@@ -807,8 +807,8 @@ const UpdateSalesProduct = () => {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Product Images (Max 5) <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-300 mb-3">
+                  Product Images (Max 5) <span className="text-amber-500">*</span>
                 </label>
 
                 <div className="mb-6">
@@ -816,12 +816,10 @@ const UpdateSalesProduct = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
                       {newImagePreviews.map((preview, index) => (
                         <div key={`image-${index}`} className="relative group">
-                          <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-                            <Image
+                          <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden">
+                            <img
                               src={preview}
                               alt={`Product image ${index + 1}`}
-                              width={100}
-                              height={100}
                               className="w-full h-full object-cover"
                             />
                           </div>
@@ -843,7 +841,7 @@ const UpdateSalesProduct = () => {
                   )}
                 </div>
 
-                <label className={`cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                <label className={`cursor-pointer inline-flex items-center px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg shadow-sm text-sm font-medium text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-colors ${
                     remainingUploadSlots <= 0 ? 'opacity-50 cursor-not-allowed' : ''
                 }`}>
                   <svg className="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -866,6 +864,7 @@ const UpdateSalesProduct = () => {
                 </p>
               </div>
             </div>
+
 
             <div className="flex justify-end pt-6 border-t border-gray-200">
               <button
