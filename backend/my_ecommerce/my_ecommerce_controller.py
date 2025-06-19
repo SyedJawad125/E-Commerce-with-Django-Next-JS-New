@@ -373,7 +373,7 @@ class SalesProductController:
 
             # Get pagination parameters from request
             page = request.GET.get('page', 1)
-            limit = request.GET.get('limit', 24)  # Default limit 10 items per page
+            limit = request.GET.get('limit', 12)  # Default limit 10 items per page
             offset = request.GET.get('offset', 0)  # Default offset 0
             
             try:
