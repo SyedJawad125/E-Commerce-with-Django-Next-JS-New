@@ -1431,26 +1431,55 @@ const ProductsCom = () => {
     setSelectedProduct(null);
   };
 
+  // const deleteRecord = async (id) => {
+  //   if (!permissions.delete_product) {
+  //     toast.error('You do not have permission to delete products');
+  //     return;
+  //   }
+    
+  //   if (!window.confirm('Are you sure you want to delete this product?')) return;
+    
+  //   try {
+  //     await AxiosInstance.delete(`/ecommerce/product?id=${id}`);
+  //     setRefreshKey(k => k + 1);
+      
+  //     if (selectedProduct?.id === id) {
+  //       closeDetailsModal();
+  //     }
+      
+  //     toast.success('Product removed successfully', { theme: 'dark', autoClose: 2000 });
+  //   } catch (error) {
+  //     console.error('Error deleting product:', error);
+  //     toast.error('Error deleting product', { theme: 'dark', autoClose: 2000 });
+  //   }
+  // };
+
+
   const deleteRecord = async (id) => {
-    if (!permissions.delete_product) {
-      toast.error('You do not have permission to delete products');
-      return;
-    }
-    
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
-    
     try {
       await AxiosInstance.delete(`/ecommerce/product?id=${id}`);
-      setRefreshKey(k => k + 1);
-      
-      if (selectedProduct?.id === id) {
-        closeDetailsModal();
-      }
-      
-      toast.success('Product removed successfully', { theme: 'dark', autoClose: 2000 });
+      setRefreshKey(prev => !prev); // This will trigger a refresh
+      toast.success('Order deleted successfully', {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     } catch (error) {
-      console.error('Error deleting product:', error);
-      toast.error('Error deleting product', { theme: 'dark', autoClose: 2000 });
+      toast.error('Error deleting order', { // Changed from 'review' to 'order'
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
   };
 

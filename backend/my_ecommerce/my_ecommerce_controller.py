@@ -514,18 +514,16 @@ class PublicSalesproductController:
     # mydata = Member.objects.filter(firstname__endswith='s').values()
     def get_publicsalesproduct(self, request):
         try:
-            # Get all instances
             instances = self.serializer_class.Meta.model.objects.all()
-            
-            # Apply filters
+
             filtered_data = self.filterset_class(request.GET, queryset=instances)
             data = filtered_data.qs
-            
+
             # Get pagination parameters from request
             page = request.GET.get('page', 1)
-            limit = request.GET.get('limit', 10)  # Default limit 16 items per page
+            limit = request.GET.get('limit', 12)  # Default limit 10 items per page
             offset = request.GET.get('offset', 0)  # Default offset 0
-            
+
             try:
                 page = int(page)
                 limit = int(limit)
@@ -536,13 +534,13 @@ class PublicSalesproductController:
                     "BAD_REQUEST",
                     400
                 )
-            
+
             # Apply offset and limit
             if offset > 0:
                 data = data[offset:]
-            
+
             paginator = Paginator(data, limit)
-            
+
             try:
                 paginated_data = paginator.page(page)
             except EmptyPage:
@@ -551,9 +549,9 @@ class PublicSalesproductController:
                     "NOT_FOUND",
                     404
                 )
-            
+
             serialized_data = self.serializer_class(paginated_data, many=True).data
-            
+
             response_data = {
                 "count": paginator.count,
                 "total_pages": paginator.num_pages,
@@ -564,7 +562,7 @@ class PublicSalesproductController:
                 "previous": paginated_data.has_previous(),
                 "data": serialized_data,
             }
-            
+
             return create_response(response_data, "SUCCESSFUL", 200)
 
         except Exception as e:

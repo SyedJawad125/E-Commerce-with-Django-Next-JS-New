@@ -624,17 +624,24 @@ const ProductDetailsCom = () => {
         }
 
         setReviewLoading(true);
-        try {
-          const reviewsRes = await AxiosInstance.get(`/ecommerce/publicreview?product_id=${ProductId}`);
+          try {
+          const reviewsRes = await AxiosInstance.get(`/ecommerce/publicreview`, {
+            params: {
+              product_id: ProductId  // or whatever parameter name your backend expects
+            }
+          });
+          
           if (reviewsRes?.data?.data) {
             setReviews(reviewsRes.data.data.data || []);
           }
         } catch (error) {
           console.error('Error fetching reviews:', error);
+          // Optionally show a user-friendly message
+          toast.error('Could not load reviews at this time');
         } finally {
-          setReviewLoading(false);
-        }
-      };
+                  setReviewLoading(false);
+                }
+              };
 
       const fetchFeaturedProducts = async () => {
         try {

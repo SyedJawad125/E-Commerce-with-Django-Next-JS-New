@@ -801,6 +801,8 @@ const SalesProductsCom = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+
   const [pagination, setPagination] = useState({
     currentPage: 1,
     limit: 12,
@@ -884,7 +886,7 @@ const SalesProductsCom = () => {
 
     fetchSalesProducts();
     fetchCategories();
-  }, [pagination.currentPage, pagination.limit, pagination.offset, baseURL]);
+  }, [refreshKey, pagination.currentPage, pagination.limit, pagination.offset, baseURL]);
 
   const openDetailsModal = (product) => {
     setSelectedProduct(product);
@@ -911,18 +913,46 @@ const SalesProductsCom = () => {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
 
-  const deleteRecord = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+  // const deleteRecord = async (id) => {
+  //   if (!window.confirm('Are you sure you want to delete this product?')) return;
     
+  //   try {
+  //     await AxiosInstance.delete(`/ecommerce/salesproduct?id=${id}`);
+  //     setPagination(prev => ({ ...prev, currentPage: 1 })); // Reset to first page
+      
+  //     if (selectedProduct?.id === id) {
+  //       closeDetailsModal();
+  //     }
+      
+  //     toast.success('Product removed successfully', {
+  //       position: "top-center",
+  //       autoClose: 2000,
+  //       hideProgressBar: true,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //       theme: "dark",
+  //     });
+  //   } catch (error) {
+  //     toast.error('Error deleting product', {
+  //       position: "top-center",
+  //       autoClose: 2000,
+  //       hideProgressBar: true,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //       theme: "dark",
+  //     });
+  //   }
+  // };
+
+  const deleteRecord = async (id) => {
     try {
       await AxiosInstance.delete(`/ecommerce/salesproduct?id=${id}`);
-      setPagination(prev => ({ ...prev, currentPage: 1 })); // Reset to first page
-      
-      if (selectedProduct?.id === id) {
-        closeDetailsModal();
-      }
-      
-      toast.success('Product removed successfully', {
+      setRefreshKey(prev => !prev); // This will trigger a refresh
+      toast.success('Order deleted successfully', {
         position: "top-center",
         autoClose: 2000,
         hideProgressBar: true,
@@ -933,7 +963,7 @@ const SalesProductsCom = () => {
         theme: "dark",
       });
     } catch (error) {
-      toast.error('Error deleting product', {
+      toast.error('Error deleting order', { // Changed from 'review' to 'order'
         position: "top-center",
         autoClose: 2000,
         hideProgressBar: true,
@@ -945,7 +975,6 @@ const SalesProductsCom = () => {
       });
     }
   };
-
   const updateRecord = async (saleproductid) => {
     router.push(`/updatesalesproductpage?saleproductid=${saleproductid}`);
   };
