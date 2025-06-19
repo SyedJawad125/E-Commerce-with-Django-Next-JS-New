@@ -761,11 +761,11 @@ const PublicSalesProductsCom = () => {
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                     
                                     {/* Additional images badge */}
-                                    {item.remainingImages.length > 0 && (
+                                    {/* {item.remainingImages.length > 0 && (
                                         <div className="absolute top-4 left-4 z-20 bg-black/70 text-white text-xs px-2 py-1 rounded">
                                             +{item.remainingImages.length}
                                         </div>
-                                    )}
+                                    )} */}
                                 </div>
                                 
                                 {/* Product Details */}
