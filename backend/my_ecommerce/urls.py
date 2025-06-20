@@ -6,7 +6,6 @@ from .views import CategorySearchViews, CategoryViews, ContactViews, EmployeeVie
 
 from django.conf import settings
 from django.conf.urls.static import static
-from . import views
 
 
 urlpatterns = [
@@ -72,7 +71,6 @@ urlpatterns = [
 
     path('categorysearch/suggestions/', CategorySearchViews.as_view({'get': 'suggestions'}), name='category-suggestions'),
 
-    path('set-theme', views.get_theme_preference, name='set_theme_preference'),
 ]
 
 if settings.DEBUG:

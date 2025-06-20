@@ -37,60 +37,90 @@
 // components/ThemeContext.jsx
 'use client'
 import { createContext, useContext, useState, useEffect } from 'react';
+import AxiosInstance from "@/components/AxiosInstance";
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [theme, setTheme] = useState('dark'); // default to dark
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Apply theme to HTML element whenever isDarkMode changes
+  // Helper function to get cookies
+  const getCookie = (name) => {
+    if (typeof document === 'undefined') return null; // SSR safety
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      const [cookieName, cookieValue] = cookie.trim().split('=');
+      if (cookieName === name) {
+        return decodeURIComponent(cookieValue);
+      }
+    }
+    return null;
+  };
+
+  // Initialize theme from user preference or cookie
   useEffect(() => {
-    document.documentElement.setAttribute(
-      'data-theme',
-      isDarkMode ? 'bw' : 'light'
-    );
-  }, [isDarkMode]);
+    const initializeTheme = async () => {
+      try {
+        setIsLoading(true);
+        
+        // 1. Check for cookie first
+        const cookieTheme = getCookie('user_theme');
+        if (cookieTheme) {
+          setTheme(cookieTheme);
+          return;
+        }
 
-  const toggleTheme = async () => {
-    const newTheme = !isDarkMode ? 'bw' : 'light';
-    const newIsDarkMode = !isDarkMode;
+        // 2. If no cookie, fetch user preference from backend
+        const response = await AxiosInstance.get('/user/theme'); // Changed endpoint to be more RESTful
+        if (response.data?.theme) {
+          setTheme(response.data.theme);
+        }
+      } catch (error) {
+        console.error('Error fetching theme preference:', error);
+        // Fallback to dark theme if error occurs
+        setTheme('dark');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeTheme();
+  }, []);
+
+  // Apply theme to HTML element whenever theme changes
+  useEffect(() => {
+    if (typeof document !== 'undefined') { // SSR safety
+      document.documentElement.setAttribute('data-theme', theme);
+      // Optionally save to cookie
+      document.cookie = `user_theme=${theme}; path=/; max-age=${60 * 60 * 24 * 365}`;
+    }
+  }, [theme]);
+
+  const toggleTheme = async (newTheme) => {
+    const oldTheme = theme;
     
     // Optimistically update the UI first
-    setIsDarkMode(newIsDarkMode);
+    setTheme(newTheme);
     
     try {
-      await fetch('/set-theme', {
-        method: 'POST',
+      await AxiosInstance.post('/user/theme', { 
+        theme: newTheme 
+      }, {
         headers: {
-          'Content-Type': 'application/json',
           'X-CSRFToken': getCookie('csrftoken'),
-        },
-        body: JSON.stringify({ theme: newTheme }),
+          'Content-Type': 'application/json'
+        }
       });
     } catch (error) {
       console.error('Error saving theme preference:', error);
       // Revert if there's an error
-      setIsDarkMode(isDarkMode);
+      setTheme(oldTheme);
     }
   };
 
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
-
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, isLoading }}>
       {children}
     </ThemeContext.Provider>
   );

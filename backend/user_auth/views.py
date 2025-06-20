@@ -43,3 +43,41 @@ class VerifyOtpAPIView(ModelViewSet):
 class ForgetPasswordAPIView(ModelViewSet):
     def post(self,request):
         return forget_password_controller.forget_password(request)
+
+
+# from django.http import JsonResponse
+# from django.views.decorators.http import require_POST
+# from django.views.decorators.csrf import csrf_exempt
+
+# @csrf_exempt
+# @require_POST
+# def set_theme_preference(request):
+#     if request.user.is_authenticated:
+#         theme_pref = request.POST.get('theme', 'light')
+#         request.user.profile.theme_preference = theme_pref
+#         request.user.profile.save()
+#         return JsonResponse({'status': 'success'})
+#     return JsonResponse({'status': 'error'}, status=401)
+
+
+# @csrf_exempt
+# def get_theme_preference(request):
+#     if request.user.is_authenticated:
+#         return JsonResponse({'theme': request.user.profile.theme_preference})
+#     return JsonResponse({'theme': 'dark'})  # Default for anonymous users
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+
+@require_POST
+@login_required
+def set_theme_preference(request):
+    theme = request.POST.get('theme', 'dark')
+    if theme not in dict(request.user._meta.get_field('theme_preference').choices):
+        return JsonResponse({'status': 'error', 'message': 'Invalid theme choice'}, status=400)
+
+    request.user.theme_preference = theme
+    request.user.save()
+    return JsonResponse({'status': 'success', 'theme': theme})

@@ -296,23 +296,3 @@ class CategorySearchViews(ViewSet):  # Changed from ModelViewSet to ViewSet
 
 
 
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
-
-# @csrf_exempt
-# @require_POST
-# def set_theme_preference(request):
-#     if request.user.is_authenticated:
-#         theme_pref = request.POST.get('theme', 'light')
-#         request.user.profile.theme_preference = theme_pref
-#         request.user.profile.save()
-#         return JsonResponse({'status': 'success'})
-#     return JsonResponse({'status': 'error'}, status=401)
-
-
-@csrf_exempt
-def get_theme_preference(request):
-    if request.user.is_authenticated:
-        return JsonResponse({'theme': request.user.profile.theme_preference})
-    return JsonResponse({'theme': 'light'})  # Default for anonymous users
