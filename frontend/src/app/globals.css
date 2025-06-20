@@ -37,6 +37,8 @@ body {
 
 
 
+
+
 /* globals.css */
 :root {
   /* Light theme (default) */
@@ -46,18 +48,36 @@ body {
   --secondary-color: #f3f4f6;
   --accent-color: #1e40af;
   --border-color: #e5e7eb;
+  --sidebar-bg: linear-gradient(to bottom, #4b5563, #111827);
+  --sidebar-text: #ffffff;
+  --card-bg: #ffffff;
+  --table-header-bg: #f3f4f6;
+  --table-row-even: #ffffff;
+  --table-row-odd: #f9fafb;
+  --input-bg: #ffffff;
+  --input-border: #e5e7eb;
+  --button-text: #ffffff;
 }
 
 [data-theme='bw'] {
   /* Black & White theme */
-  --bg-color: #ffffff;
+  --bg-color: #f5f5f5;
   --text-color: #000000;
   --primary-color: #000000;
-  --secondary-color: #f0f0f0;
+  --secondary-color: #e0e0e0;
   --accent-color: #333333;
-  --border-color: #cccccc;
+  --border-color: #bdbdbd;
+  --sidebar-bg: linear-gradient(to bottom, #e5e7eb, #d1d5db);
+  --sidebar-text: #000000;
+  --card-bg: #ffffff;
+  --table-header-bg: #e0e0e0;
+  --table-row-even: #ffffff;
+  --table-row-odd: #f5f5f5;
+  --input-bg: #ffffff;
+  --input-border: #bdbdbd;
+  --button-text: #ffffff;
   
-  /* Images will be grayscale but not other elements */
+  /* Images will be grayscale */
   img {
     filter: grayscale(100%);
   }
@@ -66,51 +86,171 @@ body {
 [data-theme='dark'] {
   /* Dark theme variables */
   --bg-color: #1a1a1a;
-  --text-color: #ffffff;
+  --text-color: #e5e7eb;
   --primary-color: #3b82f6;
   --secondary-color: #1f2937;
   --accent-color: #60a5fa;
   --border-color: #374151;
+  --sidebar-bg: linear-gradient(to bottom, #111827, #1f2937);
+  --sidebar-text: #e5e7eb;
+  --card-bg: #1f2937;
+  --table-header-bg: #111827;
+  --table-row-even: #1f2937;
+  --table-row-odd: #1a1a1a;
+  --input-bg: #1f2937;
+  --input-border: #374151;
+  --button-text: #e5e7eb;
 }
 
+/* Base styles */
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Ensure all text has proper contrast */
-[data-theme='dark'] {
-  color: #ffffff;
+/* Apply theme to all admin pages */
+[data-theme] {
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
-[data-theme='bw'] {
-  color: #000000;
+/* Sidebar styles */
+.sidebar {
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
 }
 
-/* Sidebar specific styles */
-[data-theme='dark'] .sidebar {
-  background-color: #111827;
-  color: #ffffff;
+/* Form elements */
+input,
+select,
+textarea {
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--input-border);
 }
 
-[data-theme='bw'] .sidebar {
-  background-color: #ffffff;
-  color: #000000;
-  border-right: 1px solid #000000;
+/* Tables */
+table {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  border-collapse: collapse;
+  width: 100%;
 }
 
-/* Button styles */
-button {
-  transition: background-color 0.3s ease, color 0.3s ease;
+th, td {
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  text-align: left;
 }
 
-[data-theme='dark'] button {
-  color: #ffffff;
+th {
+  background-color: var(--table-header-bg);
 }
 
-[data-theme='bw'] button {
-  color: #000000;
-  background-color: #ffffff;
-  border: 1px solid #000000;
+tr:nth-child(even) {
+  background-color: var(--table-row-even);
+}
+
+tr:nth-child(odd) {
+  background-color: var(--table-row-odd);
+}
+
+/* Cards */
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--button-text);
+  border: none;
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+/* Links */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Navigation */
+.nav-link {
+  color: var(--text-color);
+  padding: 8px 16px;
+  display: block;
+}
+
+.nav-link:hover {
+  background-color: var(--secondary-color);
+}
+
+/* Admin content area */
+.admin-content {
+  margin-left: 256px; /* Match sidebar width */
+  padding: 20px;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  transition: background-color 0.3s ease;
+}
+
+/* Ensure smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, 
+              color 0.3s ease, 
+              border-color 0.3s ease,
+              filter 0.3s ease;
+}
+
+/* Specific admin components */
+.data-table {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text-color);
+}
+
+/* Dashboard widgets */
+.widget {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.widget-title {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: var(--text-color);
 }
