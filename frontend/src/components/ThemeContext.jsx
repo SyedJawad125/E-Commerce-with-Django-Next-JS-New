@@ -58,27 +58,24 @@ export const ThemeProvider = ({ children }) => {
     return null;
   };
 
-  // Initialize theme from user preference or cookie
+  // Initialize theme from cookie or default
   useEffect(() => {
     const initializeTheme = async () => {
       try {
         setIsLoading(true);
         
-        // 1. Check for cookie first
+        // 1. Check for cookie first (set by middleware)
         const cookieTheme = getCookie('user_theme');
         if (cookieTheme) {
           setTheme(cookieTheme);
           return;
         }
 
-        // 2. If no cookie, fetch user preference from backend
-        const response = await AxiosInstance.get('/user/theme'); // Changed endpoint to be more RESTful
-        if (response.data?.theme) {
-          setTheme(response.data.theme);
-        }
+        // 2. If no cookie, use default (dark)
+        // Note: Middleware will set cookie on next request
+        setTheme('dark');
       } catch (error) {
-        console.error('Error fetching theme preference:', error);
-        // Fallback to dark theme if error occurs
+        console.error('Error initializing theme:', error);
         setTheme('dark');
       } finally {
         setIsLoading(false);
@@ -92,8 +89,6 @@ export const ThemeProvider = ({ children }) => {
   useEffect(() => {
     if (typeof document !== 'undefined') { // SSR safety
       document.documentElement.setAttribute('data-theme', theme);
-      // Optionally save to cookie
-      document.cookie = `user_theme=${theme}; path=/; max-age=${60 * 60 * 24 * 365}`;
     }
   }, [theme]);
 
@@ -104,12 +99,12 @@ export const ThemeProvider = ({ children }) => {
     setTheme(newTheme);
     
     try {
-      await AxiosInstance.post('/user/theme', { 
+      await AxiosInstance.post('/set-theme', { 
         theme: newTheme 
       }, {
         headers: {
           'X-CSRFToken': getCookie('csrftoken'),
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/x-www-form-urlencoded',
         }
       });
     } catch (error) {
