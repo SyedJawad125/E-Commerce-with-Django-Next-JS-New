@@ -49,7 +49,11 @@ class User(TimeStamps, AbstractUser):
     is_locked = models.BooleanField(default=False)
     current_token = models.CharField(max_length=500, blank=True, null=True)
     role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='user_role', null=True, blank=True)
-
+    theme_preference = models.CharField(max_length=10, default='light', choices=[
+        ('light', 'Light Theme'),
+        ('bw', 'Black & White Theme'),
+        ('dark', 'Dark Theme')  # Optional: add more theme options
+    ])
     REQUIRED_FIELDS = ["email", "password"]
 
     def clean(self):

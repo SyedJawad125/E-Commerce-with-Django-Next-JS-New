@@ -6,6 +6,8 @@ from .views import CategorySearchViews, CategoryViews, ContactViews, EmployeeVie
 
 from django.conf import settings
 from django.conf.urls.static import static
+from . import views
+
 
 urlpatterns = [
     path('product', ProductViews.as_view({"get": "get_product",
@@ -67,8 +69,11 @@ urlpatterns = [
                                                 "post": "post_publicreview"})),
     
     path('categorysearch/', CategorySearchViews.as_view({'get': 'list'}), name='category-search'),
+
     path('categorysearch/suggestions/', CategorySearchViews.as_view({'get': 'suggestions'}), name='category-suggestions'),
 
-]   
+    path('set-theme', views.get_theme_preference, name='set_theme_preference'),
+]
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

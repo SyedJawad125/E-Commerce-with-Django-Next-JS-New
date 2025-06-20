@@ -34,3 +34,103 @@ body {
 body {
   background-color: black; 
 }
+
+
+
+/* globals.css */
+:root {
+  /* Light theme (default) */
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --primary-color: #2563eb;
+  --secondary-color: #f3f4f6;
+  --accent-color: #1e40af;
+  --border-color: #e5e7eb;
+}
+
+[data-theme='bw'] {
+  /* Black & White theme */
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --primary-color: #000000;
+  --secondary-color: #f0f0f0;
+  --accent-color: #333333;
+  --border-color: #cccccc;
+  
+  /* Force grayscale */
+  filter: grayscale(100%);
+}
+
+[data-theme='dark'] {
+  /* Dark theme variables */
+  --bg-color: #1a1a1a;
+  --text-color: #ffffff;
+  --primary-color: #3b82f6;
+  --secondary-color: #1f2937;
+  --accent-color: #60a5fa;
+  --border-color: #374151;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
+
+
+
+/* Example component styling */
+.card {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.button-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.button-secondary {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+
+
+/* styles/globals.css */
+:root {
+  /* Default (light) theme variables */
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  /* ... other variables ... */
+}
+
+[data-theme='bw'] {
+  /* Force grayscale */
+  filter: grayscale(100%);
+  
+  /* Override colors */
+  * {
+    color: black !important;
+    background-color: white !important;
+    border-color: black !important;
+  }
+  
+  /* Component-specific overrides */
+  .card, .panel {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid black;
+  }
+  
+  button {
+    background-color: black !important;
+    color: white !important;
+  }
+  
+  /* Optional: Add more component-specific styles */
+  input, textarea, select {
+    border: 1px solid black !important;
+    background-color: #f9f9f9 !important;
+  }
+}
