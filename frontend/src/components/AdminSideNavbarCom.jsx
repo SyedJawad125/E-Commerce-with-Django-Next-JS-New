@@ -268,15 +268,15 @@ const AdminSideNavbarCom = () => {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null);
-  const [theme, setTheme] = useState('light'); // 'light', 'dark', or 'bw'
+  const [theme, setTheme] = useState('dark'); // 'light', 'dark', or 'bw'
   
   const isActive = (pathname) => router.pathname === pathname;
   
   const toggleTheme = () => {
     setTheme(prevTheme => {
-      if (prevTheme === 'light') return 'dark';
       if (prevTheme === 'dark') return 'bw';
-      return 'light';
+      if (prevTheme === 'bw') return 'light';
+      return 'dark';
     });
   };
 
@@ -329,77 +329,78 @@ const AdminSideNavbarCom = () => {
           
           <nav className="space-y-2">
             <button
-  onClick={toggleTheme}
-  className="relative w-24 h-8 mb-6 flex items-center rounded-full p-1 bg-gray-300 dark:bg-gray-600 transition-colors duration-300"
-  aria-label="Toggle theme"
->
-  {/* Track background */}
-  <div className="absolute inset-0 rounded-full overflow-hidden">
-    <div className={`w-full h-full transition-opacity duration-300 ${
-      theme === 'dark' ? 'bg-gradient-to-r from-gray-600 to-gray-500 opacity-100' : 
-      theme === 'bw' ? 'bg-gray-400 opacity-100' : 'opacity-0'
-    }`}></div>
-  </div>
-  
-  {/* Thumb that moves between positions */}
-  <div
-    className={`relative z-10 w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
-      theme === 'dark' ? 'translate-x-[4rem]' : // Far right (96px - thumb width/2)
-      theme === 'bw' ? 'translate-x-9' :         // Center (36px)
-      'translate-x-0'                            // Far left
-    }`}
-  >
-    {/* Icons - only one visible at a time */}
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className={`h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-yellow-400 transition-opacity duration-200 ${
-        theme === 'light' ? 'opacity-100' : 'opacity-0'
-      }`}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-      />
-    </svg>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className={`h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-600 transition-opacity duration-200 ${
-        theme === 'bw' ? 'opacity-100' : 'opacity-0'
-      }`}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 2v2m0 16v2M4 12H2m4.314-5.686L4.9 4.9m12.786 1.414L19.1 4.9M6.314 17.69l-1.414 1.414M17.686 17.69l1.414 1.414M12 8a4 4 0 100 8 4 4 0 000-8z"
-      />
-    </svg>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className={`h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-600 transition-opacity duration-200 ${
-        theme === 'dark' ? 'opacity-100' : 'opacity-0'
-      }`}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-      />
-    </svg>
-  </div>
-</button>
+              onClick={toggleTheme}
+              className="relative w-24 h-8 mb-6 flex items-center rounded-full p-1 bg-gray-300 dark:bg-gray-600 transition-colors duration-300"
+              aria-label="Toggle theme"
+            >
+              {/* Track background */}
+              <div className="absolute inset-0 rounded-full overflow-hidden">
+                <div className={`w-full h-full transition-opacity duration-300 ${
+                  theme === 'dark' ? 'bg-gradient-to-r from-gray-600 to-gray-500 opacity-100' : 
+                  theme === 'bw' ? 'bg-gray-400 opacity-100' : 'opacity-0'
+                }`}></div>
+              </div>
+              
+              {/* Thumb that moves between positions */}
+              <div
+                className={`relative z-10 w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
+                  theme === 'dark' ? 'translate-x-0' : // Far left (dark)
+                  theme === 'bw' ? 'translate-x-9' :   // Center (bw)
+                  'translate-x-[4rem]'                // Far right (light)
+                }`}
+              >
+                {/* Icons - only one visible at a time */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-yellow-400 transition-opacity duration-200 ${
+                    theme === 'light' ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-600 transition-opacity duration-200 ${
+                    theme === 'bw' ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 2v2m0 16v2M4 12H2m4.314-5.686L4.9 4.9m12.786 1.414L19.1 4.9M6.314 17.69l-1.414 1.414M17.686 17.69l1.414 1.414M12 8a4 4 0 100 8 4 4 0 000-8z"
+                  />
+                </svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-600 transition-opacity duration-200 ${
+                    theme === 'dark' ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+              </div>
+            </button>
+           
             {userRole !== '10' && (
               <>
                 <Link href="/admindashboard">
