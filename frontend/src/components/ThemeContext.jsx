@@ -34,20 +34,384 @@
 
 
 
-// components/ThemeContext.jsx
-'use client'
-import { createContext, useContext, useState, useEffect } from 'react';
-import AxiosInstance from "@/components/AxiosInstance";
+// // components/ThemeContext.jsx
+// 'use client';
+// import { createContext, useContext, useState, useEffect } from 'react';
+// import AxiosInstance from "@/components/AxiosInstance";
 
-const ThemeContext = createContext();
+// const ThemeContext = createContext();
+
+// export const ThemeProvider = ({ children }) => {
+//   const [theme, setTheme] = useState('dark');
+//   const [isLoading, setIsLoading] = useState(true);
+
+//   // Helper: read cookie
+//   const getCookie = (name) => {
+//     if (typeof document === 'undefined') return null;
+//     const cookies = document.cookie.split(';');
+//     for (let cookie of cookies) {
+//       const [cookieName, cookieValue] = cookie.trim().split('=');
+//       if (cookieName === name) {
+//         return decodeURIComponent(cookieValue);
+//       }
+//     }
+//     return null;
+//   };
+
+//   // Initialize from cookie
+//   useEffect(() => {
+//     const initializeTheme = async () => {
+//       try {
+//         setIsLoading(true);
+//         const cookieTheme = getCookie('user_theme');
+//         setTheme(cookieTheme || 'dark');
+//       } catch (error) {
+//         console.error('Error initializing theme:', error);
+//         setTheme('dark');
+//       } finally {
+//         setIsLoading(false);
+//       }
+//     };
+
+//     initializeTheme();
+//   }, []);
+
+//   // Apply theme to root element
+//   useEffect(() => {
+//     if (typeof document !== 'undefined') {
+//       document.documentElement.setAttribute('data-theme', theme);
+//     }
+//   }, [theme]);
+
+//   const toggleTheme = async (newTheme) => {
+//   const nextTheme =
+//     newTheme ||
+//     (theme === 'dark' ? 'bw' : theme === 'bw' ? 'light' : 'dark');
+
+//   const oldTheme = theme;
+//   setTheme(nextTheme);
+
+//   try {
+//     await AxiosInstance.post('/user/set-theme/', new URLSearchParams({ theme: nextTheme }));
+//     // Optional: set cookie manually if backend doesn't
+//     document.cookie = `user_theme=${nextTheme}; path=/`;
+//   } catch (error) {
+//     console.error('Error saving theme:', error);
+//     setTheme(oldTheme);
+//   }
+// };
+
+//   return (
+//     <ThemeContext.Provider value={{ theme, toggleTheme, isLoading }}>
+//       {children}
+//     </ThemeContext.Provider>
+//   );
+// };
+
+// export const useTheme = () => {
+//   const context = useContext(ThemeContext);
+//   if (!context) {
+//     throw new Error('useTheme must be used within a ThemeProvider');
+//   }
+//   return context;
+// };
+
+
+
+
+// components/ThemeContext.jsx
+// 'use client';
+// import { createContext, useContext, useState, useEffect } from 'react';
+// import AxiosInstance from '@/components/AxiosInstance';
+
+// const ThemeContext = createContext();
+
+// export const ThemeProvider = ({ children }) => {
+//   const [theme, setTheme] = useState('dark');
+//   const [isLoading, setIsLoading] = useState(true);
+
+//   // Helper: read cookie
+//   const getCookie = (name) => {
+//     if (typeof document === 'undefined') return null;
+//     const cookies = document.cookie.split(';');
+//     for (let cookie of cookies) {
+//       const [cookieName, cookieValue] = cookie.trim().split('=');
+//       if (cookieName === name) {
+//         return decodeURIComponent(cookieValue);
+//       }
+//     }
+//     return null;
+//   };
+
+//   // Initialize theme from cookie
+//   useEffect(() => {
+//     const initializeTheme = () => {
+//       try {
+//         const cookieTheme = getCookie('user_theme');
+//         setTheme(cookieTheme || 'dark');
+//       } catch (error) {
+//         console.error('Error initializing theme:', error);
+//         setTheme('dark');
+//       } finally {
+//         setIsLoading(false);
+//       }
+//     };
+//     initializeTheme();
+//   }, []);
+
+//   // Apply theme to <html> tag
+//   useEffect(() => {
+//     if (typeof document !== 'undefined') {
+//       document.documentElement.classList.remove('dark', 'light', 'bw');
+//       document.documentElement.classList.add(theme);
+//       document.documentElement.setAttribute('data-theme', theme); // optional, if your CSS uses data-theme
+//     }
+//   }, [theme]);
+
+//   const toggleTheme = async (newTheme) => {
+//     const nextTheme =
+//       newTheme ||
+//       (theme === 'dark' ? 'bw' : theme === 'bw' ? 'light' : 'dark');
+
+//     const previousTheme = theme;
+//     setTheme(nextTheme);
+
+//     try {
+//       await AxiosInstance.post('/set-theme', new URLSearchParams({ theme: nextTheme }));
+//       // Optional: force-set cookie if backend doesn't set it
+//       document.cookie = `user_theme=${nextTheme}; path=/`;
+//     } catch (error) {
+//       console.error('Error saving theme:', error);
+//       setTheme(previousTheme);
+//     }
+//   };
+
+//   if (isLoading) {
+//     return <div className="text-center py-4">Loading theme...</div>;
+//   }
+
+//   return (
+//     <ThemeContext.Provider value={{ theme, toggleTheme, isLoading }}>
+//       {children}
+//     </ThemeContext.Provider>
+//   );
+// };
+
+// export const useTheme = () => {
+//   const context = useContext(ThemeContext);
+//   if (!context) {
+//     throw new Error('useTheme must be used within a ThemeProvider');
+//   }
+//   return context;
+// };
+
+
+
+
+// // components/ThemeContext.jsx
+// 'use client';
+// import { createContext, useContext, useState, useEffect } from 'react';
+// import AxiosInstance from '@/components/AxiosInstance';
+
+// const ThemeContext = createContext();
+
+// export const ThemeProvider = ({ children }) => {
+//   const [theme, setTheme] = useState('dark');
+//   const [isLoading, setIsLoading] = useState(true);
+
+//   const getCookie = (name) => {
+//     if (typeof document === 'undefined') return null;
+//     const cookies = document.cookie.split(';');
+//     for (let cookie of cookies) {
+//       const [cookieName, cookieValue] = cookie.trim().split('=');
+//       if (cookieName === name) {
+//         return decodeURIComponent(cookieValue);
+//       }
+//     }
+//     return null;
+//   };
+
+//   // Initialize theme from cookie
+//   useEffect(() => {
+//     const initializeTheme = () => {
+//       try {
+//         const cookieTheme = getCookie('admin_theme'); // Changed to admin_theme
+//         setTheme(cookieTheme || 'dark');
+//       } catch (error) {
+//         console.error('Error initializing theme:', error);
+//         setTheme('dark');
+//       } finally {
+//         setIsLoading(false);
+//       }
+//     };
+//     initializeTheme();
+//   }, []);
+
+//   // Apply theme only to admin container
+//   useEffect(() => {
+//     if (typeof document !== 'undefined') {
+//       const adminContainer = document.getElementById('admin-container');
+//       if (adminContainer) {
+//         adminContainer.classList.remove('dark', 'light', 'bw');
+//         adminContainer.classList.add(theme);
+//         adminContainer.setAttribute('data-theme', theme);
+//       }
+//     }
+//   }, [theme]);
+
+//   const toggleTheme = async (newTheme) => {
+//     const nextTheme =
+//       newTheme ||
+//       (theme === 'dark' ? 'bw' : theme === 'bw' ? 'light' : 'dark');
+
+//     const previousTheme = theme;
+//     setTheme(nextTheme);
+
+//     try {
+//       await AxiosInstance.post('/set-admin-theme', new URLSearchParams({ theme: nextTheme }));
+//       document.cookie = `admin_theme=${nextTheme}; path=/`;
+//     } catch (error) {
+//       console.error('Error saving theme:', error);
+//       setTheme(previousTheme);
+//     }
+//   };
+
+//   if (isLoading) {
+//     return <div className="text-center py-4">Loading theme...</div>;
+//   }
+
+//   return (
+//     <ThemeContext.Provider value={{ theme, toggleTheme, isLoading }}>
+//       <div id="admin-container">
+//         {children}
+//       </div>
+//     </ThemeContext.Provider>
+//   );
+// };
+
+// export const useTheme = () => {
+//   const context = useContext(ThemeContext);
+//   if (!context) {
+//     throw new Error('useTheme must be used within a ThemeProvider');
+//   }
+//   return context;
+// };
+
+
+
+
+
+// components/ThemeContext.jsx
+// 'use client';
+// import { createContext, useContext, useState, useEffect } from 'react';
+// import AxiosInstance from '@/components/AxiosInstance';
+
+// const ThemeContext = createContext(null); // <- Add default null
+
+// export const ThemeProvider = ({ children }) => {
+//   const [theme, setTheme] = useState('dark');
+//   const [isLoading, setIsLoading] = useState(true);
+
+//   const getCookie = (name) => {
+//     if (typeof document === 'undefined') return null;
+//     const cookies = document.cookie.split(';');
+//     for (let cookie of cookies) {
+//       const [cookieName, cookieValue] = cookie.trim().split('=');
+//       if (cookieName === name) {
+//         return decodeURIComponent(cookieValue);
+//       }
+//     }
+//     return null;
+//   };
+
+//   useEffect(() => {
+//     const initializeTheme = () => {
+//       try {
+//         const cookieTheme = getCookie('admin_theme');
+//         setTheme(cookieTheme || 'dark');
+//       } catch (error) {
+//         console.error('Error initializing theme:', error);
+//         setTheme('dark');
+//       } finally {
+//         setIsLoading(false);
+//       }
+//     };
+//     initializeTheme();
+//   }, []);
+
+//   useEffect(() => {
+//     if (typeof document !== 'undefined') {
+//       const adminContainer = document.getElementById('admin-container');
+//       if (adminContainer) {
+//         adminContainer.classList.remove('dark', 'light', 'bw');
+//         adminContainer.classList.add(theme);
+//         adminContainer.setAttribute('data-theme', theme);
+//       }
+//     }
+//   }, [theme]);
+
+//   const toggleTheme = async (newTheme) => {
+//     const nextTheme =
+//       newTheme ||
+//       (theme === 'dark' ? 'bw' : theme === 'bw' ? 'light' : 'dark');
+
+//     const previousTheme = theme;
+//     setTheme(nextTheme);
+
+//     try {
+//       await AxiosInstance.post('/set-admin-theme', new URLSearchParams({ theme: nextTheme }));
+//       document.cookie = `admin_theme=${nextTheme}; path=/`;
+//     } catch (error) {
+//       console.error('Error saving theme:', error);
+//       setTheme(previousTheme);
+//     }
+//   };
+
+//   if (isLoading) {
+//     return <div className="text-center py-4">Loading theme...</div>;
+//   }
+
+//   return (
+//     <ThemeContext.Provider value={{ theme, toggleTheme, isLoading }}>
+//       <div id="admin-container">
+//         {children}
+//       </div>
+//     </ThemeContext.Provider>
+//   );
+// };
+
+// // ❌ Unsafe (keep if you're sure it's used inside ThemeProvider)
+// export const useTheme = () => {
+//   const context = useContext(ThemeContext);
+//   if (!context) {
+//     throw new Error('useTheme must be used within a ThemeProvider');
+//   }
+//   return context;
+// };
+
+// // ✅ Safe hook (optional use)
+// export const useSafeTheme = () => {
+//   try {
+//     return useContext(ThemeContext);
+//   } catch {
+//     return null;
+//   }
+// };
+
+
+// components/ThemeContext.jsx
+'use client';
+import { createContext, useContext, useState, useEffect } from 'react';
+import AxiosInstance from '@/components/AxiosInstance';
+
+const ThemeContext = createContext(undefined); // use `undefined` to detect misuse
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('dark'); // default to dark
+  const [theme, setTheme] = useState('dark');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Helper function to get cookies
   const getCookie = (name) => {
-    if (typeof document === 'undefined') return null; // SSR safety
+    if (typeof document === 'undefined') return null;
     const cookies = document.cookie.split(';');
     for (let cookie of cookies) {
       const [cookieName, cookieValue] = cookie.trim().split('=');
@@ -58,22 +422,11 @@ export const ThemeProvider = ({ children }) => {
     return null;
   };
 
-  // Initialize theme from cookie or default
   useEffect(() => {
-    const initializeTheme = async () => {
+    const initializeTheme = () => {
       try {
-        setIsLoading(true);
-        
-        // 1. Check for cookie first (set by middleware)
-        const cookieTheme = getCookie('user_theme');
-        if (cookieTheme) {
-          setTheme(cookieTheme);
-          return;
-        }
-
-        // 2. If no cookie, use default (dark)
-        // Note: Middleware will set cookie on next request
-        setTheme('dark');
+        const cookieTheme = getCookie('admin_theme');
+        setTheme(cookieTheme || 'dark');
       } catch (error) {
         console.error('Error initializing theme:', error);
         setTheme('dark');
@@ -81,50 +434,60 @@ export const ThemeProvider = ({ children }) => {
         setIsLoading(false);
       }
     };
-
     initializeTheme();
   }, []);
 
-  // Apply theme to HTML element whenever theme changes
   useEffect(() => {
-    if (typeof document !== 'undefined') { // SSR safety
-      document.documentElement.setAttribute('data-theme', theme);
+    if (typeof document !== 'undefined') {
+      const adminContainer = document.getElementById('admin-container');
+      if (adminContainer) {
+        adminContainer.classList.remove('dark', 'light', 'bw');
+        adminContainer.classList.add(theme);
+        adminContainer.setAttribute('data-theme', theme);
+      }
     }
   }, [theme]);
 
   const toggleTheme = async (newTheme) => {
-    const oldTheme = theme;
-    
-    // Optimistically update the UI first
-    setTheme(newTheme);
-    
+    const nextTheme =
+      newTheme || (theme === 'dark' ? 'bw' : theme === 'bw' ? 'light' : 'dark');
+
+    const previousTheme = theme;
+    setTheme(nextTheme);
+
     try {
-      await AxiosInstance.post('/set-theme', { 
-        theme: newTheme 
-      }, {
-        headers: {
-          'X-CSRFToken': getCookie('csrftoken'),
-          'Content-Type': 'application/x-www-form-urlencoded',
-        }
-      });
+      await AxiosInstance.post('/set-admin-theme', new URLSearchParams({ theme: nextTheme }));
+      document.cookie = `admin_theme=${nextTheme}; path=/`;
     } catch (error) {
-      console.error('Error saving theme preference:', error);
-      // Revert if there's an error
-      setTheme(oldTheme);
+      console.error('Error saving theme:', error);
+      setTheme(previousTheme);
     }
   };
 
+  if (isLoading) {
+    return <div className="text-center py-4">Loading theme...</div>;
+  }
+
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, isLoading }}>
-      {children}
+      <div id="admin-container">
+        {children}
+      </div>
     </ThemeContext.Provider>
   );
 };
 
+// ❌ Strict version for admin-only components
 export const useTheme = () => {
   const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider (admin only)');
   }
   return context;
+};
+
+// ✅ Safe version for shared components
+export const useSafeTheme = () => {
+  const context = useContext(ThemeContext);
+  return context ?? null;
 };

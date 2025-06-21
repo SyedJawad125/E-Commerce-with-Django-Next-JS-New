@@ -538,147 +538,86 @@
 
 
 'use client'
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useTheme } from '@/components/ThemeContext'
 
 const AdminSideNavbarCom = () => {
-  const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null);
-  const [theme, setTheme] = useState('dark'); // 'light', 'dark', or 'bw'
-  
-  const isActive = (pathname) => router.pathname === pathname;
-  
-  const toggleTheme = () => {
-    setTheme(prevTheme => {
-      if (prevTheme === 'dark') return 'bw';
-      if (prevTheme === 'bw') return 'light';
-      return 'dark';
-    });
-  };
+  const router = useRouter()
+  const { theme, toggleTheme } = useTheme()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [userRole, setUserRole] = useState(null)
+
+  const isActive = (pathname) => router.pathname === pathname
 
   useEffect(() => {
-    // Apply theme class to body for global styling
-    document.body.className = theme;
-    // Save theme preference to localStorage
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  useEffect(() => {
-    // Initialize theme from localStorage
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme && ['light', 'dark', 'bw'].includes(savedTheme)) {
-      setTheme(savedTheme);
-    }
-    
-    // Check authentication
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
-    setIsAuthenticated(!!token);
-    setUserRole(role);
-  }, []);
+    const token = localStorage.getItem('token')
+    const role = localStorage.getItem('role')
+    setIsAuthenticated(!!token)
+    setUserRole(role)
+  }, [])
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    setIsAuthenticated(false);
-    router.push('/Login');
-  };
+    localStorage.removeItem('token')
+    localStorage.removeItem('role')
+    setIsAuthenticated(false)
+    router.push('/Login')
+  }
 
   const handleChangepassword = () => {
-    router.push("/changepassword");
-  };
-  
+    router.push("/changepassword")
+  }
+
   return (
-    <div className={`flex ${theme === 'dark' ? 'dark' : ''} ${theme === 'bw' ? 'grayscale' : ''}`}>
-      <div className="w-64 h-screen bg-gradient-to-b from-gray-800 to-gray-900 text-white p-6 flex flex-col justify-between fixed top-0 left-0 shadow-xl">
-        <div>
-          <div className="flex items-center mb-8">
-            <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center mr-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <div className="w-64 h-screen bg-base-200 text-base-content p-6 flex flex-col justify-between fixed top-0 left-0 shadow-xl">
+      <div>
+        {/* Logo and Title */}
+        <div className="flex items-center mb-8">
+          <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3 text-primary-content">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold">
+            LUXE ADMIN
+          </h2>
+        </div>
+
+        {/* Theme Toggle Button */}
+        {/* <div className="mb-6 flex justify-center"> */}
+         <nav className="space-y-2">
+          <button
+            onClick={() => toggleTheme()}
+            className="relative w-24 h-8 flex items-center rounded-full p-1 bg-neutral/20 transition-colors duration-300"
+            aria-label="Toggle theme"
+          >
+            <div className="absolute inset-0 rounded-full overflow-hidden opacity-30">
+              <div className={`w-full h-full transition-opacity duration-300 ${
+                theme === 'dark' ? 'bg-gradient-to-r from-neutral to-base-300 opacity-100' : 
+                theme === 'bw' ? 'bg-neutral opacity-100' : 'opacity-0'
+              }`}></div>
+            </div>
+
+            <div className={`relative z-10 w-6 h-6 rounded-full bg-base-100 shadow-md transform transition-transform duration-300 ${
+              theme === 'dark' ? 'translate-x-0' : 
+              theme === 'bw' ? 'translate-x-9' : 
+              'translate-x-[4rem]'
+            }`}>
+              {/* Light icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-yellow-500 ${theme === 'light' ? 'opacity-100' : 'opacity-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              {/* BW icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral ${theme === 'bw' ? 'opacity-100' : 'opacity-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2v2m0 16v2M4 12H2m4.314-5.686L4.9 4.9m12.786 1.414L19.1 4.9M6.314 17.69l-1.414 1.414M17.686 17.69l1.414 1.414M12 8a4 4 0 100 8 4 4 0 000-8z" />
+              </svg>
+              {/* Dark icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral ${theme === 'dark' ? 'opacity-100' : 'opacity-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-500">
-              LUXE ADMIN
-            </h2>
-          </div>
-          
-          <nav className="space-y-2">
-            <button
-              onClick={toggleTheme}
-              className="relative w-24 h-8 mb-6 flex items-center rounded-full p-1 bg-gray-300 dark:bg-gray-600 transition-colors duration-300"
-              aria-label="Toggle theme"
-            >
-              {/* Track background */}
-              <div className="absolute inset-0 rounded-full overflow-hidden">
-                <div className={`w-full h-full transition-opacity duration-300 ${
-                  theme === 'dark' ? 'bg-gradient-to-r from-gray-600 to-gray-500 opacity-100' : 
-                  theme === 'bw' ? 'bg-gray-400 opacity-100' : 'opacity-0'
-                }`}></div>
-              </div>
-              
-              {/* Thumb that moves between positions */}
-              <div
-                className={`relative z-10 w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
-                  theme === 'dark' ? 'translate-x-0' : // Far left (dark)
-                  theme === 'bw' ? 'translate-x-9' :   // Center (bw)
-                  'translate-x-[4rem]'                // Far right (light)
-                }`}
-              >
-                {/* Icons - only one visible at a time */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-yellow-400 transition-opacity duration-200 ${
-                    theme === 'light' ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-600 transition-opacity duration-200 ${
-                    theme === 'bw' ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 2v2m0 16v2M4 12H2m4.314-5.686L4.9 4.9m12.786 1.414L19.1 4.9M6.314 17.69l-1.414 1.414M17.686 17.69l1.414 1.414M12 8a4 4 0 100 8 4 4 0 000-8z"
-                  />
-                </svg>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-600 transition-opacity duration-200 ${
-                    theme === 'dark' ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                  />
-                </svg>
-              </div>
-            </button>
-           
+          </button>
             {/* {userRole !== '10' && ( */}
               <>
                 <Link href="/admindashboard">
@@ -793,7 +732,7 @@ const AdminSideNavbarCom = () => {
           )}
         </div>
       </div>
-    </div>
+    // </div>
   );
 };
 

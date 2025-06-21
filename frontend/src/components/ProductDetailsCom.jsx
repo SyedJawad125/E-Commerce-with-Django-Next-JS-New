@@ -542,6 +542,8 @@
 
 
 
+
+
 'use client';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -579,88 +581,97 @@ const ProductDetailsCom = () => {
   const productDataString = searchParams.get('productData');
 
   useEffect(() => {
-    if (ProductId) {
-      const fetchProductAndReviews = async () => {
-        setLoading(true);
-        try {
-          const res = await AxiosInstance.get(`/ecommerce/publicproduct?id=${ProductId}`);
-          if (res?.data?.data?.data && res.data.data.data.length > 0) {
-            const fetchedProduct = res.data.data.data[0];
-            const processedProduct = {
-              ...fetchedProduct,
-              mainImage: fetchedProduct.image_urls?.[0]
-                ? `${baseURL}${fetchedProduct.image_urls[0].startsWith('/') ? '' : '/'}${fetchedProduct.image_urls[0]}`
-                : '/default-product-image.jpg',
-              remainingImages: fetchedProduct.image_urls?.slice(1).map(u =>
-                `${baseURL}${u.startsWith('/') ? '' : '/'}${u}`
-              ) || []
-            };
-            setProduct(processedProduct);
-            setMainImage(processedProduct.mainImage);
-          } else if (productDataString) {
-            const parsedProduct = JSON.parse(productDataString);
-            const processedProduct = {
-              ...parsedProduct,
-              mainImage: parsedProduct.image_urls?.[0]
-                ? `${baseURL}${parsedProduct.image_urls[0].startsWith('/') ? '' : '/'}${parsedProduct.image_urls[0]}`
-                : '/default-product-image.jpg',
-              remainingImages: parsedProduct.image_urls?.slice(1).map(u =>
-                `${baseURL}${u.startsWith('/') ? '' : '/'}${u}`
-              ) || []
-            };
-            setProduct(processedProduct);
-            setMainImage(processedProduct.mainImage);
-          } else {
-            console.error('No product data found for ProductId:', ProductId);
-            toast.error('Product not found.');
-            router.push('/publicproducts');
-          }
-        } catch (error) {
-          console.error('Error fetching product:', error);
-          toast.error('Failed to load product details.');
-          router.push('/publicproducts');
-        } finally {
-          setLoading(false);
-        }
+  if (!ProductId) return;
 
-        setReviewLoading(true);
-          try {
-          const reviewsRes = await AxiosInstance.get(`/ecommerce/publicreview`, {
-            params: {
-              product_id: ProductId  // or whatever parameter name your backend expects
-            }
-          });
-          
-          if (reviewsRes?.data?.data) {
-            setReviews(reviewsRes.data.data.data || []);
-          }
-        } catch (error) {
-          console.error('Error fetching reviews:', error);
-          // Optionally show a user-friendly message
-          toast.error('Could not load reviews at this time');
-        } finally {
-                  setReviewLoading(false);
-                }
-              };
+  const fetchProductAndReviews = async () => {
+    setLoading(true);
 
-      const fetchFeaturedProducts = async () => {
-        try {
-          const res = await AxiosInstance.get('/ecommerce/publiccategory');
-          if (res?.data?.data?.data) {
-            setFeaturedProducts(res.data.data.data.map(cat => ({
-              ...cat,
-              image: `${baseURL}${cat.image.startsWith('/') ? '' : '/'}${cat.image}`
-            })));
-          }
-        } catch (error) {
-          console.error('Error fetching featured products:', error);
-        }
-      };
+    try {
+      // Fetch product details
+      const res = await AxiosInstance.get(`/ecommerce/publicproduct?id=${ProductId}`);
 
-      fetchProductAndReviews();
-      fetchFeaturedProducts();
+      if (res?.data?.data?.data && res.data.data.data.length > 0) {
+        const fetchedProduct = res.data.data.data[0];
+        const processedProduct = {
+          ...fetchedProduct,
+          mainImage: fetchedProduct.image_urls?.[0]
+            ? `${baseURL}${fetchedProduct.image_urls[0].startsWith('/') ? '' : '/'}${fetchedProduct.image_urls[0]}`
+            : '/default-product-image.jpg',
+          remainingImages:
+            fetchedProduct.image_urls?.slice(1).map(u =>
+              `${baseURL}${u.startsWith('/') ? '' : '/'}${u}`
+            ) || [],
+        };
+
+        setProduct(processedProduct);
+        setMainImage(processedProduct.mainImage);
+      } else if (productDataString) {
+        const parsedProduct = JSON.parse(productDataString);
+        const processedProduct = {
+          ...parsedProduct,
+          mainImage: parsedProduct.image_urls?.[0]
+            ? `${baseURL}${parsedProduct.image_urls[0].startsWith('/') ? '' : '/'}${parsedProduct.image_urls[0]}`
+            : '/default-product-image.jpg',
+          remainingImages:
+            parsedProduct.image_urls?.slice(1).map(u =>
+              `${baseURL}${u.startsWith('/') ? '' : '/'}${u}`
+            ) || [],
+        };
+
+        setProduct(processedProduct);
+        setMainImage(processedProduct.mainImage);
+      } else {
+        console.error('No product data found for ProductId:', ProductId);
+        toast.error('Product not found.');
+        router.push('/publicproducts');
+      }
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      toast.error('Failed to load product details.');
+      router.push('/publicproducts');
+    } finally {
+      setLoading(false);
     }
-  }, [ProductId, productDataString, router, baseURL]);
+
+    // Fetch reviews
+    setReviewLoading(true);
+    try {
+      // const reviewsRes = await AxiosInstance.get(`/ecommerce/publicreview/?product=${ProductId}`);
+      // const reviewsRes = await AxiosInstance.get(`/ecommerce/publicreview/?product=${ProductId}`);
+      const reviewsRes = await AxiosInstance.get(`/ecommerce/publicreview?product=${ProductId}`);
+      if (reviewsRes?.data?.data) {
+        setReviews(reviewsRes.data.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      toast.error('Could not load reviews at this time');
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
+  const fetchFeaturedProducts = async () => {
+    try {
+      const res = await AxiosInstance.get('/ecommerce/publiccategory');
+      if (res?.data?.data?.data) {
+        setFeaturedProducts(
+          res.data.data.data.map(cat => ({
+            ...cat,
+            image: `${baseURL}${cat.image.startsWith('/') ? '' : '/'}${cat.image}`,
+          }))
+        );
+      }
+    } catch (error) {
+      console.error('Error fetching featured products:', error);
+    }
+  };
+
+  // Execute the functions
+  fetchProductAndReviews();
+  fetchFeaturedProducts();
+
+}, [ProductId, productDataString, router, baseURL]);
+
 
   useEffect(() => {
     if (featuredProducts.length <= 1 || isHovered) return;

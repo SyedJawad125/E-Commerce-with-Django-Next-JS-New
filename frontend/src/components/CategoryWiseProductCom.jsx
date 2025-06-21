@@ -643,7 +643,9 @@ const CategoryWiseProductCom = () => {
         // Fetch category details if name isn't provided
         if (!categoryName) {
           try {
-            const categoryRes = await AxiosInstance.get(`/ecommerce/publiccategories/${categoryId}`)
+            // const categoryRes = await AxiosInstance.get(`/ecommerce/publiccategory?id=${categoryId}`)
+            const categoryRes = await AxiosInstance.get(`/ecommerce/publiccategorywise/${categoryId}`) 
+
             setCategory(categoryRes.data.data)
           } catch (error) {
             console.error('Error fetching category:', error)

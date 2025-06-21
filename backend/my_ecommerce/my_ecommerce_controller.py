@@ -2,7 +2,7 @@ from venv import logger
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.auth import authenticate
-from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, DropDownListCategoryFilter, EmployeeFilter, ProductFilter, OrderFilter, ProductTagFilter, PublicOrderFilter, PublicReviewFilter, PublicSalesProductFilter, \
+from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, DropDownListCategoryFilter, EmployeeFilter, ProductFilter, OrderFilter, ProductTagFilter, PublicOrderFilter, PublicReviewFilter, PublicSalesProductFilter, PubliccategorywiseFilter, \
     PublicproductFilter, PubliccategoryFilter, ReviewFilter, SlidercategoryFilter, SliderproductFilter
 from my_ecommerce.my_ecommerce_serializer import *
 from my_ecommerce.models import Product
@@ -794,29 +794,43 @@ class PubliccategoryController:
         except Exception as e:
             return Response({'error': str(e)}, status=500)
         
-class PubliccategoryController:
-    serializer_class = PubliccategorySerializer
-    filterset_class = PubliccategoryFilter
+
+class PubliccategorywiseController:
+    serializer_class = PubliccategorywiseSerializer
+    filterset_class = PubliccategorywiseFilter
 
 
-    def get_publiccategory(self, request):
+    def get_publiccategorywise(self, request, pk=None):
         try:
+            if pk is not None:
+                # Fetch single category by ID
+                instance = self.serializer_class.Meta.model.objects.filter(pk=pk).first()
+                if not instance:
+                    return Response({'error': 'Category not found'}, status=404)
 
+                serialized_data = self.serializer_class(instance).data
+                return create_response(serialized_data, "SUCCESSFUL", 200)
+
+            # Fetch all categories (paginated)
             instances = self.serializer_class.Meta.model.objects.all()
-
             filtered_data = self.filterset_class(request.GET, queryset=instances)
             data = filtered_data.qs
 
             paginated_data, count = paginate_data(data, request)
-
             serialized_data = self.serializer_class(paginated_data, many=True).data
+
             response_data = {
                 "count": count,
                 "data": serialized_data,
             }
             return create_response(response_data, "SUCCESSFUL", 200)
+
         except Exception as e:
-            return Response({'error': str(e)}, 500)
+            import traceback
+            print("Error in get_publiccategory:", str(e))
+            traceback.print_exc()
+            return Response({'error': str(e)}, status=500)
+
 
 class DropDownListCategoryController:
     serializer_class = DropDownListCategorySerializer
@@ -2087,12 +2101,12 @@ class PublicReviewController:
     
     def get_publicreview(self, request):
         try:
-            product_id = request.GET.get('product_id')
+            
+            product_id = request.GET.get('product_id') or request.GET.get('product')
             
             if not product_id:
                 return create_response({}, "Product ID is required", 400)
             
-            # Filter by product ID first
             instances = self.serializer_class.Meta.model.objects.filter(product_id=product_id)
             
             if not instances.exists():
@@ -2113,6 +2127,43 @@ class PublicReviewController:
 
         except Exception as e:
             return Response({'error': str(e)}, status=500)
+        
+
+    def get_publicreview_by_id(self, request):
+        try:
+            # Get product ID from query params
+            product_id = request.GET.get('product_id') or request.GET.get('product')
+
+            if not product_id:
+                return create_response({}, "Product ID is required", 400)
+
+            # Get all review instances matching product_id
+            queryset = self.serializer_class.Meta.model.objects.filter(product_id=product_id)
+
+            if not queryset.exists():
+                return create_response({}, "No reviews found for this product", 404)
+
+            # Apply filters if filterset_class is defined
+            if hasattr(self, 'filterset_class') and self.filterset_class:
+                queryset = self.filterset_class(request.GET, queryset=queryset).qs
+
+            # Paginate the filtered queryset
+            paginated_data, count = paginate_data(queryset, request)
+
+            # Serialize the data
+            serializer = self.serializer_class(paginated_data, many=True)
+            response_data = {
+                "count": count,
+                "data": serializer.data,
+            }
+
+            return create_response(response_data, "SUCCESSFUL", 200)
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return Response({"error": "Internal server error", "details": str(e)}, status=500)
+
 
 
 

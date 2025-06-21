@@ -1816,9 +1816,9 @@ const clearSearch = () => {
 
           {/* Search and Cart */}
           <div className="flex items-center space-x-4">
-            <div className="relative" ref={searchRef}>
+            <div className="relative1" ref={searchRef}>
               <form onSubmit={handleSearch} className="flex items-center">
-                <div className="relative">
+                <div className="relative1">
                   <input
                     type="text"
                     value={searchQuery}

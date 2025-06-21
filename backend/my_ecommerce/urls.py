@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import CategorySearchViews, CategoryViews, ContactViews, EmployeeViews, CategorySearchViews, \
-    ProductTagViews, ProductViews, OrderViews, PublicOrderViews, PublicSalesProductViews, PubliceReviewViews, \
+    ProductTagViews, ProductViews, OrderViews, PublicOrderViews, PublicSalesProductViews, PubliccategoryWiseViews, PubliceReviewViews, \
     PublicproductViews, PubliccategoryViews, ReviewViews, SalesProductViews, \
     SlidercategoryViews, SliderproductViews, EmployeeViews, DropDownListCategoryViews
 
@@ -32,6 +32,8 @@ urlpatterns = [
 
     path('publiccategory', PubliccategoryViews.as_view({"get": "get_publiccategory"})),
 
+    path('publiccategorywise/<int:pk>/', PubliccategoryWiseViews.as_view({"get": "get_publiccategorywise"})),
+    
     path('dropdownlistcategory', DropDownListCategoryViews.as_view({"get": "get_dropdownlistcategory"})),
 
     path('slidercategory', SlidercategoryViews.as_view({"get": "get_slidercategory"})),
@@ -64,9 +66,13 @@ urlpatterns = [
                                                 "patch": "update_review",
                                                 "delete": "delete_review"})),
 
-    path('publicreview', PubliceReviewViews.as_view({"get": "get_publicreview",
-                                                "post": "post_publicreview"})),
-    
+    # path('publicreview', PubliceReviewViews.as_view({"get": "get_publicreview",
+    #                                             "post": "post_publicreview"})),
+
+    path('publicreview', PubliceReviewViews.as_view({"get": "get_publicreview", "post": "post_publicreview"})),
+    # path('publicreview/<int:pk>/', PubliceReviewViews.as_view({"get": "get_publicreview_by_id"})),
+
+
     path('categorysearch/', CategorySearchViews.as_view({'get': 'list'}), name='category-search'),
 
     path('categorysearch/suggestions/', CategorySearchViews.as_view({'get': 'suggestions'}), name='category-suggestions'),
@@ -75,3 +81,9 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
+
+
+    # path('publicreview/<int:pk>/', PubliceReviewViews.as_view({"get": "get_publiccategorywise"})),

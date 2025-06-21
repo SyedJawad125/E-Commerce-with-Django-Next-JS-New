@@ -6,7 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 #from .blog_serializer import BlogSerializer
 from utils.base_authentication import JWTAuthentication
-from .my_ecommerce_controller import CategoryController, CategorySearchController, ContactController, DropDownListCategoryController, EmployeeController, ProductController, OrderController, ProductTagController, CategorySearchController, PublicOrderController, PublicReviewController, PublicSalesproductController, \
+from .my_ecommerce_controller import CategoryController, CategorySearchController, ContactController, DropDownListCategoryController, EmployeeController, ProductController, OrderController, ProductTagController, CategorySearchController, PublicOrderController, PublicReviewController, PublicSalesproductController, PubliccategorywiseController, \
     PublicproductController, PubliccategoryController, ReviewController, SalesProductController, SlidercategoryController, SliderproductController
 
 # from rest_framework.permissions import IsAdminUser
@@ -30,6 +30,7 @@ employee_controller = EmployeeController()
 review_controller = ReviewController()
 publicreview_controller = PublicReviewController()
 categorysearch_controller = CategorySearchController()
+publiccategorywise_controller = PubliccategorywiseController()
 
 
 
@@ -159,6 +160,11 @@ class PubliccategoryViews(ModelViewSet):
     def get_publiccategory(self, request):
         return publiccategory_controller.get_publiccategory(request)
     
+class PubliccategoryWiseViews(ModelViewSet):
+    # authentication_classes = [JWTAuthentication]
+    def get_publiccategorywise(self, request, pk=None):
+        return publiccategorywise_controller.get_publiccategorywise(request, pk)
+    
 class DropDownListCategoryViews(ModelViewSet):
     authentication_classes = [JWTAuthentication]
     def get_dropdownlistcategory(self, request):
@@ -282,6 +288,9 @@ class PubliceReviewViews(ModelViewSet):
     
     def get_publicreview(self, request):
         return publicreview_controller.get_publicreview(request)
+    
+    def get_publicreview_by_id(self, request, pk=None):
+        return publicreview_controller.get_publicreview_by_id(request, pk)
 
 from rest_framework.viewsets import ViewSet
 from .my_ecommerce_controller import CategorySearchController

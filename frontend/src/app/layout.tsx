@@ -7,7 +7,7 @@ import { CartProvider } from '@/components/CartContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AuthProvider from '@/components/AuthProvider';
-import ClientThemeProvider from '@/components/ClientThemeProvider';
+// import ClientThemeProvider from '@/components/ClientThemeProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,14 +25,14 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
   return (
     <html lang="en" className={inter.className}>
       <body>
-        <ClientThemeProvider>
+        {/* <ClientThemeProvider> */}
           <AuthProvider>
             <CartProvider>
               {children}
               <ToastContainer />
             </CartProvider>
           </AuthProvider>
-        </ClientThemeProvider>
+        {/* </ClientThemeProvider> */}
       </body>
     </html>
   );
