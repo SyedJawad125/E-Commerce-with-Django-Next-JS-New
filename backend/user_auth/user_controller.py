@@ -327,4 +327,21 @@ class LogoutController:
             return create_response({}, SUCCESSFUL, status_code=200)
         except Exception as e:
             return create_response({'error':str(e)}, UNSUCCESSFUL, 500)
-        
+
+
+
+
+from rest_framework.response import Response
+from rest_framework import status
+
+class SetThemeController:
+    @staticmethod
+    def set_theme_preference(request):
+        theme = request.data.get('theme', 'dark')
+
+        if theme not in dict(request.user._meta.get_field('theme_preference').choices):
+            return Response({'status': 'error', 'message': 'Invalid theme choice'}, status=status.HTTP_400_BAD_REQUEST)
+
+        request.user.theme_preference = theme
+        request.user.save()
+        return Response({'status': 'success', 'theme': theme})
