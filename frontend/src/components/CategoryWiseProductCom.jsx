@@ -640,7 +640,7 @@ const CategoryWiseProductCom = () => {
       try {
         setIsLoading(true)
         
-        // Fetch category details if name isn't provided
+        // Fetch category details if name isn't provided. It display the name of category and description in Header.
         if (!categoryName) {
           try {
             // const categoryRes = await AxiosInstance.get(`/ecommerce/publiccategory?id=${categoryId}`)
@@ -665,9 +665,11 @@ const CategoryWiseProductCom = () => {
         
         // Fetch products with proper error handling
         try {
-          const productsRes = await AxiosInstance.get(`/ecommerce/publicproduct`, {
-            params: { category: categoryId }
-          })
+          // const productsRes = await AxiosInstance.get(`/ecommerce/publicproduct`, {
+          //   params: { category: categoryId }
+          // })
+            const productsRes = await AxiosInstance.get(`/ecommerce/publicproduct?category=${categoryId}`)
+
           
           // Handle different response structures
           const productsData = productsRes.data.data?.data || productsRes.data.data || []

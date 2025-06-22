@@ -634,22 +634,44 @@ const ProductDetailsCom = () => {
     }
 
     // Fetch reviews
-    setReviewLoading(true);
-    try {
-      // const reviewsRes = await AxiosInstance.get(`/ecommerce/publicreview/?product=${ProductId}`);
-      // const reviewsRes = await AxiosInstance.get(`/ecommerce/publicreview/?product=${ProductId}`);
-      const reviewsRes = await AxiosInstance.get(`/ecommerce/publicreview?product=${ProductId}`);
-      if (reviewsRes?.data?.data) {
-        setReviews(reviewsRes.data.data.data || []);
-      }
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-      toast.error('Could not load reviews at this time');
-    } finally {
-      setReviewLoading(false);
-    }
-  };
+  //   setReviewLoading(true);
+  //   try {
+  //     // const reviewsRes = await AxiosInstance.get(`/ecommerce/publicreview/?product=${ProductId}`);
+  //     // const reviewsRes = await AxiosInstance.get(`/ecommerce/publicreview/?product=${ProductId}`);
+  //     const reviewsRes = await AxiosInstance.get(`/ecommerce/publicreview?product=${ProductId}`);
+  //     if (reviewsRes?.data?.data) {
+  //       setReviews(reviewsRes.data.data.data || []);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching reviews:', error);
+  //     toast.error('Could not load reviews at this time');
+  //   } finally {
+  //     setReviewLoading(false);
+  //   }
+  // };
 
+   setReviewLoading(true);
+  try {
+    if (!ProductId) {
+      toast.error('Product ID is required');
+      return;
+    }
+
+    // Corrected: Plain template string without special characters
+    const response = await AxiosInstance.get(`/ecommerce/publicreview?product=${ProductId}`);
+
+    if (response.data?.data) {
+      setReviews(response.data.data.data || []);
+    } else {
+      setReviews([]);
+    }
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    toast.error(error.response?.data?.message || 'Failed to load reviews');
+  } finally {
+    setReviewLoading(false);
+  }
+};
   const fetchFeaturedProducts = async () => {
     try {
       const res = await AxiosInstance.get('/ecommerce/publiccategory');
