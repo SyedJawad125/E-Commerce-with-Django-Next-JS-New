@@ -537,19 +537,39 @@
 
 
 
+// 'use client'
+// import Link from 'next/link'
+// import { useRouter } from 'next/navigation'
+// import { useState, useEffect } from 'react'
+// import { useSafeTheme  } from '@/components/ThemeContext'
+
+// const AdminSideNavbarCom = () => {
+//   const router = useRouter()
+//   const { themeContext , toggleTheme } = useSafeTheme()
+//   const theme = themeContext?.theme || 'dark'; // Fallback to 'dark'
+//   const [isAuthenticated, setIsAuthenticated] = useState(false)
+//   const [userRole, setUserRole] = useState(null)
+
+//   const isActive = (pathname) => router.pathname === pathname
+
 'use client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { useTheme } from '@/components/ThemeContext'
+import { useSafeTheme } from '@/components/ThemeContext'
 
 const AdminSideNavbarCom = () => {
   const router = useRouter()
-  const { theme, toggleTheme } = useTheme()
+  const themeContext = useSafeTheme()
+  const theme = themeContext?.theme || 'dark' // Fallback to 'dark'
+  const toggleTheme = themeContext?.toggleTheme || (() => {})
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userRole, setUserRole] = useState(null)
 
   const isActive = (pathname) => router.pathname === pathname
+
+  // ... rest of your component
+
 
   useEffect(() => {
     const token = localStorage.getItem('token')

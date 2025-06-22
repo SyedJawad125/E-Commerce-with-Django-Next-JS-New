@@ -400,11 +400,109 @@
 
 
 // components/ThemeContext.jsx
+// 'use client';
+// import { createContext, useContext, useState, useEffect } from 'react';
+// import AxiosInstance from '@/components/AxiosInstance';
+// import { useTheme } from '@/components/ThemeContext';
+
+// const ThemeContext = createContext(undefined); // use `undefined` to detect misuse
+
+// export const ThemeProvider = ({ children }) => {
+//   const [theme, setTheme] = useState('dark');
+//   const [isLoading, setIsLoading] = useState(true);
+
+//   const getCookie = (name) => {
+//     if (typeof document === 'undefined') return null;
+//     const cookies = document.cookie.split(';');
+//     for (let cookie of cookies) {
+//       const [cookieName, cookieValue] = cookie.trim().split('=');
+//       if (cookieName === name) {
+//         return decodeURIComponent(cookieValue);
+//       }
+//     }
+//     return null;
+//   };
+
+//   useEffect(() => {
+//     const initializeTheme = () => {
+//       try {
+//         const cookieTheme = getCookie('admin_theme');
+//         setTheme(cookieTheme || 'dark');
+//       } catch (error) {
+//         console.error('Error initializing theme:', error);
+//         setTheme('dark');
+//       } finally {
+//         setIsLoading(false);
+//       }
+//     };
+//     initializeTheme();
+//   }, []);
+
+//   useEffect(() => {
+//     if (typeof document !== 'undefined') {
+//       const adminContainer = document.getElementById('admin-container');
+//       if (adminContainer) {
+//         adminContainer.classList.remove('dark', 'light', 'bw');
+//         adminContainer.classList.add(theme);
+//         adminContainer.setAttribute('data-theme', theme);
+//       }
+//     }
+//   }, [theme]);
+
+//   const toggleTheme = async (newTheme) => {
+//     const nextTheme =
+//       newTheme || (theme === 'dark' ? 'bw' : theme === 'bw' ? 'light' : 'dark');
+
+//     const previousTheme = theme;
+//     setTheme(nextTheme);
+
+//     try {
+//       await AxiosInstance.post('/set-admin-theme', new URLSearchParams({ theme: nextTheme }));
+//       document.cookie = `admin_theme=${nextTheme}; path=/`;
+//     } catch (error) {
+//       console.error('Error saving theme:', error);
+//       setTheme(previousTheme);
+//     }
+//   };
+
+//   if (isLoading) {
+//     return <div className="text-center py-4">Loading theme...</div>;
+//   }
+
+//   return (
+//     <ThemeContext.Provider value={{ theme, toggleTheme, isLoading }}>
+//       <div id="admin-container">
+//         {children}
+//       </div>
+//     </ThemeContext.Provider>
+//   );
+// };
+
+// // ❌ Strict version for admin-only components
+// export const useTheme = () => {
+//   const context = useContext(ThemeContext);
+//   if (context === undefined) {
+//     throw new Error('useTheme must be used within a ThemeProvider (admin only)');
+//   }
+//   return context;
+// };
+
+// // ✅ Safe version for shared components
+// export const useSafeTheme = () => {
+//   const context = useContext(ThemeContext);
+//   return context ?? null;
+// };
+
+
+
+
+
+// components/ThemeContext.jsx
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
 import AxiosInstance from '@/components/AxiosInstance';
 
-const ThemeContext = createContext(undefined); // use `undefined` to detect misuse
+const ThemeContext = createContext(undefined);
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState('dark');
@@ -456,7 +554,10 @@ export const ThemeProvider = ({ children }) => {
     setTheme(nextTheme);
 
     try {
-      await AxiosInstance.post('/set-admin-theme', new URLSearchParams({ theme: nextTheme }));
+      await AxiosInstance.post(
+        '/set-admin-theme',
+        new URLSearchParams({ theme: nextTheme })
+      );
       document.cookie = `admin_theme=${nextTheme}; path=/`;
     } catch (error) {
       console.error('Error saving theme:', error);
@@ -470,24 +571,30 @@ export const ThemeProvider = ({ children }) => {
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, isLoading }}>
-      <div id="admin-container">
+      <div id="admin-container" className={theme}>
         {children}
       </div>
     </ThemeContext.Provider>
   );
 };
 
-// ❌ Strict version for admin-only components
+// Strict version (throws error if used outside provider)
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider (admin only)');
+    throw new Error('useTheme must be used within a ThemeProvider');
   }
   return context;
 };
 
-// ✅ Safe version for shared components
+// Safe version (returns null if no provider)
 export const useSafeTheme = () => {
-  const context = useContext(ThemeContext);
-  return context ?? null;
+  return useContext(ThemeContext) ?? null;
+};
+
+// Optional: Default theme values for static fallback
+export const defaultTheme = {
+  theme: 'dark',
+  toggleTheme: () => console.warn('ThemeProvider not initialized'),
+  isLoading: false
 };
