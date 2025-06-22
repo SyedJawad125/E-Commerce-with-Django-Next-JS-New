@@ -672,6 +672,8 @@ const ProductDetailsCom = () => {
     setReviewLoading(false);
   }
 };
+
+
   const fetchFeaturedProducts = async () => {
     try {
       const res = await AxiosInstance.get('/ecommerce/publiccategory');
