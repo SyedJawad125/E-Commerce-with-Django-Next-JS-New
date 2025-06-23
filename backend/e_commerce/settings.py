@@ -119,6 +119,8 @@ CORS_ALLOWED_ORIGINS = [
 
 ROOT_URLCONF = 'e_commerce.urls'
 
+CORS_ALLOW_CREDENTIALS = True
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

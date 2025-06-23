@@ -1428,28 +1428,28 @@ const OrdersCom = () => {
   });
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setIsLoading(true);
-        const { currentPage, limit, offset } = pagination;
-        const res = await AxiosInstance.get('/ecommerce/order', {
-          params: {
-            page: currentPage,
-            limit: limit,
-            offset: offset,
-            search: searchTerm
-          }
-        });
-        
-        if (res?.data?.data) {
-          setOrders(res.data.data.orders || []);
-          setPagination(prev => ({
-            ...prev,
-            count: res.data.data.count,
-            totalPages: res.data.data.total_pages,
-            next: res.data.data.next,
-            previous: res.data.data.previous
-          }));
+   const fetchOrders = async () => {
+  try {
+    setIsLoading(true);
+    const { currentPage, limit, offset } = pagination;
+    const res = await AxiosInstance.get('/ecommerce/order', {
+      params: {
+        page: currentPage,
+        limit: limit,
+        offset: offset,
+        search: searchTerm
+      }
+    });
+    
+    if (res?.data?.data) {
+      setOrders(res.data.data.orders || []);  // This part is correct
+      setPagination(prev => ({
+        ...prev,
+        count: res.data.data.count,
+        totalPages: res.data.data.total_pages,
+        next: res.data.data.next,
+        previous: res.data.data.previous
+      }));
         }
       } catch (error) {
         console.error('Error fetching orders:', error);
