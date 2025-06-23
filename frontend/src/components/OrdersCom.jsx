@@ -1418,38 +1418,44 @@ const OrdersCom = () => {
   const pdfRefs = useRef({});
   const [refreshKey, setRefreshKey] = useState(false);
   const [pagination, setPagination] = useState({
-    currentPage: 1,
+    current_page: 1,
     limit: 10,
     offset: 0,
-    totalPages: 1,
+    total_pages: 1,
     count: 0,
     next: false,
     previous: false
   });
 
   useEffect(() => {
-   const fetchOrders = async () => {
-  try {
-    setIsLoading(true);
-    const { currentPage, limit, offset } = pagination;
-    const res = await AxiosInstance.get('/ecommerce/order', {
-      params: {
-        page: currentPage,
-        limit: limit,
-        offset: offset,
-        search: searchTerm
-      }
-    });
-    
-    if (res?.data?.data) {
-      setOrders(res.data.data.orders || []);  // This part is correct
-      setPagination(prev => ({
-        ...prev,
-        count: res.data.data.count,
-        totalPages: res.data.data.total_pages,
-        next: res.data.data.next,
-        previous: res.data.data.previous
-      }));
+    const fetchOrders = async () => {
+      try {
+        setIsLoading(true);
+        const { current_page, limit, offset } = pagination;
+        const res = await AxiosInstance.get('/ecommerce/order', {
+          params: {
+            page: current_page,
+            limit: limit,
+            offset: offset,
+            search: searchTerm
+          }
+        });
+        
+        console.log('API Response:', res.data); // Debugging
+        
+        if (res?.data?.data) {
+          // Update to match the backend response structure
+          setOrders(res.data.data.orders || []);
+          setPagination(prev => ({
+            ...prev,
+            count: res.data.data.count,
+            total_pages: res.data.data.total_pages,
+            next: res.data.data.next,
+            previous: res.data.data.previous,
+            current_page: res.data.data.current_page || current_page,
+            limit: res.data.data.limit || limit,
+            offset: res.data.data.offset || offset
+          }));
         }
       } catch (error) {
         console.error('Error fetching orders:', error);
@@ -1469,7 +1475,8 @@ const OrdersCom = () => {
     };
 
     fetchOrders();
-  }, [pagination.currentPage, pagination.limit, pagination.offset, searchTerm, refreshKey]);
+  }, [pagination.current_page, pagination.limit, pagination.offset, searchTerm, refreshKey]);
+
 
   const deleteOrder = async (id) => {
     try {
@@ -1511,12 +1518,12 @@ const OrdersCom = () => {
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
-    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    setPagination(prev => ({ ...prev, current_page: 1 }));
   };
 
   const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= pagination.totalPages) {
-      setPagination(prev => ({ ...prev, currentPage: newPage }));
+    if (newPage >= 1 && newPage <= pagination.total_pages) {
+      setPagination(prev => ({ ...prev, current_page: newPage }));
     }
   };
 
@@ -1525,7 +1532,7 @@ const OrdersCom = () => {
     setPagination(prev => ({ 
       ...prev, 
       limit: newLimit,
-      currentPage: 1,
+      current_page: 1,
       offset: 0
     }));
   };
@@ -1535,7 +1542,7 @@ const OrdersCom = () => {
     setPagination(prev => ({ 
       ...prev, 
       offset: newOffset,
-      currentPage: 1
+      current_page: 1
     }));
   };
 
@@ -1944,16 +1951,16 @@ const OrdersCom = () => {
         )}
 
         {/* Enhanced Pagination */}
-        {pagination.totalPages > 1 && (
+        {pagination.total_pages > 1 && (
           <div className="flex flex-col md:flex-row justify-between items-center mt-16 gap-4">
             <div className="text-gray-400 text-sm">
-              Page {pagination.currentPage} of {pagination.totalPages} • Total {pagination.count} orders
+              Page {pagination.current_page} of {pagination.total_pages} • Total {pagination.count} orders
             </div>
             
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handlePageChange(1)}
-                disabled={pagination.currentPage === 1}
+                disabled={pagination.current_page === 1}
                 className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors"
                 aria-label="First page"
               >
@@ -1963,7 +1970,7 @@ const OrdersCom = () => {
               </button>
               
               <button
-                onClick={() => handlePageChange(pagination.currentPage - 1)}
+                onClick={() => handlePageChange(pagination.current_page - 1)}
                 disabled={!pagination.previous}
                 className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors"
                 aria-label="Previous page"
@@ -1974,16 +1981,16 @@ const OrdersCom = () => {
               </button>
               
               <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                {Array.from({ length: Math.min(5, pagination.total_pages) }, (_, i) => {
                   let pageNum;
-                  if (pagination.totalPages <= 5) {
+                  if (pagination.total_pages <= 5) {
                     pageNum = i + 1;
-                  } else if (pagination.currentPage <= 3) {
+                  } else if (pagination.current_page <= 3) {
                     pageNum = i + 1;
-                  } else if (pagination.currentPage >= pagination.totalPages - 2) {
-                    pageNum = pagination.totalPages - 4 + i;
+                  } else if (pagination.current_page >= pagination.total_pages - 2) {
+                    pageNum = pagination.total_pages - 4 + i;
                   } else {
-                    pageNum = pagination.currentPage - 2 + i;
+                    pageNum = pagination.current_page - 2 + i;
                   }
                   
                   return (
@@ -1991,7 +1998,7 @@ const OrdersCom = () => {
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
                       className={`w-8 h-8 rounded-full text-sm transition-colors ${
-                        pagination.currentPage === pageNum
+                        pagination.current_page === pageNum
                           ? 'bg-amber-600 text-white'
                           : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
                       }`}
@@ -2004,7 +2011,7 @@ const OrdersCom = () => {
               </div>
               
               <button
-                onClick={() => handlePageChange(pagination.currentPage + 1)}
+                onClick={() => handlePageChange(pagination.current_page + 1)}
                 disabled={!pagination.next}
                 className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors"
                 aria-label="Next page"
@@ -2015,8 +2022,8 @@ const OrdersCom = () => {
               </button>
               
               <button
-                onClick={() => handlePageChange(pagination.totalPages)}
-                disabled={pagination.currentPage === pagination.totalPages}
+                onClick={() => handlePageChange(pagination.total_pages)}
+                disabled={pagination.current_page === pagination.total_pages}
                 className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors"
                 aria-label="Last page"
               >
