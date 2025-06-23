@@ -1428,54 +1428,54 @@ const OrdersCom = () => {
   });
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setIsLoading(true);
-        const { current_page, limit, offset } = pagination;
-        const res = await AxiosInstance.get('/ecommerce/order', {
-          params: {
-            page: current_page,
-            limit: limit,
-            offset: offset,
-            search: searchTerm
-          }
-        });
-        
-        console.log('API Response:', res.data); // Debugging
-        
-        if (res?.data?.data) {
-          // Update to match the backend response structure
-          setOrders(res.data.data.orders || []);
-          setPagination(prev => ({
-            ...prev,
-            count: res.data.data.count,
-            total_pages: res.data.data.total_pages,
-            next: res.data.data.next,
-            previous: res.data.data.previous,
-            current_page: res.data.data.current_page || current_page,
-            limit: res.data.data.limit || limit,
-            offset: res.data.data.offset || offset
-          }));
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true);
+      const { current_page, limit, offset } = pagination;
+      const res = await AxiosInstance.get('/ecommerce/order', {
+        params: {
+          page: current_page,
+          limit: limit,
+          offset: offset,
+          search: searchTerm
         }
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-        toast.error('Failed to load orders', {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-      } finally {
-        setIsLoading(false);
+      });
+      
+      console.log('API Response:', res.data); // Debugging
+      
+      if (res?.data?.data?.orders) {
+        // Updated to match the backend response structure
+        setOrders(res.data.data.orders || []); // Changed from res.data.data.orders
+        setPagination(prev => ({
+          ...prev,
+          count: res.data.data.count,
+          total_pages: res.data.data.total_pages,
+          next: res.data.data.next,
+          previous: res.data.data.previous,
+          current_page: res.data.data.current_page || current_page,
+          limit: res.data.data.limit || limit,
+          offset: res.data.data.offset || offset
+        }));
       }
-    };
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      toast.error('Failed to load orders', {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchOrders();
-  }, [pagination.current_page, pagination.limit, pagination.offset, searchTerm, refreshKey]);
+  fetchOrders();
+}, [pagination.current_page, pagination.limit, pagination.offset, searchTerm, refreshKey]);
 
 
   const deleteOrder = async (id) => {
