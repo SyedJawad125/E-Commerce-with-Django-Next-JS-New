@@ -1961,7 +1961,7 @@ const OrdersCom = () => {
               <button
                 onClick={() => handlePageChange(1)}
                 disabled={pagination.current_page === 1}
-                className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-500 disabled:opacity-50 transition-colors"
                 aria-label="First page"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -1972,7 +1972,7 @@ const OrdersCom = () => {
               <button
                 onClick={() => handlePageChange(pagination.current_page - 1)}
                 disabled={!pagination.previous}
-                className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-500 disabled:opacity-50 transition-colors"
                 aria-label="Previous page"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -2013,7 +2013,7 @@ const OrdersCom = () => {
               <button
                 onClick={() => handlePageChange(pagination.current_page + 1)}
                 disabled={!pagination.next}
-                className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-500 disabled:opacity-50 transition-colors"
                 aria-label="Next page"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -2024,7 +2024,7 @@ const OrdersCom = () => {
               <button
                 onClick={() => handlePageChange(pagination.total_pages)}
                 disabled={pagination.current_page === pagination.total_pages}
-                className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-500 disabled:opacity-50 transition-colors"
                 aria-label="Last page"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
