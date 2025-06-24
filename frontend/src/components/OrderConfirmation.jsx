@@ -180,7 +180,7 @@ const OrderConfirmationPage = () => {
                         <h2 className="text-xl font-semibold text-gray-900 mb-4">Payment Method</h2>
                         <div className="flex items-center">
                             <div className="bg-gray-900 p-3 rounded-md">
-                                <p className="font-medium capitalize">
+                                <p className="font-medium capitalize text-white">
                                     {orderData.payment_method.replace(/_/g, ' ')}
                                 </p>
                             </div>
