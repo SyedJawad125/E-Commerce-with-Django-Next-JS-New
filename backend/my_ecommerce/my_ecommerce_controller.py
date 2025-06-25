@@ -1935,45 +1935,196 @@ class EmployeeController:
 
 from django.shortcuts import get_object_or_404
 
+# class ReviewController:
+#     serializer_class = ReviewSerializer
+#     filterset_class = ReviewFilter
+
+
+
+#     def create(self, request):
+#         try:
+#             request.POST._mutable = True
+#             request.data["created_by"] = request.user.guid
+#             request.POST._mutable = False
+
+#             # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
+#             validated_data = ReviewSerializer(data=request.data, context={'request': request})
+#             if validated_data.is_valid():
+#                 response = validated_data.save()
+#                 response_data = ReviewSerializer(response).data
+#                 return Response({'data': response_data}, 200)
+#             else:
+#                 error_message = get_first_error_message(validated_data.errors, "UNSUCCESSFUL")
+#                 return Response({'data': error_message}, 400)
+#             # else:
+#             #     return Response({'data': "Permission Denaied"}, 400)
+#         except Exception as e:
+#             return Response({'error': str(e)}, 500)
+
+#     # mydata = Member.objects.filter(firstname__endswith='s').values()
+#     def get_review(self, request):
+#         try:
+#             # Get all instances
+#             instances = self.serializer_class.Meta.model.objects.all()
+            
+#             # Apply filters
+#             filtered_data = self.filterset_class(request.GET, queryset=instances)
+#             data = filtered_data.qs
+            
+#             # Get pagination parameters from request
+#             page = request.GET.get('page', 1)
+#             limit = request.GET.get('limit', 10)  # Default to 10 items per page
+#             offset = request.GET.get('offset', 0)
+            
+#             try:
+#                 page = int(page)
+#                 limit = int(limit)
+#                 offset = int(offset)
+#             except ValueError:
+#                 return create_response(
+#                     {"error": "Invalid pagination parameters. Page, limit and offset must be integers."},
+#                     "BAD_REQUEST",
+#                     400
+#                 )
+            
+#             # Apply offset and limit
+#             if offset > 0:
+#                 data = data[offset:]
+            
+#             paginator = Paginator(data, limit)
+            
+#             try:
+#                 paginated_data = paginator.page(page)
+#             except EmptyPage:
+#                 return create_response(
+#                     {"error": "Page not found"},
+#                     "NOT_FOUND",
+#                     404
+#                 )
+            
+#             serialized_data = self.serializer_class(paginated_data, many=True).data
+            
+#             response_data = {
+#                 "count": paginator.count,
+#                 "total_pages": paginator.num_pages,
+#                 "current_page": page,
+#                 "limit": limit,
+#                 "offset": offset,
+#                 "next": paginated_data.has_next(),
+#                 "previous": paginated_data.has_previous(),
+#                 "data": serialized_data,
+#             }
+            
+#             return create_response(response_data, "SUCCESSFUL", 200)
+
+#         except Exception as e:
+#             return Response({'error': str(e)}, status=500)
+
+#     def update_review(self, request):
+#         try:
+#             if "id" in request.data:
+#                 # finding instance
+#                 instance = Review.objects.filter(id=request.data["id"]).first()
+
+#                 if instance:
+#                     request.POST._mutable = True
+#                     request.data["updated_by"] = request.user.guid
+#                     request.POST._mutable = False
+
+#                     # updating the instance/record with request in context
+#                     serialized_data = ReviewSerializer(
+#                         instance, 
+#                         data=request.data, 
+#                         partial=True,
+#                         context={'request': request}  # Add this line
+#                     )
+                    
+#                     if serialized_data.is_valid():
+#                         response = serialized_data.save()
+#                         response_data = ReviewSerializer(response).data
+#                         return Response({"data": response_data}, 200)
+#                     else:
+#                         error_message = get_first_error_message(serialized_data.errors, "UNSUCCESSFUL")
+#                         return Response({'data': error_message}, 400)
+#                 else:
+#                     return Response({"data": "NOT FOUND"}, 404)
+#             else:
+#                 return Response({"data": "ID NOT PROVIDED"}, 400)
+
+#         except Exception as e:
+#             return Response({'error': str(e)}, 500)
+
+#     def delete_review(self, request):
+#         try:
+#             if "id" in request.query_params:
+#                 instance = Review.objects.filter(id=request.query_params['id']).first()
+
+#                 if instance:
+#                     instance.delete()
+#                     return Response({"data": "SUCESSFULL"}, 200)
+#                 else:
+#                     return Response({"data": "RECORD NOT FOUND"}, 404)
+#             else:
+#                 return Response({"data": "ID NOT PROVIDED"}, 400)
+#         except Exception as e:
+#             return Response({'error': str(e)}, 500)
+        
+
+
 class ReviewController:
     serializer_class = ReviewSerializer
     filterset_class = ReviewFilter
 
-
-
     def create(self, request):
         try:
-            request.POST._mutable = True
-            request.data["created_by"] = request.user.guid
-            request.POST._mutable = False
+            # Make request data mutable if needed
+            if hasattr(request.data, '_mutable'):
+                request.data._mutable = True
+            
+            # Set created_by if user is authenticated
+            if request.user.is_authenticated:
+                request.data["user"] = request.user.guid
+            
+            # Validate and save
+            serializer = self.serializer_class(data=request.data, context={'request': request})
+            if serializer.is_valid():
+                review = serializer.save()
+                
+                # Return enriched response data
+                response_data = self.serializer_class(review).data
+                return Response({
+                    'status': 'SUCCESS',
+                    'message': 'Review created successfully',
+                    'data': response_data
+                }, status=status.HTTP_201_CREATED)
+            
+            # Handle validation errors
+            error_message = get_first_error_message(serializer.errors, "UNSUCCESSFUL")
+            return Response({
+                'status': 'ERROR',
+                'message': error_message,
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-            # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
-            validated_data = ReviewSerializer(data=request.data, context={'request': request})
-            if validated_data.is_valid():
-                response = validated_data.save()
-                response_data = ReviewSerializer(response).data
-                return Response({'data': response_data}, 200)
-            else:
-                error_message = get_first_error_message(validated_data.errors, "UNSUCCESSFUL")
-                return Response({'data': error_message}, 400)
-            # else:
-            #     return Response({'data': "Permission Denaied"}, 400)
         except Exception as e:
-            return Response({'error': str(e)}, 500)
+            return Response({
+                'status': 'ERROR',
+                'message': 'Failed to create review',
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    # mydata = Member.objects.filter(firstname__endswith='s').values()
     def get_review(self, request):
         try:
-            # Get all instances
-            instances = self.serializer_class.Meta.model.objects.all()
+            # Get filtered queryset
+            queryset = Review.objects.all()
+            filtered_queryset = self.filterset_class(request.GET, queryset=queryset).qs
             
-            # Apply filters
-            filtered_data = self.filterset_class(request.GET, queryset=instances)
-            data = filtered_data.qs
+            # Apply ordering (newest first by default)
+            filtered_queryset = filtered_queryset.order_by('-created_at')
             
-            # Get pagination parameters from request
+            # Pagination
             page = request.GET.get('page', 1)
-            limit = request.GET.get('limit', 10)  # Default to 10 items per page
+            limit = request.GET.get('limit', 10)
             offset = request.GET.get('offset', 0)
             
             try:
@@ -1981,95 +2132,156 @@ class ReviewController:
                 limit = int(limit)
                 offset = int(offset)
             except ValueError:
-                return create_response(
-                    {"error": "Invalid pagination parameters. Page, limit and offset must be integers."},
-                    "BAD_REQUEST",
-                    400
-                )
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'Invalid pagination parameters'
+                }, status=status.HTTP_400_BAD_REQUEST)
             
             # Apply offset and limit
             if offset > 0:
-                data = data[offset:]
+                filtered_queryset = filtered_queryset[offset:]
             
-            paginator = Paginator(data, limit)
+            paginator = Paginator(filtered_queryset, limit)
             
             try:
                 paginated_data = paginator.page(page)
             except EmptyPage:
-                return create_response(
-                    {"error": "Page not found"},
-                    "NOT_FOUND",
-                    404
-                )
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'Page not found'
+                }, status=status.HTTP_404_NOT_FOUND)
             
-            serialized_data = self.serializer_class(paginated_data, many=True).data
+            # Serialize data with enriched product/sales product info
+            serializer = self.serializer_class(paginated_data, many=True)
             
-            response_data = {
-                "count": paginator.count,
-                "total_pages": paginator.num_pages,
-                "current_page": page,
-                "limit": limit,
-                "offset": offset,
-                "next": paginated_data.has_next(),
-                "previous": paginated_data.has_previous(),
-                "data": serialized_data,
-            }
-            
-            return create_response(response_data, "SUCCESSFUL", 200)
+            return Response({
+                'status': 'SUCCESS',
+                'message': 'Reviews retrieved successfully',
+                'data': serializer.data,
+                'meta': {
+                    'total': paginator.count,
+                    'pages': paginator.num_pages,
+                    'current_page': page,
+                    'limit': limit,
+                    'offset': offset,
+                    'has_next': paginated_data.has_next(),
+                    'has_previous': paginated_data.has_previous()
+                }
+            }, status=status.HTTP_200_OK)
 
         except Exception as e:
-            return Response({'error': str(e)}, status=500)
+            return Response({
+                'status': 'ERROR',
+                'message': 'Failed to retrieve reviews',
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     def update_review(self, request):
         try:
-            if "id" in request.data:
-                # finding instance
-                instance = Review.objects.filter(id=request.data["id"]).first()
+            # Validate required ID field
+            if "id" not in request.data:
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'Review ID not provided'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-                if instance:
-                    request.POST._mutable = True
-                    request.data["updated_by"] = request.user.guid
-                    request.POST._mutable = False
+            # Find the review instance
+            instance = Review.objects.filter(id=request.data["id"]).first()
+            if not instance:
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'Review not found'
+                }, status=status.HTTP_404_NOT_FOUND)
 
-                    # updating the instance/record with request in context
-                    serialized_data = ReviewSerializer(
-                        instance, 
-                        data=request.data, 
-                        partial=True,
-                        context={'request': request}  # Add this line
-                    )
-                    
-                    if serialized_data.is_valid():
-                        response = serialized_data.save()
-                        response_data = ReviewSerializer(response).data
-                        return Response({"data": response_data}, 200)
-                    else:
-                        error_message = get_first_error_message(serialized_data.errors, "UNSUCCESSFUL")
-                        return Response({'data': error_message}, 400)
-                else:
-                    return Response({"data": "NOT FOUND"}, 404)
-            else:
-                return Response({"data": "ID NOT PROVIDED"}, 400)
+            # Check ownership (user can only update their own reviews)
+            if request.user.is_authenticated and instance.user != request.user:
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'You can only update your own reviews'
+                }, status=status.HTTP_403_FORBIDDEN)
+
+            # Create a copy of the data to avoid modifying the original request
+            data = request.data.copy()
+            
+            # Explicitly remove product/sales_product fields
+            data.pop('product', None)
+            data.pop('sales_product', None)
+            
+            # Update the review
+            serializer = self.serializer_class(
+                instance,
+                data=data,
+                partial=True,
+                context={'request': request}
+            )
+            
+            if serializer.is_valid():
+                updated_review = serializer.save()
+                
+                # Return enriched response
+                response_data = self.serializer_class(updated_review).data
+                return Response({
+                    'status': 'SUCCESS',
+                    'message': 'Review updated successfully',
+                    'data': response_data
+                }, status=status.HTTP_200_OK)
+            
+            # Handle validation errors
+            error_message = get_first_error_message(serializer.errors, "Validation failed")
+            return Response({
+                'status': 'ERROR',
+                'message': error_message,
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
-            return Response({'error': str(e)}, 500)
+            return Response({
+                'status': 'ERROR',
+                'message': 'Failed to update review',
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete_review(self, request):
         try:
-            if "id" in request.query_params:
-                instance = Review.objects.filter(id=request.query_params['id']).first()
+            # Validate required ID parameter
+            review_id = request.query_params.get('id')
+            if not review_id:
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'Review ID not provided'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-                if instance:
-                    instance.delete()
-                    return Response({"data": "SUCESSFULL"}, 200)
-                else:
-                    return Response({"data": "RECORD NOT FOUND"}, 404)
-            else:
-                return Response({"data": "ID NOT PROVIDED"}, 400)
+            # Find the review instance
+            instance = Review.objects.filter(id=review_id).first()
+            if not instance:
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'Review not found'
+                }, status=status.HTTP_404_NOT_FOUND)
+
+            # Check ownership (user can only delete their own reviews)
+            if request.user.is_authenticated and instance.user != request.user:
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'You can only delete your own reviews'
+                }, status=status.HTTP_403_FORBIDDEN)
+
+            # Delete the review
+            instance.delete()
+            
+            return Response({
+                'status': 'SUCCESS',
+                'message': 'Review deleted successfully',
+                'data': {'id': review_id}
+            }, status=status.HTTP_200_OK)
+
         except Exception as e:
-            return Response({'error': str(e)}, 500)
-        
-
+            return Response({
+                'status': 'ERROR',
+                'message': 'Failed to delete review',
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class PublicReviewController:
     serializer_class = PublicReviewSerializer

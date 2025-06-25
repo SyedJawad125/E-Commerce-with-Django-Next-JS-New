@@ -337,18 +337,73 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 
 
+# class ReviewSerializer(serializers.ModelSerializer):
+#     name = serializers.CharField(required=False, allow_blank=True)
+#     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+
+#     class Meta:
+#         model = Review
+#         fields = ['id', 'user', 'name', 'rating', 'comment', 'product', 'created_at', 'updated_at']
+#         read_only_fields = ['user', 'created_at', 'updated_at']
+
+#     def validate(self, data):
+#         if not self.context['request'].user.is_authenticated and not data.get('name'):
+#             raise serializers.ValidationError("Please provide a name for your review.")
+#         return data
+
+#     def create(self, validated_data):
+#         if self.context['request'].user.is_authenticated:
+#             validated_data['user'] = self.context['request'].user
+#         return super().create(validated_data)
+    
+#     def to_representation(self, instance):
+#         data = super().to_representation(instance)
+#         data['product_name'] = instance.product.name if instance.product else None
+        
+#         return data
+    
+from rest_framework import serializers
+from .models import Review, Product, SalesProduct
+
+from rest_framework import serializers
+from .models import Review, Product, SalesProduct
+
 class ReviewSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False, allow_blank=True)
-    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
-
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(),
+        required=False,
+        allow_null=True
+    )
+    sales_product = serializers.PrimaryKeyRelatedField(
+        queryset=SalesProduct.objects.all(),
+        required=False,
+        allow_null=True
+    )
+    
     class Meta:
         model = Review
-        fields = ['id', 'user', 'name', 'rating', 'comment', 'product', 'created_at', 'updated_at']
+        fields = [
+            'id', 'user', 'name', 'rating', 'comment',
+            'product', 'sales_product', 'created_at', 'updated_at'
+        ]
         read_only_fields = ['user', 'created_at', 'updated_at']
 
     def validate(self, data):
-        if not self.context['request'].user.is_authenticated and not data.get('name'):
+        request = self.context['request']
+        
+        # Validate anonymous users provide a name
+        if not request.user.is_authenticated and not data.get('name'):
             raise serializers.ValidationError("Please provide a name for your review.")
+        
+        # Only validate product/sales_product during creation
+        if self.instance is None:  # This is a create operation
+            if data.get('product') and data.get('sales_product'):
+                raise serializers.ValidationError("Cannot specify both product and sales product.")
+            
+            if not data.get('product') and not data.get('sales_product'):
+                raise serializers.ValidationError("Must specify either a product or sales product.")
+        
         return data
 
     def create(self, validated_data):
@@ -358,10 +413,30 @@ class ReviewSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['product_name'] = instance.product.name if instance.product else None
+        
+        # Add product/sales product details
+        if instance.product:
+            data['item'] = {
+                'id': instance.product.id,
+                'name': instance.product.name,
+                'type': 'product'
+            }
+        elif instance.sales_product:
+            data['item'] = {
+                'id': instance.sales_product.id,
+                'name': instance.sales_product.name,
+                'type': 'sales_product',
+                'original_price': instance.sales_product.original_price,
+                'final_price': instance.sales_product.final_price,
+                'discount_percent': instance.sales_product.discount_percent
+            }
+        
+        # Remove the separate product/sales_product fields
+        data.pop('product', None)
+        data.pop('sales_product', None)
         
         return data
-    
+
 
 class PublicReviewSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False, allow_blank=True)

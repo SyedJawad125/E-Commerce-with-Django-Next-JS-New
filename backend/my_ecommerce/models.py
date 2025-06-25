@@ -242,22 +242,65 @@ class Employee(models.Model):
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employee_updated_by', null=True, blank=True)
 
 
+from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 
 class Review(models.Model):
-    name = models.CharField(max_length=100)  # For anonymous users
+    name = models.CharField(max_length=100, blank=True)  # For anonymous users
     rating = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(1, 6)])
     comment = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # For logged-in users
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reviews'
+    )
+
+    # Either regular product or sales product (one must be null)
+    product = models.ForeignKey(
+        'Product',  # Your existing Product model
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        null=True,
+        blank=True
+    )
+    sales_product = models.ForeignKey(
+        'SalesProduct',  # Your SalesProduct model
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        null=True,
+        blank=True
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-created_at']
+        constraints = [
+            # Ensure review is for either Product OR SalesProduct, not both
+            models.CheckConstraint(
+                check=(
+                        models.Q(product__isnull=False, sales_product__isnull=True) |
+                        models.Q(product__isnull=True, sales_product__isnull=False)
+                ),
+                name='review_for_product_or_salesproduct'
+            )
+        ]
 
     def __str__(self):
-        name = self.user.username if self.user else self.name
-        return f"Review by {name} for {self.product.name}"
+        name = self.user.username if self.user else (self.name or "Anonymous")
+        item = self.product if self.product else self.sales_product
+        return f"Review by {name} for {item.name} (Rating: {self.rating})"
+
+    @property
+    def reviewed_item(self):
+        """Helper method to get the associated product/sales_product"""
+        return self.product or self.sales_product
 
 # models.py
 # class GuestCustomer(models.Model):

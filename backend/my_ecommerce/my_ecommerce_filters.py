@@ -208,16 +208,60 @@ class EmployeeFilter(FilterSet):
         # fields ='__all__'
         exclude = ['image']
 
+# class ReviewFilter(FilterSet):
+#     id = CharFilter(field_name='id')
+#     name = CharFilter(field_name='name', lookup_expr='icontains')
+#     date_from = DateFilter(field_name='created_at', lookup_expr='gte' )
+#     date_to = DateFilter(field_name='created_at', lookup_expr='lte' )
+    
+
+#     class Meta:
+#         model = Review
+#         fields ='__all__'
+
+
+
+from django_filters import FilterSet, CharFilter, DateFilter, NumberFilter, ChoiceFilter
+from django.db.models import Q
+
 class ReviewFilter(FilterSet):
     id = CharFilter(field_name='id')
     name = CharFilter(field_name='name', lookup_expr='icontains')
-    date_from = DateFilter(field_name='created_at', lookup_expr='gte' )
-    date_to = DateFilter(field_name='created_at', lookup_expr='lte' )
+    rating = NumberFilter(field_name='rating')
+    user = CharFilter(field_name='user__username', lookup_expr='icontains')
     
+    # Date filters
+    date_from = DateFilter(field_name='created_at', lookup_expr='gte')
+    date_to = DateFilter(field_name='created_at', lookup_expr='lte')
+    
+    # Product/SalesProduct filters
+    product_id = NumberFilter(field_name='product__id')
+    product_name = CharFilter(field_name='product__name', lookup_expr='icontains')
+    sales_product_id = NumberFilter(field_name='sales_product__id')
+    sales_product_name = CharFilter(field_name='sales_product__name', lookup_expr='icontains')
+    
+    # Combined filter for any product type
+    item_id = NumberFilter(method='filter_by_item_id')
+    item_name = CharFilter(method='filter_by_item_name')
 
     class Meta:
         model = Review
-        fields ='__all__'
+        fields = {
+            'rating': ['exact', 'gte', 'lte'],
+        }
+
+    def filter_by_item_id(self, queryset, name, value):
+        """Filter by either product_id or sales_product_id"""
+        return queryset.filter(
+            Q(product__id=value) | Q(sales_product__id=value)
+        )
+
+    def filter_by_item_name(self, queryset, name, value):
+        """Filter by either product name or sales product name"""
+        return queryset.filter(
+            Q(product__name__icontains=value) | 
+            Q(sales_product__name__icontains=value)
+        )
 
 class PublicReviewFilter(FilterSet):
     id = CharFilter(field_name='id')
