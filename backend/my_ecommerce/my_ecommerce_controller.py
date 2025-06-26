@@ -2337,94 +2337,192 @@ class PublicReviewController:
     serializer_class = PublicReviewSerializer
     filterset_class = PublicReviewFilter
 
-
-
     def create(self, request):
         try:
+            # Check if either product or sales_product is provided
             product_id = request.data.get('product')
-            if not product_id:
-                return Response({'error': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Check if product exists
-            product = get_object_or_404(Product, id=product_id)
+            sales_product_id = request.data.get('sales_product')
 
+            if not product_id and not sales_product_id:
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'Either product or sales_product ID is required'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Validate product exists if provided
+            if product_id:
+                product = get_object_or_404(Product, id=product_id)
+            if sales_product_id:
+                sales_product = get_object_or_404(SalesProduct, id=sales_product_id)
+
+            # Validate and save
             serializer = ReviewSerializer(data=request.data, context={'request': request})
-            
             if serializer.is_valid():
-                serializer.save()
-                return Response({'data': serializer.data}, status=status.HTTP_201_CREATED)
-            else:
-                error_message = get_first_error_message(serializer.errors, "UNSUCCESSFUL")
-                return Response({'data': error_message}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                review = serializer.save()
 
+                # Return success response
+                return Response({
+                    'status': 'SUCCESS',
+                    'message': 'Review created successfully',
+                    'data': {
+                        'id': review.id,
+                        'name': review.name,
+                        'comment': review.comment,
+                        'rating': review.rating,
+                        'product': {
+                            'id': review.product.id if review.product else None,
+                            'name': review.product.name if review.product else None
+                        } if review.product else None,
+                        'sales_product': {
+                            'id': review.sales_product.id if review.sales_product else None,
+                            'name': review.sales_product.name if review.sales_product else None,
+                            'discount_percent': review.sales_product.discount_percent if review.sales_product else None
+                        } if review.sales_product else None
+                    }
+                }, status=status.HTTP_201_CREATED)
+
+            # Handle validation errors
+            error_message = get_first_error_message(serializer.errors, "UNSUCCESSFUL")
+            return Response({
+                'status': 'ERROR',
+                'message': error_message,
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({
+                'status': 'ERROR',
+                'message': 'Failed to create review',
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     # mydata = Member.objects.filter(firstname__endswith='s').values()
-    
+
     def get_publicreview(self, request):
         try:
-            
+            # Get product or sales_product ID from query params
             product_id = request.GET.get('product_id') or request.GET.get('product')
-            
-            if not product_id:
-                return create_response({}, "Product ID is required", 400)
-            
-            instances = self.serializer_class.Meta.model.objects.filter(product_id=product_id)
-            
+            sales_product_id = request.GET.get('sales_product_id') or request.GET.get('sales_product')
+
+            # Validate at least one ID is provided
+            if not product_id and not sales_product_id:
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'Either product_id or sales_product_id is required',
+                    'data': None
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Build the query based on provided ID
+            query = Q()
+            if product_id:
+                query |= Q(product_id=product_id)
+            if sales_product_id:
+                query |= Q(sales_product_id=sales_product_id)
+
+            # Get filtered reviews
+            instances = self.serializer_class.Meta.model.objects.filter(query)
+
             if not instances.exists():
-                return create_response({}, "No reviews found for this product", 404)
-            
+                return Response({
+                    'status': 'SUCCESS',
+                    'message': 'No reviews found',
+                    'data': []
+                }, status=status.HTTP_200_OK)
+
             # Apply additional filters if needed
             filtered_data = self.filterset_class(request.GET, queryset=instances)
             data = filtered_data.qs
 
+            # Paginate and serialize
             paginated_data, count = paginate_data(data, request)
             serialized_data = self.serializer_class(paginated_data, many=True).data
-            
+
+            # Format response
             response_data = {
-                "count": count,
-                "data": serialized_data,
+                'status': 'SUCCESS',
+                'message': 'Reviews retrieved successfully',
+                'data': {
+                    'count': count,
+                    'reviews': serialized_data
+                }
             }
-            return create_response(response_data, "SUCCESSFUL", 200)
+
+            return Response(response_data, status=status.HTTP_200_OK)
 
         except Exception as e:
-            return Response({'error': str(e)}, status=500)
-        
+            return Response({
+                'status': 'ERROR',
+                'message': 'Failed to retrieve reviews',
+                'error': str(e),
+                'data': None
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get_publicreview_by_id(self, request):
         try:
-            # Get product ID from query params
+            # Get product or sales_product ID from query params
             product_id = request.GET.get('product_id') or request.GET.get('product')
+            sales_product_id = request.GET.get('sales_product_id') or request.GET.get('sales_product')
+            review_id = request.GET.get('review_id')
 
-            if not product_id:
-                return create_response({}, "Product ID is required", 400)
+            # Validate at least one ID is provided
+            if not product_id and not sales_product_id and not review_id:
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'Either product_id, sales_product_id, or review_id is required',
+                    'data': None
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-            # Get all review instances matching product_id
-            queryset = self.serializer_class.Meta.model.objects.filter(product_id=product_id)
+            # Build the base queryset
+            queryset = self.serializer_class.Meta.model.objects.all()
+
+            # Apply specific filters based on provided IDs
+            if review_id:
+                queryset = queryset.filter(id=review_id)
+            else:
+                query = Q()
+                if product_id:
+                    query |= Q(product_id=product_id)
+                if sales_product_id:
+                    query |= Q(sales_product_id=sales_product_id)
+                queryset = queryset.filter(query)
 
             if not queryset.exists():
-                return create_response({}, "No reviews found for this product", 404)
+                return Response({
+                    'status': 'SUCCESS',
+                    'message': 'No reviews found',
+                    'data': []
+                }, status=status.HTTP_200_OK)
 
-            # Apply filters if filterset_class is defined
+            # Apply additional filters if filterset_class is defined
             if hasattr(self, 'filterset_class') and self.filterset_class:
                 queryset = self.filterset_class(request.GET, queryset=queryset).qs
 
-            # Paginate the filtered queryset
+            # Paginate the results
             paginated_data, count = paginate_data(queryset, request)
 
             # Serialize the data
             serializer = self.serializer_class(paginated_data, many=True)
+
+            # Format the response
             response_data = {
-                "count": count,
-                "data": serializer.data,
+                'status': 'SUCCESS',
+                'message': 'Reviews retrieved successfully',
+                'data': {
+                    'count': count,
+                    'reviews': serializer.data
+                }
             }
 
-            return create_response(response_data, "SUCCESSFUL", 200)
+            return Response(response_data, status=status.HTTP_200_OK)
 
         except Exception as e:
             import traceback
             traceback.print_exc()
-            return Response({"error": "Internal server error", "details": str(e)}, status=500)
+            return Response({
+                'status': 'ERROR',
+                'message': 'Internal server error',
+                'error': str(e),
+                'data': None
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
