@@ -2,8 +2,11 @@ from venv import logger
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.auth import authenticate
-from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, DropDownListCategoryFilter, EmployeeFilter, ProductFilter, OrderFilter, ProductTagFilter, PublicOrderFilter, PublicReviewFilter, PublicSalesProductFilter, PubliccategorywiseFilter, \
-    PublicproductFilter, PubliccategoryFilter, ReviewFilter, SlidercategoryFilter, SliderproductFilter
+from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, DropDownListCategoryFilter, EmployeeFilter, \
+    ProductFilter, OrderFilter, ProductTagFilter, PublicOrderFilter, PublicReviewFilter, PublicSalesProductFilter, \
+    PubliccategorywiseFilter, \
+    PublicproductFilter, PubliccategoryFilter, ReviewFilter, SlidercategoryFilter, SliderproductFilter, \
+    DropDownListProductFilter, DropDownListSalesProductFilter
 from my_ecommerce.my_ecommerce_serializer import *
 from my_ecommerce.models import Product
 from utils.reusable_methods import get_first_error_message, generate_six_length_random_number
@@ -308,6 +311,30 @@ class SliderproductController:
             return Response({'error': str(e)}, 500)
 
 
+class DropDownListProductController:
+    serializer_class = DropDownListProductSerializer
+    filterset_class = DropDownListProductFilter
+
+
+    def get_dropdownlistproduct(self, request):
+        try:
+
+            instances = self.serializer_class.Meta.model.objects.all()
+
+            filtered_data = self.filterset_class(request.GET, queryset=instances)
+            data = filtered_data.qs
+
+            paginated_data, count = paginate_data(data, request)
+
+            serialized_data = self.serializer_class(paginated_data, many=True).data
+            response_data = {
+                "count": count,
+                "data": serialized_data,
+            }
+            return create_response(response_data, "SUCCESSFUL", 200)
+        except Exception as e:
+            return Response({'error': str(e)}, 500)
+
 
 class SalesProductController:
     serializer_class = SalesProductSerializer
@@ -594,6 +621,29 @@ class SliderproductController:
             return Response({'error': str(e)}, 500)
 
 
+class DropDownListSalesProductController:
+    serializer_class = DropDownListSalesProductSerializer
+    filterset_class = DropDownListSalesProductFilter
+
+
+    def get_dropdownlistsalesproduct(self, request):
+        try:
+
+            instances = self.serializer_class.Meta.model.objects.all()
+
+            filtered_data = self.filterset_class(request.GET, queryset=instances)
+            data = filtered_data.qs
+
+            paginated_data, count = paginate_data(data, request)
+
+            serialized_data = self.serializer_class(paginated_data, many=True).data
+            response_data = {
+                "count": count,
+                "data": serialized_data,
+            }
+            return create_response(response_data, "SUCCESSFUL", 200)
+        except Exception as e:
+            return Response({'error': str(e)}, 500)
 
 
 

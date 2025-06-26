@@ -146,7 +146,16 @@ class SliderproductSerializer(ModelSerializer):
         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
         data['category_name'] = instance.prod_has_category.name if instance.prod_has_category else None
         return data
-    
+class DropDownListProductSerializer(ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
+        data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
+        return data
 class SalesProductImageSerializer(ModelSerializer):
     class Meta:
         model = SalesProductImage
@@ -198,7 +207,17 @@ class PublicSalesProductSerializer(ModelSerializer):
         data['category_name'] = instance.salesprod_has_category.name if instance.salesprod_has_category else None
         data['image_urls'] = [img.images.url for img in instance.images.all()] if hasattr(instance, 'images') else []
         return data
-    
+
+class DropDownListSalesProductSerializer(ModelSerializer):
+    class Meta:
+        model = SalesProduct
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
+        data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
+        return data
 class CategorySerializer(ModelSerializer):
     class Meta:
         model = Category

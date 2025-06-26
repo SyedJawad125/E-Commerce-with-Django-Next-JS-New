@@ -6,8 +6,12 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 #from .blog_serializer import BlogSerializer
 from utils.base_authentication import JWTAuthentication
-from .my_ecommerce_controller import CategoryController, CategorySearchController, ContactController, DropDownListCategoryController, EmployeeController, ProductController, OrderController, ProductTagController, CategorySearchController, PublicOrderController, PublicReviewController, PublicSalesproductController, PubliccategorywiseController, \
-    PublicproductController, PubliccategoryController, ReviewController, SalesProductController, SlidercategoryController, SliderproductController
+from .my_ecommerce_controller import CategoryController, CategorySearchController, ContactController, \
+    DropDownListCategoryController, EmployeeController, ProductController, OrderController, ProductTagController, \
+    CategorySearchController, PublicOrderController, PublicReviewController, PublicSalesproductController, \
+    PubliccategorywiseController, \
+    PublicproductController, PubliccategoryController, ReviewController, SalesProductController, \
+    SlidercategoryController, SliderproductController, DropDownListProductController, DropDownListSalesProductController
 
 # from rest_framework.permissions import IsAdminUser
 # Create your views here.
@@ -16,7 +20,9 @@ from .my_ecommerce_controller import CategoryController, CategorySearchControlle
 product_controller = ProductController()
 salesproduct_controller = SalesProductController()
 publicproduct_controller = PublicproductController()
+dropdownlistproduct_controller = DropDownListProductController()
 publicsalesproduct_controller = PublicSalesproductController()
+dropdownlistsalesproduct_controller = DropDownListSalesProductController()
 sliderproduct_controller = SliderproductController()
 category_controller = CategoryController()
 publiccategory_controller = PubliccategoryController()
@@ -86,7 +92,10 @@ class SliderproductViews(ModelViewSet):
     def get_sliderproduct(self, request):
         return sliderproduct_controller.get_sliderproduct(request)
 
-
+class DropDownListProductViews(ModelViewSet):
+    authentication_classes = [JWTAuthentication]
+    def get_dropdownlistproduct(self, request):
+        return dropdownlistproduct_controller.get_dropdownlistproduct(request)
 class SalesProductViews(ModelViewSet):
 
     authentication_classes = [JWTAuthentication]
@@ -113,7 +122,10 @@ class PublicSalesProductViews(ModelViewSet):
     def get_publicsalesproduct(self, request):
         return publicsalesproduct_controller.get_publicsalesproduct(request)
     
-
+class DropDownListSalesProductViews(ModelViewSet):
+    authentication_classes = [JWTAuthentication]
+    def get_dropdownlistsalesproduct(self, request):
+        return dropdownlistsalesproduct_controller.get_dropdownlistsalesproduct(request)
 
 class CategoryViews(ModelViewSet):
     authentication_classes = [JWTAuthentication]

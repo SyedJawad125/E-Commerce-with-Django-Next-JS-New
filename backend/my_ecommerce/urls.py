@@ -1,8 +1,10 @@
 from django.urls import path
 from .views import CategorySearchViews, CategoryViews, ContactViews, EmployeeViews, CategorySearchViews, \
-    ProductTagViews, ProductViews, OrderViews, PublicOrderViews, PublicSalesProductViews, PubliccategoryWiseViews, PubliceReviewViews, \
+    ProductTagViews, ProductViews, OrderViews, PublicOrderViews, PublicSalesProductViews, PubliccategoryWiseViews, \
+    PubliceReviewViews, \
     PublicproductViews, PubliccategoryViews, ReviewViews, SalesProductViews, \
-    SlidercategoryViews, SliderproductViews, EmployeeViews, DropDownListCategoryViews
+    SlidercategoryViews, SliderproductViews, EmployeeViews, DropDownListCategoryViews, DropDownListProductViews, \
+    DropDownListSalesProductViews
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -17,6 +19,7 @@ urlpatterns = [
     path('publicproduct', PublicproductViews.as_view({"get": "get_publicproduct"})),
 
     path('sliderproduct', SliderproductViews.as_view({"get": "get_sliderproduct"})),
+    path('dropdownlistproduct', DropDownListProductViews.as_view({"get": "get_dropdownlistproduct"})),
 
     path('salesproduct', SalesProductViews.as_view({"get": "get_salesproduct",
                                           "post": "post_salesproduct",
@@ -24,6 +27,7 @@ urlpatterns = [
                                           "delete": "delete_salesproduct"})),
 
     path('publicsalesproduct', PublicSalesProductViews.as_view({"get": "get_publicsalesproduct"})),
+    path('dropdownlistsalesproduct', DropDownListSalesProductViews.as_view({"get": "get_dropdownlistsalesproduct"})),
 
     path('category', CategoryViews.as_view({"get": "get_category",
                                                 "post": "post_category",
