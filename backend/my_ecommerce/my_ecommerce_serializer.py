@@ -365,9 +365,6 @@ class EmployeeSerializer(serializers.ModelSerializer):
 from rest_framework import serializers
 from .models import Review, Product, SalesProduct
 
-from rest_framework import serializers
-from .models import Review, Product, SalesProduct
-
 class ReviewSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False, allow_blank=True)
     product = serializers.PrimaryKeyRelatedField(
