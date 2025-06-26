@@ -864,7 +864,7 @@ const SalesProductDetailsCom = () => {
                     <div
                       key={product.id}
                       onClick={() => router.push(`/salesproductdetails?ProductId=${product.id}`)}
-                      className="flex-shrink-0 w-64 bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer transform transition-all hover:shadow-lg hover:-translate-y-1"
+                      className="flex-shrink-0 w-60 bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer transform transition-all hover:shadow-lg hover:-translate-y-1"
                     >
                       <div className="relative h-64 w-full">
                         <img
