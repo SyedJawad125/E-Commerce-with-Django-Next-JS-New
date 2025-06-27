@@ -380,7 +380,7 @@ const SalesProductDetailsCom = () => {
 
       try {
         // Fetch product details
-        const res = await AxiosInstance.get(`/ecommerce/salesproduct?id=${ProductId}`);
+        const res = await AxiosInstance.get(`/ecommerce/publicsalesproduct?id=${ProductId}`);
 
         if (res?.data?.data?.data && res.data.data.data.length > 0) {
           const fetchedProduct = res.data.data.data[0];
@@ -415,12 +415,12 @@ const SalesProductDetailsCom = () => {
         } else {
           console.error('No product data found for ProductId:', ProductId);
           toast.error('Product not found.');
-          router.push('/salesproducts');
+          router.push('/publicsalesproductpage');
         }
       } catch (error) {
         console.error('Error fetching product:', error);
         toast.error('Failed to load product details.');
-        router.push('/salesproducts');
+        router.push('/publicsalesproductpage');
       } finally {
         setLoading(false);
       }
@@ -450,7 +450,7 @@ const SalesProductDetailsCom = () => {
 
     const fetchFeaturedProducts = async () => {
       try {
-        const res = await AxiosInstance.get('/ecommerce/salesproduct?limit=8');
+        const res = await AxiosInstance.get('/ecommerce/publicsalesproduct?limit=8');
         if (res?.data?.data?.data) {
           setFeaturedProducts(
             res.data.data.data.map(product => ({
