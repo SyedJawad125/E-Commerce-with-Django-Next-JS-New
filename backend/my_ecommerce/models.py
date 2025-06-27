@@ -272,7 +272,7 @@ class Review(models.Model):
     name = models.CharField(max_length=100, blank=True)  # For anonymous users
     rating = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(1, 6)])
     comment = models.TextField()
-    email = models.EmailField(unique=True, null=True, blank=True)
+    email = models.EmailField(unique=False, null=True, blank=True)
     user = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
