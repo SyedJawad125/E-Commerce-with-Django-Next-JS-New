@@ -318,13 +318,14 @@ const Footer = () => {
     const footerLinks = {
         shop: [
             { name: 'Home', path: '/' },
+            { name: 'Kids', path: '/kidspage' },
             { name: 'Shop', path: '/publicproducts' },
             { name: 'Collections', path: '/publiccategories' },
             { name: 'Sales', path: '/publicsalesproductpage' },
-            { name: 'Gift Cards', path: '/gift-cards' }
+            { name: 'New In', path: '/newarrivalspage' }
         ],
         customerService: [
-            { name: 'Contact Us', path: '/contact' },
+            { name: 'Contact Us', path: '/publiccontact' },
             { name: 'Shipping Info', path: '/shipping-info' },
             { name: 'Returns & Exchanges', path: '/returns' },
             { name: 'FAQ', path: '/faq' },
