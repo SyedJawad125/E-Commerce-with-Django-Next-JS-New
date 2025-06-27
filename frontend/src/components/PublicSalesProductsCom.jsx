@@ -672,9 +672,20 @@ const PublicSalesProductsCom = () => {
         };
     }, [records]);
 
+    // const handleProductClick = (ProductId) => {
+    //     router.push(`/salesproductdetailspage?ProductId=${ProductId}`);
+    // };
+
     const handleProductClick = (ProductId) => {
-        router.push(`/salesproductdetailspage?ProductId=${ProductId}`);
-    };
+  // Debugging: log the ProductId and verify it's correct
+  console.log('Navigating to product with ID:', ProductId);
+  
+  // Option 1: Using the router
+  router.push(`/salesproductdetailspage?ProductId=${ProductId}`);
+  
+  // Option 2: Alternative approach using window.location
+  // window.location.href = `/salesproductdetailspage?ProductId=${ProductId}`;
+};
 
     const handleCategoryClick = (categoryId) => {
         router.push(`/categorywiseproductpage?categoryId=${categoryId}`);
@@ -740,7 +751,7 @@ const PublicSalesProductsCom = () => {
                             <div
                                 key={item.id}
                                 className="group relative overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-500 rounded-lg cursor-pointer"
-                                onClick={() => handleProductClick(item.id)}
+                                onClick={() => handleProductClick(item)}
                             >
                                 {/* Discount Ribbon */}
                                 {item.discount_percent > 0 && (

@@ -878,11 +878,11 @@ const SalesProductDetailsCom = () => {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent flex items-end p-4">
                           <div>
-                            <h4 className="text-white font-medium text-lg">{product.name}</h4>
-                            <div className="flex items-center mt-1">
+                            {/* <h4 className="text-white font-medium text-lg">{product.name}</h4> */}
+                            {/* <div className="flex items-center mt-1">
                               <span className="text-amber-300 font-medium">PKR {product.final_price}</span>
                               <span className="ml-2 text-gray-300 text-sm line-through">PKR {product.original_price}</span>
-                            </div>
+                            </div> */}
                             <button className="mt-2 text-sm text-white hover:text-amber-300 transition-colors">
                               View Offer →
                             </button>
