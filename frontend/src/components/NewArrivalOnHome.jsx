@@ -149,7 +149,7 @@ const NewArrivalOnHome = () => {
 
         router.push(`/productdetailpage?${query}`);
     };
-
+     
     return (
         <div className="bg-gradient-to-b from-white to-gray-100 py-16 px-4 sm:px-8 lg:px-20">
   <div className="max-w-screen-xl mx-auto">

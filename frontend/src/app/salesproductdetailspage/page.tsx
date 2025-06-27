@@ -3,6 +3,7 @@ import React from 'react'
 import SalesProductDetailsCom from "@/components/SalesProductDetailsCom";
 import NavbarCom from "@/components/NavbarCom";
 import TopNavbarCom from "@/components/TopNavbarCom";
+import FooterCom from "@/components/FooterCom";
 
 const page = () => {
   return (
@@ -10,6 +11,8 @@ const page = () => {
       <TopNavbarCom/>
       <NavbarCom/>
       <SalesProductDetailsCom/>
+      <FooterCom />
+
     </div>
   )
 }

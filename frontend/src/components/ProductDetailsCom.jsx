@@ -2006,7 +2006,7 @@ const ProductDetailsCom = () => {
       </div>
 
       {/* Luxury Footer */}
-      <footer className="bg-black text-white py-12 px-8">
+      {/* <footer className="bg-black text-white py-12 px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="text-lg font-serif font-medium mb-4">Luxury Store</h3>
@@ -2048,7 +2048,7 @@ const ProductDetailsCom = () => {
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-sm text-gray-400">
           <p>© {new Date().getFullYear()} Luxury Store. All rights reserved.</p>
         </div>
-      </footer>
+      </footer> */}
 
       <ToastContainer 
         position="bottom-right"

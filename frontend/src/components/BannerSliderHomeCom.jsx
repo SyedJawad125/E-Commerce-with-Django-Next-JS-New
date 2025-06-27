@@ -630,7 +630,7 @@ const HomePage = () => {
           </Carousel>
         </div>
 
-        {/* Luxury Categories */}
+        {/* Luxury Categories
         <section className="mb-16">
           <h2 className="text-3xl font-serif text-gray-900 font-bold mb-8 text-center">Our Luxury Categories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -650,16 +650,16 @@ const HomePage = () => {
                   </div>
                 </div>
                 <div className="w-full h-full bg-gray-200 group-hover:scale-105 transition-transform duration-500">
-                  {/* Placeholder for category image */}
+                  
                   <div className="w-full h-full bg-gray-300"></div>
                 </div>
               </div>
             ))}
           </div>
-        </section>
+        </section> */}
 
         {/* Featured Products */}
-        <section className="mb-16">
+        {/* <section className="mb-16">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-serif font-bold">Curated Selections</h2>
             <button className="flex items-center text-sm font-medium hover:underline">
@@ -671,7 +671,7 @@ const HomePage = () => {
             {featuredProducts.map((product) => (
               <div key={product.id} className="group relative">
                 <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
-                  {/* Placeholder for product image */}
+                  
                   <div className="w-full h-full bg-gray-300"></div>
                 </div>
                 <div className="mt-4">
@@ -686,7 +686,7 @@ const HomePage = () => {
               </div>
             ))}
           </div>
-        </section>
+        </section> */}
       </main>
     </div>
   );

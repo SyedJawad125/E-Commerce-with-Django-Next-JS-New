@@ -22,9 +22,9 @@ export default function Home() {
     <NavbarCom />
     <BannerSliderHomeCom />
     <PublicSalesProductsOnHome />
+    <PublicCategoriesOnHome />
     <KidsComOnHome />
     <NewArrivalOnHome />
-    <PublicCategoriesOnHome />
     <PublicProductsOnHome />
     <FooterCom />
   </div>
