@@ -523,7 +523,7 @@ const ContactsCom = () => {
         };
         if (offset > 0) params.offset = offset;
 
-        const res = await AxiosInstance.get('/contact', { params });
+        const res = await AxiosInstance.get('/ecommerce/contact', { params });
         
         if (res.data?.status === 'SUCCESS') {
           setContacts(res.data.data || []);
@@ -577,7 +577,7 @@ const ContactsCom = () => {
 
   const deleteContact = async (id) => {
     try {
-      await AxiosInstance.delete(`/contact?id=${id}`);
+      await AxiosInstance.delete(`/ecommerce/contact?id=${id}`);
       setRefreshKey(prev => prev + 1);
       toast.success('Contact deleted successfully', {
         position: "top-center",
@@ -879,7 +879,7 @@ const ContactsCom = () => {
               <button
                 onClick={() => handlePageChange(1)}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 disabled:opacity-50 transition-colors"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-500 disabled:opacity-50 transition-colors"
                 aria-label="First page"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -890,7 +890,7 @@ const ContactsCom = () => {
               <button
                 onClick={() => handlePageChange(pagination.currentPage - 1)}
                 disabled={!pagination.hasPrevious}
-                className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 disabled:opacity-50 transition-colors"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-500 disabled:opacity-50 transition-colors"
                 aria-label="Previous page"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -931,7 +931,7 @@ const ContactsCom = () => {
               <button
                 onClick={() => handlePageChange(pagination.currentPage + 1)}
                 disabled={!pagination.hasNext}
-                className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 disabled:opacity-50 transition-colors"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-500 disabled:opacity-50 transition-colors"
                 aria-label="Next page"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -942,7 +942,7 @@ const ContactsCom = () => {
               <button
                 onClick={() => handlePageChange(pagination.totalPages)}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 disabled:opacity-50 transition-colors"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-500 disabled:opacity-50 transition-colors"
                 aria-label="Last page"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

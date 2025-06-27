@@ -1889,30 +1889,69 @@ class ContactController:
             return Response({'error': str(e)}, 500)
         
 
+from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError as DjangoValidationError
+import logging
+ 
 class PublicContactController:
     serializer_class = PublicContactSerializer
     filterset_class = PublicContactFilter
 
  
+    # def create(self, request):
+    #     try:
+    #         # request.POST._mutable = True
+    #         # request.data["created_by"] = request.user.guid
+    #         # request.POST._mutable = False
+
+    #         # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
+    #         validated_data = PublicContactSerializer(data=request.data)
+    #         if validated_data.is_valid():
+    #             response = validated_data.save()
+    #             response_data = PublicContactSerializer(response).data
+    #             return Response({'data': response_data}, 200)
+    #         else:
+    #             error_message = get_first_error_message(validated_data.errors, "UNSUCCESSFUL")
+    #             return Response({'data': error_message}, 400)
+    #         # else:
+    #         #     return Response({'data': "Permission Denaied"}, 400)
+    #     except Exception as e:
+    #         return Response({'error': str(e)}, 500)
+
+
+    logger = logging.getLogger(__name__)
+
     def create(self, request):
         try:
-            # request.POST._mutable = True
-            # request.data["created_by"] = request.user.guid
-            # request.POST._mutable = False
+            serializer = PublicContactSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
 
-            # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
-            validated_data = PublicContactSerializer(data=request.data)
-            if validated_data.is_valid():
-                response = validated_data.save()
-                response_data = PublicContactSerializer(response).data
-                return Response({'data': response_data}, 200)
-            else:
-                error_message = get_first_error_message(validated_data.errors, "UNSUCCESSFUL")
-                return Response({'data': error_message}, 400)
-            # else:
-            #     return Response({'data': "Permission Denaied"}, 400)
+            contact = serializer.save()  # Model validators will run automatically
+
+            return Response({
+                'success': True,
+                'message': "Contact created successfully",
+                'data': PublicContactSerializer(contact).data
+            }, status=201)
+
+        except ValidationError as e:
+            return Response({
+                'success': False,
+                'errors': e.detail
+            }, status=400)
+
+        except DjangoValidationError as e:
+            return Response({
+                'success': False,
+                'errors': e.message_dict if hasattr(e, 'message_dict') else {'non_field_errors': [str(e)]}
+            }, status=400)
+
         except Exception as e:
-            return Response({'error': str(e)}, 500)
+            logger.error(f"Error creating contact: {str(e)}", exc_info=True)
+            return Response({
+                'success': False,
+                'error': "An unexpected error occurred while processing your request"
+            }, status=500)
 
     # mydata = Member.objects.filter(firstname__endswith='s').values()
     def get_publiccontact(self, request):

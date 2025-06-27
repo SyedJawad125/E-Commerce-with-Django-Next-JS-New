@@ -215,12 +215,32 @@ class OrderDetail(models.Model):
         super().save(*args, **kwargs)
 
 
+# class Contact(models.Model):
+
+#     name = models.CharField(max_length=100)
+#     email = models.EmailField(unique=False)
+#     phone_number = models.CharField(max_length=20)
+#     message = models.TextField(null=True, blank=True)
+#     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contact_created_by',null=True, blank=True)
+#     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contact_updated_by',null=True, blank=True)
+
+from django.core.exceptions import ValidationError
+from django.core.validators import EmailValidator, RegexValidator
 
 class Contact(models.Model):
-
-    name = models.CharField(max_length=100)
-    email = models.EmailField(unique=False)
-    phone_number = models.CharField(max_length=20)
+    alphabetic_validator = RegexValidator(
+    regex=r'^[a-zA-Z]+( [a-zA-Z]+)*$',
+    message='This field accepts only alphabetic characters and single spaces between words.',
+    code='invalid_input'
+    )
+    phone_number_validator = RegexValidator(
+        regex=r'^[\d\-\+\(\) ]+$',
+        message='Phone number can only contain digits, spaces, dashes (-), parentheses (), and plus (+).',
+        code='invalid_phone_number'
+    )
+    name = models.CharField(max_length=100, validators=[alphabetic_validator])
+    email = models.EmailField(unique=False, validators=[EmailValidator()])
+    phone_number = models.CharField(max_length=20, validators=[phone_number_validator])
     message = models.TextField(null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contact_created_by',null=True, blank=True)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contact_updated_by',null=True, blank=True)

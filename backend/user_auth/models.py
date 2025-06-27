@@ -37,6 +37,7 @@ class User(TimeStamps, AbstractUser):
     last_name = models.CharField(max_length=100, blank=True, null=True, validators=[alphabetic_validator])
     username = models.CharField(unique=True, max_length=100, validators=[MinLengthValidator(3)])
     email = models.EmailField(unique=True, validators=[EmailValidator()])
+    
     phone = models.CharField(max_length=50, blank=True, null=True, validators=[RegexValidator
                                (regex=r'^\+?1?\d{9,15}$', message="Phone number must be between 9 to 15 digits.")])
     password = models.CharField(max_length=100, validators=[MinLengthValidator(8)])

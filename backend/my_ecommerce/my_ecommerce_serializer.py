@@ -339,18 +339,41 @@ class ContactSerializer(ModelSerializer):
         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
 
         return data
+    
+# class PublicContactSerializer(ModelSerializer):
+#     class Meta:
+#         model = Contact
+#         fields='__all__'
+
+#     def to_representation(self, instance):
+#         data = super().to_representation(instance)
+#         data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
+#         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
+
+#         return data
+
+
+
 class PublicContactSerializer(ModelSerializer):
     class Meta:
         model = Contact
-        fields='__all__'
+        fields = '__all__'
+        # No need for read_only here if the fields won't be used at all
+        extra_kwargs = {
+            'created_by': {'read_only': True},
+            'updated_by': {'read_only': True},
+        }
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
-        data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
-
+        # Skip serializing user fields since they are not used
+        data.pop('created_by', None)
+        data.pop('updated_by', None)
         return data
 
+    def validate(self, data):
+        # No custom validation needed, model validators handle it
+        return data
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
