@@ -327,7 +327,19 @@ class ProductTagSerializer(serializers.ModelSerializer):
 
         return data    
 
+
 class ContactSerializer(ModelSerializer):
+    class Meta:
+        model = Contact
+        fields='__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
+        data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None
+
+        return data
+class PublicContactSerializer(ModelSerializer):
     class Meta:
         model = Contact
         fields='__all__'

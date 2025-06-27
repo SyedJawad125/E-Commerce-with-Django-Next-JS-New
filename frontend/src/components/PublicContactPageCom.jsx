@@ -302,7 +302,7 @@ import { useRouter } from 'next/navigation';
 import { FaPaperPlane, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
-const Contact = () => {
+const PublicContactPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     phone_number: '',
@@ -322,7 +322,7 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await AxiosInstance.post('/ecommerce/contact', formData, {
+      const response = await AxiosInstance.post('/ecommerce/publiccontact', formData, {
         headers: { 'Content-Type': 'application/json' }
       });
       
@@ -333,7 +333,7 @@ const Contact = () => {
           email: '',
           message: ''
         });
-        router.push('/contact');
+        router.push('/publiccontact');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -518,4 +518,4 @@ const Contact = () => {
   );
 };
 
-export default Contact;
+export default PublicContactPage;

@@ -2,8 +2,8 @@ from venv import logger
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.auth import authenticate
-from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, DropDownListCategoryFilter, EmployeeFilter, \
-    ProductFilter, OrderFilter, ProductTagFilter, PublicOrderFilter, PublicReviewFilter, PublicSalesProductFilter, \
+from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, PublicContactFilter, DropDownListCategoryFilter, EmployeeFilter, \
+    ProductFilter, OrderFilter, ProductTagFilter, PublicContactFilter, PublicOrderFilter, PublicReviewFilter, PublicSalesProductFilter, \
     PubliccategorywiseFilter, \
     PublicproductFilter, PubliccategoryFilter, ReviewFilter, SlidercategoryFilter, SliderproductFilter, \
     DropDownListProductFilter, DropDownListSalesProductFilter
@@ -1802,9 +1802,96 @@ class ProductTagController:
         
 
 
+from django.core.paginator import Paginator, EmptyPage
+       
 class ContactController:
     serializer_class = ContactSerializer
     filterset_class = ContactFilter
+
+ 
+    # mydata = Member.objects.filter(firstname__endswith='s').values()
+    def get_contact(self, request):
+        try:
+            # Get filtered queryset
+            queryset = self.serializer_class.Meta.model.objects.all()
+            filtered_queryset = self.filterset_class(request.GET, queryset=queryset).qs
+            
+            # Apply ordering if needed (you can add your default ordering here)
+            # filtered_queryset = filtered_queryset.order_by('-created_at')
+            
+            # Pagination
+            page = request.GET.get('page', 1)
+            limit = request.GET.get('limit', 10)
+            offset = request.GET.get('offset', 0)
+            
+            try:
+                page = int(page)
+                limit = int(limit)
+                offset = int(offset)
+            except ValueError:
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'Invalid pagination parameters'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Apply offset and limit
+            if offset > 0:
+                filtered_queryset = filtered_queryset[offset:]
+            
+            paginator = Paginator(filtered_queryset, limit)
+            
+            try:
+                paginated_data = paginator.page(page)
+            except EmptyPage:
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'Page not found'
+                }, status=status.HTTP_404_NOT_FOUND)
+            
+            # Serialize data
+            serializer = self.serializer_class(paginated_data, many=True)
+            
+            return Response({
+                'status': 'SUCCESS',
+                'message': 'Contacts retrieved successfully',
+                'data': serializer.data,
+                'meta': {
+                    'total': paginator.count,
+                    'pages': paginator.num_pages,
+                    'current_page': page,
+                    'limit': limit,
+                    'offset': offset,
+                    'has_next': paginated_data.has_next(),
+                    'has_previous': paginated_data.has_previous()
+                }
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({
+                'status': 'ERROR',
+                'message': 'Failed to retrieve contacts',
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def delete_contact(self, request):
+        try:
+            if "id" in request.query_params:
+                instance = Contact.objects.filter(id=request.query_params['id']).first()
+
+                if instance:
+                    instance.delete()
+                    return Response({"data": "SUCESSFULL"}, 200)
+                else:
+                    return Response({"data": "RECORD NOT FOUND"}, 404)
+            else:
+                return Response({"data": "ID NOT PROVIDED"}, 400)
+        except Exception as e:
+            return Response({'error': str(e)}, 500)
+        
+
+class PublicContactController:
+    serializer_class = PublicContactSerializer
+    filterset_class = PublicContactFilter
 
  
     def create(self, request):
@@ -1814,10 +1901,10 @@ class ContactController:
             # request.POST._mutable = False
 
             # if request.user.role in ['admin', 'manager'] or request.user.is_superuser:  # roles
-            validated_data = ContactSerializer(data=request.data)
+            validated_data = PublicContactSerializer(data=request.data)
             if validated_data.is_valid():
                 response = validated_data.save()
-                response_data = ContactSerializer(response).data
+                response_data = PublicContactSerializer(response).data
                 return Response({'data': response_data}, 200)
             else:
                 error_message = get_first_error_message(validated_data.errors, "UNSUCCESSFUL")
@@ -1828,7 +1915,7 @@ class ContactController:
             return Response({'error': str(e)}, 500)
 
     # mydata = Member.objects.filter(firstname__endswith='s').values()
-    def get_contact(self, request):
+    def get_publiccontact(self, request):
         try:
 
             instances = self.serializer_class.Meta.model.objects.all()

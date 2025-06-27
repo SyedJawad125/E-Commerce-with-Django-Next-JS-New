@@ -1,20 +1,21 @@
+'use client';
 import React from 'react'
-import NavbarCom from "@/components/NavbarCom";
-import ContactPageCom from "@/components/ContactPageCom";
-import TopNavbarCom from "@/components/TopNavbarCom";
-import FooterCom from "@/components/FooterCom";
-
+import ContactsCom from "@/components/ContactsCom";
+import AdminSideNavbarCom from "@/components/AdminSideNavbarCom";
 
 
 
 const page = () => {
   return (
-    <div>
-      <TopNavbarCom/>
-      <NavbarCom/>
-      <ContactPageCom/>
-      {/* <FooterCom/> */}
-    </div>
+     <div className="flex h-screen">
+      
+      <div className="w-[16%] bg-gray-800 text-white">
+        <AdminSideNavbarCom />
+      </div>
+      <div className="w-[84%] p-6 bg-black">
+        <ContactsCom />
+      </div>
+    </div> 
   )
 }
 

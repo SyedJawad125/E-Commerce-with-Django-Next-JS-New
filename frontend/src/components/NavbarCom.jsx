@@ -2035,7 +2035,7 @@ const NavbarCom = () => {
     { name: 'New IN', path: '/newarrivalspage', className: "hover-group" },
     { name: 'Shop', path: '/publicproducts' },
     { name: 'Collections', path: '/publiccategories' },
-    { name: 'Contact', path: '/contact' }
+    { name: 'Contact', path: '/publiccontact' }
   ], [])
 
   // Optimized authentication check

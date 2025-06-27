@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import CategorySearchViews, CategoryViews, ContactViews, EmployeeViews, CategorySearchViews, \
-    ProductTagViews, ProductViews, OrderViews, PublicOrderViews, PublicSalesProductViews, PubliccategoryWiseViews, \
+from .views import CategorySearchViews, CategoryViews, ContactViews, PublicContactViews, EmployeeViews, CategorySearchViews, \
+    ProductTagViews, ProductViews, OrderViews, PublicContactViews, PublicOrderViews, PublicSalesProductViews, PubliccategoryWiseViews, \
     PubliceReviewViews, \
     PublicproductViews, PubliccategoryViews, ReviewViews, SalesProductViews, \
     SlidercategoryViews, SliderproductViews, EmployeeViews, DropDownListCategoryViews, DropDownListProductViews, \
@@ -53,11 +53,10 @@ urlpatterns = [
                                                 "delete": "delete_order"})),
                                                 
     path('publicorder', PublicOrderViews.as_view({'post': 'create'}), name='public-order'),
+
+    path('contact', ContactViews.as_view({"get": "get_contact", "delete": "delete_contact" })),
     
-    path('contact', ContactViews.as_view({"get": "get_contact",
-                                                "post": "post_contact",
-                                                "patch": "update_contact",
-                                                "delete": "delete_contact"})),
+    path('publiccontact', PublicContactViews.as_view({"get": "get_publiccontact", "post": "post_publiccontact"})),
     
 
     path('employee', EmployeeViews.as_view({"get": "get_employee",

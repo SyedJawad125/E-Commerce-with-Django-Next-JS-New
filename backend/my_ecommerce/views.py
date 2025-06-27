@@ -6,9 +6,9 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 #from .blog_serializer import BlogSerializer
 from utils.base_authentication import JWTAuthentication
-from .my_ecommerce_controller import CategoryController, CategorySearchController, ContactController, \
+from .my_ecommerce_controller import CategoryController, CategorySearchController, ContactController, PublicContactController, \
     DropDownListCategoryController, EmployeeController, ProductController, OrderController, ProductTagController, \
-    CategorySearchController, PublicOrderController, PublicReviewController, PublicSalesproductController, \
+    CategorySearchController, PublicContactController, PublicOrderController, PublicReviewController, PublicSalesproductController, \
     PubliccategorywiseController, \
     PublicproductController, PubliccategoryController, ReviewController, SalesProductController, \
     SlidercategoryController, SliderproductController, DropDownListProductController, DropDownListSalesProductController
@@ -32,6 +32,7 @@ order_controller = OrderController()
 publicorder_controller = PublicOrderController()
 producttag_controller = ProductTagController()
 contact_controller = ContactController()
+publiccontact_controller = PublicContactController()
 employee_controller = EmployeeController()
 review_controller = ReviewController()
 publicreview_controller = PublicReviewController()
@@ -235,19 +236,25 @@ class PublicOrderViews(ModelViewSet):
 
 
 class ContactViews(ModelViewSet):
-    # authentication_classes = [JWTAuthentication]
+    authentication_classes = [JWTAuthentication]
 
-    def post_contact(self, request):
-        return contact_controller.create(request)
-
+    @permission_required(['read_contact'])
     def get_contact(self, request):
         return contact_controller.get_contact(request)
-
-    def update_contact(self, request):
-        return contact_controller.update_contact(request)
-
+    
+    @permission_required(['delete_contact'])
     def delete_contact(self, request):
         return contact_controller.delete_contact(request)
+
+class PublicContactViews(ModelViewSet):
+    # authentication_classes = [JWTAuthentication]
+
+    def post_publiccontact(self, request):
+        return publiccontact_controller.create(request)
+
+    def get_publiccontact(self, request):
+        return publiccontact_controller.get_publiccontact(request)
+
     
 
 

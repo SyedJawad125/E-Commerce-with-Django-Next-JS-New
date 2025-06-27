@@ -857,12 +857,20 @@ const Sidebar = () => {
                 </Link>
               </>
             )}
-            <Link href="/clientselfpage">
+            {/* <Link href="/clientselfpage">
               <div className={`flex items-center py-3 px-4 rounded-lg transition-all ${isActive('/clientselfpage') ? 'bg-indigo-700 shadow-md' : 'hover:bg-gray-700 hover:shadow-md'}`}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 My Profile
+              </div>
+            </Link> */}
+            <Link href="/contact">
+              <div className={`flex items-center py-3 px-4 rounded-lg transition-all ${isActive('/contact') ? 'bg-indigo-700 shadow-md' : 'hover:bg-gray-700 hover:shadow-md'}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Contacts
               </div>
             </Link>
             <Link href="/">
