@@ -640,7 +640,7 @@ const PublicContactPage = () => {
           message: ''
         });
         // Optional: Redirect after delay
-        setTimeout(() => router.push('/'), 3000);
+        setTimeout(() => router.push('/publiccontact'), 3000);
       }
     } catch (error) {
       if (error.response) {
@@ -670,148 +670,203 @@ const PublicContactPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="text-center mb-16">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-4xl md:text-5xl font-serif font-light text-black mb-4"
-          >
-            Get In Touch
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-lg text-black max-w-2xl mx-auto"
-          >
-            Our concierge team is available to assist you with any inquiries. 
-            Reach out and we'll respond promptly.
-          </motion.p>
-        </div>
-
-        {/* Success Message */}
-        {successMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8 p-4 bg-green-100 border border-green-400 text-green-700 rounded"
-          >
-            {successMessage}
-          </motion.div>
-        )}
-
-        {/* General Error Message */}
-        {errors.general && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded"
-          >
-            {errors.general}
-          </motion.div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Information (unchanged) */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="space-y-8"
-          >
-            {/* ... existing contact info section ... */}
-          </motion.div>
-
-          {/* Contact Form */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="bg-gray-100 rounded-xl p-8 border border-gray-300"
-          >
-            <h2 className="text-2xl font-serif font-light text-black mb-6">Send Us a Message</h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  className={`w-full px-4 py-3 bg-white border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md text-black focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500`}
-                  placeholder="Enter your name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    className={`w-full px-4 py-3 bg-white border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md text-black focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500`}
-                    placeholder="your@email.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                  />
-                  {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
-                </div>
-
-                <div>
-                  <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
-                  <input
-                    id="phone_number"
-                    name="phone_number"
-                    type="tel"
-                    className={`w-full px-4 py-3 bg-white border ${errors.phone_number ? 'border-red-500' : 'border-gray-300'} rounded-md text-black focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500`}
-                    placeholder="0300 0000000"
-                    value={formData.phone_number}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                  />
-                  {errors.phone_number && <p className="mt-1 text-sm text-red-600">{errors.phone_number}</p>}
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Your Message *</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows="5"
-                  className={`w-full px-4 py-3 bg-white border ${errors.message ? 'border-red-500' : 'border-gray-300'} rounded-md text-black focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500`}
-                  placeholder="How can we assist you?"
-                  value={formData.message}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                ></textarea>
-                {errors.message && <p className="mt-1 text-sm text-red-600">{errors.message}</p>}
-              </div>
-
-              <div>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`w-full flex items-center justify-center px-6 py-4 bg-gray-700 text-white rounded-md hover:bg-gray-800 transition-all duration-300 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
-                >
-                  <FaPaperPlane className="mr-2" />
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
-                </button>
-              </div>
-            </form>
-          </motion.div>
-        </div>
-      </div>
+  <div className="max-w-7xl mx-auto">
+    {/* Header Section */}
+    <div className="text-center mb-16">
+      <motion.h1 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="text-4xl md:text-5xl font-serif font-light text-black mb-4"
+      >
+        Get In Touch
+      </motion.h1>
+      <motion.p 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="text-lg text-black max-w-2xl mx-auto"
+      >
+        Our concierge team is available to assist you with any inquiries. 
+        Reach out and we'll respond promptly.
+      </motion.p>
     </div>
+
+    {/* Success Message */}
+    {successMessage && (
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-8 p-4 bg-green-100 border border-green-400 text-green-700 rounded"
+      >
+        {successMessage}
+      </motion.div>
+    )}
+
+    {/* General Error Message */}
+    {errors.general && (
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded"
+      >
+        {errors.general}
+      </motion.div>
+    )}
+
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      {/* Contact Information */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+        className="space-y-8"
+      >
+        <div className="bg-gray-100 rounded-xl p-8 border border-gray-300">
+          <h2 className="text-2xl font-serif font-light text-black mb-6">Contact Information</h2>
+          
+          <div className="space-y-6">
+            <div className="flex items-start">
+              <div className="bg-gray-200 p-3 rounded-full mr-4">
+                <FaPhoneAlt className="text-gray-700 text-lg" />
+              </div>
+              <div>
+                <h3 className="text-gray-700 text-sm uppercase tracking-wider mb-1">Phone</h3>
+                <p className="text-black text-lg">(+92) 333 1906382</p>
+                <p className="text-black text-lg">(+92) 51 0000000</p>
+              </div>
+            </div>
+
+            <div className="flex items-start">
+              <div className="bg-gray-200 p-3 rounded-full mr-4">
+                <FaEnvelope className="text-gray-700 text-lg" />
+              </div>
+              <div>
+                <h3 className="text-gray-700 text-sm uppercase tracking-wider mb-1">Email</h3>
+                <p className="text-black text-lg">contact@luxurybrand.com</p>
+                <p className="text-black text-lg">support@luxurybrand.com</p>
+              </div>
+            </div>
+
+            <div className="flex items-start">
+              <div className="bg-gray-200 p-3 rounded-full mr-4">
+                <FaMapMarkerAlt className="text-gray-700 text-lg" />
+              </div>
+              <div>
+                <h3 className="text-gray-700 text-sm uppercase tracking-wider mb-1">Address</h3>
+                <p className="text-black text-lg">DHA 2, Islamabad</p>
+                <p className="text-black text-lg">Pakistan</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-50 rounded-xl p-8 border border-gray-300">
+          <h2 className="text-2xl font-serif font-light text-black mb-6">Business Hours</h2>
+          <div className="space-y-4">
+            <div className="flex justify-between border-b border-gray-300 pb-2">
+              <span className="text-gray-700">Monday - Friday</span>
+              <span className="text-black">9:00 AM - 6:00 PM</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-300 pb-2">
+              <span className="text-gray-700">Saturday</span>
+              <span className="text-black">10:00 AM - 4:00 PM</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-700">Sunday</span>
+              <span className="text-black">Closed</span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Contact Form */}
+      <motion.div 
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+        className="bg-gray-100 rounded-xl p-8 border border-gray-300"
+      >
+        <h2 className="text-2xl font-serif font-light text-black mb-6">Send Us a Message</h2>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              required
+              className={`w-full px-4 py-3 bg-white border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md text-black focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500`}
+              placeholder="Enter your name"
+              value={formData.name}
+              onChange={handleChange}
+            />
+            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                className={`w-full px-4 py-3 bg-white border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md text-black focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500`}
+                placeholder="your@email.com"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <input
+                id="phone_number"
+                name="phone_number"
+                type="tel"
+                required
+                className={`w-full px-4 py-3 bg-white border ${errors.phone_number ? 'border-red-500' : 'border-gray-300'} rounded-md text-black focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500`}
+                placeholder="0300 0000000"
+                value={formData.phone_number}
+                onChange={handleChange}
+              />
+              {errors.phone_number && <p className="mt-1 text-sm text-red-600">{errors.phone_number}</p>}
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
+            <textarea
+              id="message"
+              name="message"
+              rows="5"
+              required
+              className={`w-full px-4 py-3 bg-white border ${errors.message ? 'border-red-500' : 'border-gray-300'} rounded-md text-black focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500`}
+              placeholder="How can we assist you?"
+              value={formData.message}
+              onChange={handleChange}
+            ></textarea>
+            {errors.message && <p className="mt-1 text-sm text-red-600">{errors.message}</p>}
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`w-full flex items-center justify-center px-6 py-4 bg-gray-700 text-white rounded-md hover:bg-gray-800 transition-all duration-300 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+            >
+              <FaPaperPlane className="mr-2" />
+              {isSubmitting ? 'Sending...' : 'Send Message'}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  </div>
+</div>
   );
 };
 

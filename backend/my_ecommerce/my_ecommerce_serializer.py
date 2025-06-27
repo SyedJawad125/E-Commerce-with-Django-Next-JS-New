@@ -435,7 +435,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = [
-            'id', 'user', 'name', 'rating', 'comment',
+            'id', 'user', 'name', 'rating', 'comment', 'email',
             'product', 'sales_product', 'created_at', 'updated_at'
         ]
         read_only_fields = ['user', 'created_at', 'updated_at']
@@ -495,7 +495,7 @@ class PublicReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ['id', 'user', 'name', 'rating', 'comment', 'product', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'name', 'rating', 'comment', 'email', 'product', 'created_at', 'updated_at']
         read_only_fields = ['user', 'created_at', 'updated_at']
 
     def validate(self, data):
