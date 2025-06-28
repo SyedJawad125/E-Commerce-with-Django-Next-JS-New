@@ -1,10 +1,10 @@
-import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'e_commerce.settings')
-import django
-django.setup()
-from permissions.models import Permission
+# import os
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'e_commerce.settings')
+# import django
+# django.setup()
+# from permissions.models import Permission
 
-permissions = [
+# permissions = [
     # Permission(name='Create Role', code='create_role', module_name='Role', description='User can create role'),
     # Permission(name='Read Role', code='read_role', module_name='Role', description='User can read role'),
     # Permission(name='Update Role', code='update_role', module_name='Role', description='User can update role'),
@@ -29,18 +29,18 @@ permissions = [
     # Permission(name='Read Images', code='read_images', module_name='Images', description='User can read images'),
     # Permission(name='Update Images', code='update_images', module_name='Images', description='User can update Images'),
     # Permission(name='Delete Images', code='delete_images', module_name='Images', description='User can delete Images'),
-]
+# ]
 
 
 
-def add_permission():
-    for permission in permissions:
-        try:
-            Permission.objects.get(code=permission.code)
-        except Permission.DoesNotExist:
-            permission.save()
+# def add_permission():
+#     for permission in permissions:
+#         try:
+#             Permission.objects.get(code=permission.code)
+#         except Permission.DoesNotExist:
+#             permission.save()
 
 
-if __name__ == '__main__':
-    print("Populating hrm...")
-    add_permission()
+# if __name__ == '__main__':
+#     print("Populating hrm...")
+#     add_permission()
