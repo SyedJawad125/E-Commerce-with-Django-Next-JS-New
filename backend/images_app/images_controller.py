@@ -1,7 +1,7 @@
 
 from django.contrib.auth import authenticate
-from images_app.images_filter import CategoriesFilter, ImagesFilter, PublicImagesFilter
-from images_app.images_serializers import CategoriesSerializer, ImagesSerializer, PublicImagesSerializer
+from images_app.images_filter import CategoriesFilter, ImagesFilter, PublicImagesFilter, TextBoxCategoriesFilter
+from images_app.images_serializers import CategoriesSerializer, ImagesSerializer, PublicImagesSerializer, TextBoxCategoriesSerializer
 from images_app.models import Categories, Images
 from user_auth.user_serializer import UserSerializer
 from utils.reusable_methods import get_first_error_message, generate_six_length_random_number
@@ -428,3 +428,30 @@ class CategoriesController:
                 return Response({"data": "ID NOT PROVIDED"}, 400)
         except Exception as e:
             return Response({'error': str(e)}, 500)
+        
+
+
+class TextBoxCategoriesController:
+    serializer_class = TextBoxCategoriesSerializer
+    filterset_class = TextBoxCategoriesFilter
+
+ 
+    def get_categories_textbox(self, request):
+        try:
+
+            instances = self.serializer_class.Meta.model.objects.all()
+
+            filtered_data = self.filterset_class(request.GET, queryset=instances)
+            data = filtered_data.qs
+
+            paginated_data, count = paginate_data(data, request)
+
+            serialized_data = self.serializer_class(paginated_data, many=True).data
+            response_data = {
+                "count": count,
+                "data": serialized_data,
+            }
+            return create_response(response_data, "SUCCESSFUL", 200)
+        except Exception as e:
+            return Response({'error': str(e)}, 500)
+

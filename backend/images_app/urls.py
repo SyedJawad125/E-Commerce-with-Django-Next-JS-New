@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CategoriesViews, ImagesViews, PublicImagesViews
+from .views import CategoriesViews, ImagesViews, PublicImagesViews, TextCategoriesViews
 
 
 urlpatterns = [
@@ -16,5 +16,6 @@ path('categories', CategoriesViews.as_view({"get": "get_categories",
                                             "patch": "update_categories",
                                             "delete": "delete_categories"})),
 
+path('textbox_categories', TextCategoriesViews.as_view({"get": "get_categories_textbox"})),
 
 ]

@@ -43,3 +43,16 @@ class CategoriesSerializer(serializers.ModelSerializer):
         data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None 
 
         return data
+    
+class TextBoxCategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categories
+        fields = '__all__'
+        
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['created_by'] = UserListingSerializer(instance.created_by).data if instance.created_by else None
+        data['updated_by'] = UserListingSerializer(instance.updated_by).data if instance.updated_by else None 
+
+        return data

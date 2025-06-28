@@ -209,9 +209,26 @@ const ImagesCom = () => {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [categories, setCategories] = useState([]); // State for categories
+
+  // Function to fetch categories
+  const fetchCategories = async () => {
+    try {
+      const res = await AxiosInstance.get('/images/categories');
+      if (res?.data?.data) {
+        setCategories(res.data.data);
+      } else if (res?.data) {
+        setCategories(res.data);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      toast.error('Failed to load categories');
+    }
+  };
 
   useEffect(() => {
     fetchImages();
+    fetchCategories(); // Now this is defined
   }, [data.current_page, data.limit, data.offset]);
 
   const fetchImages = async () => {
@@ -220,23 +237,37 @@ const ImagesCom = () => {
       const res = await AxiosInstance.get(
         `/images/images?page=${data.current_page}&limit=${data.limit}&offset=${data.offset}`
       );
-      if (res && res.data && res.data.data) {
+      
+      if (res?.data?.data) {
+        const responseData = res.data.data;
         setData({
-          images: res.data.data.images || [],
-          count: res.data.data.count || 0,
-          total_pages: res.data.data.total_pages || 1,
-          current_page: res.data.data.current_page || 1,
-          limit: res.data.data.limit || 12,
-          offset: res.data.data.offset || 0,
-          next: res.data.data.next || false,
-          previous: res.data.data.previous || false
+          images: responseData.images || [],
+          count: responseData.count || 0,
+          total_pages: responseData.total_pages || 1,
+          current_page: responseData.current_page || 1,
+          limit: responseData.limit || 12,
+          offset: responseData.offset || 0,
+          next: responseData.next || false,
+          previous: responseData.previous || false
+        });
+      } else if (res?.data) {
+        setData({
+          images: res.data.images || [],
+          count: res.data.count || 0,
+          total_pages: res.data.total_pages || 1,
+          current_page: res.data.current_page || 1,
+          limit: res.data.limit || 12,
+          offset: res.data.offset || 0,
+          next: res.data.next || false,
+          previous: res.data.previous || false
         });
       } else {
         console.error('Unexpected response structure:', res);
+        toast.error('Received unexpected data format from server');
       }
     } catch (error) {
       console.error('Error occurred:', error);
-      toast.error('Error fetching images');
+      toast.error(error.response?.data?.message || 'Error fetching images');
     } finally {
       setIsLoading(false);
     }

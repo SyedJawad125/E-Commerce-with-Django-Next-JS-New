@@ -34,3 +34,12 @@ class CategoriesFilter(FilterSet):
     class Meta:
         model = Categories
         fields ='__all__'
+
+class TextBoxCategoriesFilter(FilterSet):
+    id = CharFilter(field_name='id')
+    category = CharFilter(field_name='category', lookup_expr='icontains')
+
+    
+    class Meta:
+        model = Categories
+        fields ='__all__'

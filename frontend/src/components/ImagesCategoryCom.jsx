@@ -65,7 +65,7 @@ const ImagesCategoryCom = () => {
   };
 
   const updateCategory = async (id) => {
-    router.push(`/updatecategory?id=${id}`);
+    router.push(`/UpdateImagesCategoryPage?id=${id}`);
   };
 
   const handleSearch = async (e) => {

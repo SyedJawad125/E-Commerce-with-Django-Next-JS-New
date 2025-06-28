@@ -24,7 +24,7 @@ const AddImages = () => {
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const res = await AxiosInstance.get('/images/categories');
+        const res = await AxiosInstance.get('/images/textbox_categories');
         if (res?.data?.data?.data) {
           setCategoryRecords(res.data.data.data);
         } else {

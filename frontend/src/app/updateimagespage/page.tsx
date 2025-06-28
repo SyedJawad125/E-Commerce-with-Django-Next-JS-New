@@ -70,7 +70,7 @@ const UpdateImage = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await AxiosInstance.get('/images/categories');
+        const res = await AxiosInstance.get('/images/textbox_categories');
         if (res?.data?.data?.data) {
           setCategoryRecords(res.data.data.data);
         }
