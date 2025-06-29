@@ -1104,7 +1104,7 @@ const UpdateOrder = () => {
         }
         
         if (orderRes.data) {
-          const orderData: OrderData = orderRes.data.data;
+          const orderData: OrderData = orderRes.data.data.orders;
           
           setFormData({
             customer_name: orderData.customer_info.name,

@@ -96,25 +96,26 @@ class SliderproductViews(ModelViewSet):
 
 class DropDownListProductViews(ModelViewSet):
     authentication_classes = [JWTAuthentication]
+
     def get_dropdownlistproduct(self, request):
         return dropdownlistproduct_controller.get_dropdownlistproduct(request)
-class SalesProductViews(ModelViewSet):
-
-    authentication_classes = [JWTAuthentication]
     
-    # @permission_required(['create_saleproduct'])
+class SalesProductViews(ModelViewSet):
+    authentication_classes = [JWTAuthentication]
+
+    @permission_required(['create_sales_product'])
     def post_salesproduct(self, request):
         return salesproduct_controller.create(request)
     
-    # @permission_required(['read_saleproduct'])
+    @permission_required(['read_sales_product'])
     def get_salesproduct(self, request):
         return salesproduct_controller.get_salesproduct(request)
     
-    # @permission_required(['update_saleproduct'])
+    @permission_required(['update_sales_product'])
     def update_salesproduct(self, request):
         return salesproduct_controller.update_salesproduct(request)
     
-    # @permission_required(['delete_saleproduct'])
+    @permission_required(['delete_sales_product'])
     def delete_salesproduct(self, request):
         return salesproduct_controller.delete_salesproduct(request)
 
@@ -180,6 +181,7 @@ class PubliccategoryWiseViews(ModelViewSet):
         return publiccategorywise_controller.get_publiccategorywise(request, pk)
     
 class DropDownListCategoryViews(ModelViewSet):
+
     authentication_classes = [JWTAuthentication]
     def get_dropdownlistcategory(self, request):
         return dropdownlistcategory_controller.get_dropdownlistcategory(request)
@@ -192,6 +194,7 @@ class SlidercategoryViews(ModelViewSet):
     
 class OrderViews(ModelViewSet):
     authentication_classes = [JWTAuthentication]
+
     @permission_required(['create_order'])
     def post_order(self, request):
         # Check if this is a checkout request
@@ -322,6 +325,7 @@ class PubliceReviewViews(ModelViewSet):
 from rest_framework.viewsets import ViewSet
 from .my_ecommerce_controller import CategorySearchController
 class CategorySearchViews(ViewSet):  # Changed from ModelViewSet to ViewSet
+
     controller = CategorySearchController()
     
     def list(self, request):  # This will handle GET /categorysearch/
