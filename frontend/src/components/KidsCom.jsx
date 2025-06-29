@@ -493,7 +493,7 @@ const PublicKids = () => {
                                 records.map((item) => (
                                     <div
                                         key={item.id}
-                                        className="card-5 cursor-pointer group relative"
+                                        className="card-5 cursor-pointer group relative mb-2"
                                         onClick={() => handleProductClick(item)}
                                     >
                                         <img
