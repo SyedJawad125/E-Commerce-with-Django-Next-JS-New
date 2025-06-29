@@ -1010,7 +1010,7 @@
 
 'use client'
 import React, { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import AxiosInstance from "@/components/AxiosInstance";
 
 interface Product {
@@ -1060,7 +1060,8 @@ interface OrderData {
 
 const UpdateOrder = () => {
   const router = useRouter();
-  const { id } = useParams();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('orderid');
   
   const [formData, setFormData] = useState({
     customer_name: '',
@@ -1081,62 +1082,69 @@ const UpdateOrder = () => {
 
   // Fetch order data and products
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsFetching(true);
-        
-        const [productsRes, salesProductsRes, orderRes] = await Promise.all([
-          AxiosInstance.get('/ecommerce/dropdownlistproduct'),
-          AxiosInstance.get('/ecommerce/dropdownlistsalesproduct'),
-          AxiosInstance.get(`/ecommerce/textbox_order?id=${id}`)
-        ]);
-        
-        if (productsRes.data) {
-          setProducts(productsRes.data.data.data);
-        }
+  const fetchData = async () => {
+    try {
+      setIsFetching(true);
 
-        if (salesProductsRes.data) {
-          const salesProductsData = salesProductsRes.data.data.data.map((product: any) => ({
-            ...product,
-            final_price: Number(product.final_price)
-          }));
-          setSalesProducts(salesProductsData);
-        }
-        
-        if (orderRes.data) {
-          const orderData: OrderData = orderRes.data.data.orders;
-          
-          setFormData({
-            customer_name: orderData.customer_info.name,
-            customer_email: orderData.customer_info.email,
-            customer_phone: orderData.customer_info.phone,
-            delivery_address: orderData.delivery_info.address,
-            city: orderData.delivery_info.city || '',
-            payment_method: orderData.payment_method,
-          });
-          
-          const items = orderData.order_summary.items.map(item => ({
-            id: item.id,
-            product_type: item.product_type || 'product',
-            product_id: item.product_id,
-            quantity: item.quantity,
-            unit_price: item.unit_price,
-            total_price: item.total_price,
-            is_discounted: item.is_discounted
-          }));
-          
-          setOrderItems(items);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setError('Failed to load order data');
-      } finally {
-        setIsFetching(false);
+      const [productsRes, salesProductsRes, orderRes] = await Promise.all([
+        AxiosInstance.get('/ecommerce/dropdownlistproduct'),
+        AxiosInstance.get('/ecommerce/dropdownlistsalesproduct'),
+        AxiosInstance.get(`/ecommerce/textbox_order?id=${id}`)
+      ]);
+
+      // ✅ Set Products
+      if (productsRes.data?.data?.data) {
+        setProducts(productsRes.data.data.data);
       }
-    };
-    
-    fetchData();
-  }, [id]);
+
+      // ✅ Set Sales Products
+      if (salesProductsRes.data?.data?.data) {
+        const salesProductsData = salesProductsRes.data.data.data.map((product: any) => ({
+          ...product,
+          final_price: Number(product.final_price)
+        }));
+        setSalesProducts(salesProductsData);
+      }
+
+      // ✅ Set Order Data
+      if (orderRes.data?.data) {
+        const orderData = orderRes.data.data;
+
+        // 🟢 Corrected Form Fields based on backend response
+        setFormData({
+          customer_name: orderData.customer_name,
+          customer_email: orderData.customer_email,
+          customer_phone: orderData.customer_phone,
+          delivery_address: orderData.delivery_address,
+          city: orderData.city || '',
+          payment_method: orderData.payment_method,
+        });
+
+        // 🟢 Map order_details into expected format
+        const items = orderData.order_details.map((item: any) => ({
+          id: item.id,
+          product_type: item.sales_product ? 'sales_product' : 'product',
+          product_id: item.sales_product ?? item.product,
+          quantity: item.quantity,
+          unit_price: item.unit_price,
+          total_price: item.total_price,
+          is_discounted: item.sales_product !== null
+        }));
+
+        setOrderItems(items);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setError('Failed to load order data');
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  if (id) {
+    fetchData(); // 🔁 Only fetch if id exists
+  }
+}, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -1223,7 +1231,7 @@ const UpdateOrder = () => {
         full_update: false
       };
 
-      const response = await AxiosInstance.put('/ecommerce/order', payload);
+      const response = await AxiosInstance.patch('/ecommerce/order', payload);
       
       if (response.data) {
         router.push('/orderspage');
