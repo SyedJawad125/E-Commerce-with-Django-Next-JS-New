@@ -2257,6 +2257,22 @@ class ReviewController:
             if hasattr(request.data, '_mutable'):
                 request.data._mutable = True
             
+            # Check if either product or sales_product is provided
+            product_id = request.data.get('product')
+            sales_product_id = request.data.get('sales_product')
+
+            if not product_id and not sales_product_id:
+                return Response({
+                    'status': 'ERROR',
+                    'message': 'Either product or sales_product ID is required'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Validate product exists if provided
+            if product_id:
+                product = get_object_or_404(Product, id=product_id)
+            if sales_product_id:
+                sales_product = get_object_or_404(SalesProduct, id=sales_product_id)
+
             # Set created_by if user is authenticated
             if request.user.is_authenticated:
                 request.data["user"] = request.user.guid
@@ -2268,10 +2284,25 @@ class ReviewController:
                 
                 # Return enriched response data
                 response_data = self.serializer_class(review).data
+                
+                # Enhance the response with product/sales_product details
+                enhanced_data = {
+                    **response_data,
+                    'product': {
+                        'id': review.product.id if review.product else None,
+                        'name': review.product.name if review.product else None
+                    } if review.product else None,
+                    'sales_product': {
+                        'id': review.sales_product.id if review.sales_product else None,
+                        'name': review.sales_product.name if review.sales_product else None,
+                        'discount_percent': review.sales_product.discount_percent if review.sales_product else None
+                    } if review.sales_product else None
+                }
+                
                 return Response({
                     'status': 'SUCCESS',
                     'message': 'Review created successfully',
-                    'data': response_data
+                    'data': enhanced_data
                 }, status=status.HTTP_201_CREATED)
             
             # Handle validation errors
