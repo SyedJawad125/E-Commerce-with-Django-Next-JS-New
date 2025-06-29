@@ -177,58 +177,61 @@ const UpdateCategory = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Header */}
-          <div className="bg-indigo-600 px-6 py-4">
-            <h2 className="text-2xl font-bold text-white">Edit Images Category</h2>
-            <p className="mt-1 text-indigo-100">Update the details of your Images Category</p>
-          </div>
-          
-          {/* Form */}
-          <form className="p-6 space-y-6" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Category Name */}
-              <div className="md:col-span-2">
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-                  Category Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="category"
-                  name="category"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                  value={formData.category}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              
-            </div>
-
-            {/* Submit Button */}
-            <div className="flex justify-end pt-4">
-              <button
-                type="button"
-                onClick={() => router.push('/ImagesCategoryPage')}
-                className="mr-4 px-6 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className={`px-6 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
-              >
-                {isLoading ? 'Updating...' : 'Update Category'}
-              </button>
-            </div>
-          </form>
-        </div>
+    <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 py-10 px-4 sm:px-6 lg:px-8">
+  <div className="max-w-4xl mx-auto">
+    <div className="bg-gray-950 rounded-2xl shadow-2xl overflow-hidden border border-gray-800">
+      
+      {/* Header */}
+      <div className="bg-gradient-to-r from-amber-600 to-amber-800 px-6 py-5 shadow-md">
+        <h2 className="text-3xl font-bold text-white">Edit Images Category</h2>
+        <p className="mt-1 text-amber-100">Update the details of your Images Category</p>
       </div>
+
+      {/* Form */}
+      <form className="p-6 space-y-6" onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          {/* Category Name */}
+          <div className="md:col-span-2">
+            <label htmlFor="category" className="block text-sm font-semibold text-amber-400 mb-1">
+              Category Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="category"
+              name="category"
+              className="w-full px-4 py-2 rounded-lg border border-gray-700 bg-black text-white placeholder-gray-500 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
+              value={formData.category}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+
+        {/* Submit Buttons */}
+        <div className="flex justify-end pt-4">
+          <button
+            type="button"
+            onClick={() => router.push('/ImagesCategoryPage')}
+            className="mr-4 px-6 py-2 border border-gray-600 text-sm font-medium rounded-lg text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`px-6 py-2 text-sm font-medium rounded-lg text-white bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-700 hover:to-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 transition shadow-lg ${
+              isLoading ? 'opacity-75 cursor-not-allowed' : ''
+            }`}
+          >
+            {isLoading ? 'Updating...' : 'Update Category'}
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
+</div>
+
   );
 };
 

@@ -309,6 +309,8 @@ class CategoriesController:
             return Response({'error': str(e)}, 500)
 
     # mydata = Member.objects.filter(firstname__endswith='s').values()
+  
+
     def get_categories(self, request):
         try:
             # Get all instances
@@ -317,47 +319,33 @@ class CategoriesController:
             # Apply filters
             filtered_data = self.filterset_class(request.query_params, queryset=instances)
             data = filtered_data.qs
-            
-            # Get pagination parameters from request
-            page = request.query_params.get('page', 1)
-            limit = request.query_params.get('limit', 10)  # Default to 10 items per page
-            offset = request.query_params.get('offset', 0)
-            
+
+            # Parse pagination parameters
             try:
-                page = int(page)
-                limit = int(limit)
-                offset = int(offset)
-            except ValueError:
-                return Response(
-                    {
-                        "status_code": 400,
-                        "message": "Invalid pagination parameters. Page, limit and offset must be integers.",
-                        "data": None
-                    },
-                    status=400
-                )
-            
-            # Apply offset and limit
-            if offset > 0:
-                data = data[offset:]
-            
+                page = int(request.query_params.get('page', 1))
+                limit = int(request.query_params.get('limit', 10))
+            except (TypeError, ValueError):
+                return Response({
+                    "status_code": 400,
+                    "message": "Invalid pagination parameters. Page and limit must be integers.",
+                    "data": None
+                }, status=400)
+
+            # Apply pagination
             paginator = Paginator(data, limit)
-            
             try:
                 paginated_data = paginator.page(page)
             except EmptyPage:
-                return Response(
-                    {
-                        "status_code": 404,
-                        "message": "Page not found",
-                        "data": None
-                    },
-                    status=404
-                )
-            
-            # Serialize the data
+                return Response({
+                    "status_code": 404,
+                    "message": "Page not found",
+                    "data": None
+                }, status=404)
+
+            # Serialize paginated data
             serialized_data = self.serializer_class(paginated_data, many=True).data
-            
+
+            # Build response
             response_data = {
                 "status_code": 200,
                 "message": "SUCCESSFUL",
@@ -366,12 +354,12 @@ class CategoriesController:
                     "total_pages": paginator.num_pages,
                     "current_page": page,
                     "limit": limit,
-                    "offset": offset,
                     "next": paginated_data.has_next(),
                     "previous": paginated_data.has_previous(),
                     "categories": serialized_data
                 }
             }
+
             return Response(response_data, status=200)
 
         except Exception as e:
@@ -379,9 +367,10 @@ class CategoriesController:
             logger.error(f"Error fetching categories: {str(e)}\n{traceback.format_exc()}")
             return Response({
                 "status_code": 500,
-                "message": str(e),
+                "message": "Internal Server Error",
                 "data": None
             }, status=500)
+
 
     def update_categories(self, request):
         try:
