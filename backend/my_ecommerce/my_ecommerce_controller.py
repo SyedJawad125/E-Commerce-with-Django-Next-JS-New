@@ -933,6 +933,7 @@ class SlidercategoryController:
 
 
 from datetime import date, timedelta
+import logging
 
 class OrderController:
     serializer_class = OrderSerializer
@@ -1201,94 +1202,216 @@ class OrderController:
     #             "data": None
     #         }, status=500)
         
+    # def get_order(self, request):
+    #     try:
+    #         # Get all instances
+    #         instances = self.serializer_class.Meta.model.objects.all()
+            
+    #         # Apply filters
+    #         # filtered_data = self.filterset_class(request.GET, queryset=instances)
+    #         filtered_data = self.filterset_class(request.query_params, queryset=instances)
+    #         data = filtered_data.qs
+            
+    #         # Get pagination parameters from request
+    #         page = request.query_params.get('page', 1)
+    #         limit = request.query_params.get('limit', 10)  # Default to 10 items per page
+    #         offset = request.query_params.get('offset', 0)
+            
+    #         try:
+    #             page = int(page)
+    #             limit = int(limit)
+    #             offset = int(offset)
+    #         except ValueError:
+    #             return Response(
+    #                 {
+    #                     "status_code": 400,
+    #                     "message": "Invalid pagination parameters. Page, limit and offset must be integers.",
+    #                     "data": None
+    #                 },
+    #                 status=400
+    #             )
+            
+    #         # Apply offset and limit
+    #         if offset > 0:
+    #             data = data[offset:]
+            
+    #         paginator = Paginator(data, limit)
+            
+    #         try:
+    #             paginated_data = paginator.page(page)
+    #         except EmptyPage:
+    #             return Response(
+    #                 {
+    #                     "status_code": 404,
+    #                     "message": "Page not found",
+    #                     "data": None
+    #                 },
+    #                 status=404
+    #             )
+            
+    #         # Transform each order instance to match create_mixed_order format
+    #         formatted_orders = []
+    #         for order in paginated_data:
+    #             order_items = []
+                
+    #             # Process order details
+    #             for detail in order.order_details.all():
+    #                 # Skip if no product associated
+    #                 if not detail.product and not detail.sales_product:
+    #                     continue
+                    
+    #                 # Determine product type and info
+    #                 if detail.product:
+    #                     product_type = "product"
+    #                     product_id = detail.product.id
+    #                     product_name = detail.product.name
+    #                     is_discounted = getattr(detail.product, 'has_discount', False)
+    #                 else:  # sales_product
+    #                     product_type = "sales_product"
+    #                     product_id = detail.sales_product.id
+    #                     product_name = detail.sales_product.name
+    #                     is_discounted = True  # Assuming sales products are always discounted
+                    
+    #                 # Handle None values for prices
+    #                 unit_price = float(detail.unit_price) if detail.unit_price is not None else 0.0
+    #                 total_price = float(detail.total_price) if detail.total_price is not None else 0.0
+                    
+    #                 order_items.append({
+    #                     'product_type': product_type,
+    #                     'product_id': product_id,
+    #                     'product_name': product_name,
+    #                     'quantity': detail.quantity,
+    #                     'unit_price': unit_price,
+    #                     'total_price': total_price,
+    #                     'is_discounted': is_discounted
+    #                 })
+                
+    #             # Calculate subtotal and total, handling None values
+    #             subtotal = float(order.bill) if order.bill is not None else 0.0
+                
+    #             # Format the order data
+    #             formatted_order = {
+    #                 'order_id': order.id,
+    #                 'customer_info': {
+    #                     'name': order.customer_name,
+    #                     'email': order.customer_email,
+    #                     'phone': order.customer_phone
+    #                 },
+    #                 'delivery_info': {
+    #                     'address': order.delivery_address,
+    #                     'city': order.city,
+    #                     'estimated_date': order.delivery_date.strftime('%Y-%m-%d') if order.delivery_date else None
+    #                 },
+    #                 'order_summary': {
+    #                     'items': order_items,
+    #                     'subtotal': subtotal,
+    #                     'total': subtotal
+    #                 },
+    #                 'payment_method': order.payment_method,
+    #                 'status': order.status
+    #             }
+    #             formatted_orders.append(formatted_order)
+
+    #         response_data = {
+    #             "status_code": 200,
+    #             "message": "Successful",
+    #             "data": {
+    #                 "count": paginator.count,
+    #                 "total_pages": paginator.num_pages,
+    #                 "current_page": page,
+    #                 "limit": limit,
+    #                 "offset": offset,
+    #                 "next": paginated_data.has_next(),
+    #                 "previous": paginated_data.has_previous(),
+    #                 "orders": formatted_orders  # This matches frontend expectation
+    #             }
+    #         }
+    #         return Response(response_data, status=200)
+        
+    #     except Exception as e:
+    #         import traceback
+    #         logger.error(f"Error fetching orders: {str(e)}\n{traceback.format_exc()}")
+    #         return Response({
+    #             "status_code": 500,
+    #             "message": str(e),
+    #             "data": None
+    #         }, status=500)
+
+
+   
+
+    logger = logging.getLogger(__name__)
+
     def get_order(self, request):
         try:
-            # Get all instances
-            instances = self.serializer_class.Meta.model.objects.all()
+            # Fetch and order queryset
+            instances = self.serializer_class.Meta.model.objects.all().order_by('-id')
             
             # Apply filters
-            # filtered_data = self.filterset_class(request.GET, queryset=instances)
             filtered_data = self.filterset_class(request.query_params, queryset=instances)
             data = filtered_data.qs
-            
-            # Get pagination parameters from request
-            page = request.query_params.get('page', 1)
-            limit = request.query_params.get('limit', 10)  # Default to 10 items per page
-            offset = request.query_params.get('offset', 0)
-            
+
+            # Get pagination parameters
             try:
-                page = int(page)
-                limit = int(limit)
-                offset = int(offset)
+                page = int(request.query_params.get('page', 1))
+                limit = int(request.query_params.get('limit', 10))
             except ValueError:
-                return Response(
-                    {
-                        "status_code": 400,
-                        "message": "Invalid pagination parameters. Page, limit and offset must be integers.",
-                        "data": None
-                    },
-                    status=400
-                )
-            
-            # Apply offset and limit
-            if offset > 0:
-                data = data[offset:]
-            
+                return Response({
+                    "status_code": 400,
+                    "message": "Invalid pagination parameters. 'page' and 'limit' must be integers.",
+                    "data": None
+                }, status=400)
+
             paginator = Paginator(data, limit)
-            
+
             try:
                 paginated_data = paginator.page(page)
             except EmptyPage:
-                return Response(
-                    {
-                        "status_code": 404,
-                        "message": "Page not found",
-                        "data": None
-                    },
-                    status=404
-                )
-            
-            # Transform each order instance to match create_mixed_order format
+                return Response({
+                    "status_code": 200,
+                    "message": "No more data",
+                    "data": {
+                        "count": paginator.count,
+                        "total_pages": paginator.num_pages,
+                        "current_page": page,
+                        "limit": limit,
+                        "next": False,
+                        "previous": page > 1,
+                        "orders": []
+                    }
+                }, status=200)
+
             formatted_orders = []
             for order in paginated_data:
                 order_items = []
-                
-                # Process order details
+
                 for detail in order.order_details.all():
-                    # Skip if no product associated
                     if not detail.product and not detail.sales_product:
                         continue
-                    
-                    # Determine product type and info
+
                     if detail.product:
                         product_type = "product"
                         product_id = detail.product.id
                         product_name = detail.product.name
                         is_discounted = getattr(detail.product, 'has_discount', False)
-                    else:  # sales_product
+                    else:
                         product_type = "sales_product"
                         product_id = detail.sales_product.id
                         product_name = detail.sales_product.name
-                        is_discounted = True  # Assuming sales products are always discounted
-                    
-                    # Handle None values for prices
-                    unit_price = float(detail.unit_price) if detail.unit_price is not None else 0.0
-                    total_price = float(detail.total_price) if detail.total_price is not None else 0.0
-                    
+                        is_discounted = True
+
                     order_items.append({
                         'product_type': product_type,
                         'product_id': product_id,
                         'product_name': product_name,
                         'quantity': detail.quantity,
-                        'unit_price': unit_price,
-                        'total_price': total_price,
+                        'unit_price': float(detail.unit_price or 0),
+                        'total_price': float(detail.total_price or 0),
                         'is_discounted': is_discounted
                     })
-                
-                # Calculate subtotal and total, handling None values
-                subtotal = float(order.bill) if order.bill is not None else 0.0
-                
-                # Format the order data
+
+                subtotal = float(order.bill or 0)
+
                 formatted_order = {
                     'order_id': order.id,
                     'customer_info': {
@@ -1311,7 +1434,7 @@ class OrderController:
                 }
                 formatted_orders.append(formatted_order)
 
-            response_data = {
+            return Response({
                 "status_code": 200,
                 "message": "Successful",
                 "data": {
@@ -1319,14 +1442,12 @@ class OrderController:
                     "total_pages": paginator.num_pages,
                     "current_page": page,
                     "limit": limit,
-                    "offset": offset,
                     "next": paginated_data.has_next(),
                     "previous": paginated_data.has_previous(),
-                    "orders": formatted_orders  # This matches frontend expectation
+                    "orders": formatted_orders
                 }
-            }
-            return Response(response_data, status=200)
-        
+            }, status=200)
+
         except Exception as e:
             import traceback
             logger.error(f"Error fetching orders: {str(e)}\n{traceback.format_exc()}")
@@ -1335,7 +1456,7 @@ class OrderController:
                 "message": str(e),
                 "data": None
             }, status=500)
-    
+
     def update_order(self, request):
         """
         Handles order updates with both regular and sales products

@@ -192,19 +192,22 @@ class SlidercategoryViews(ModelViewSet):
     
 class OrderViews(ModelViewSet):
     authentication_classes = [JWTAuthentication]
-
+    @permission_required(['create_order'])
     def post_order(self, request):
         # Check if this is a checkout request
         if 'cart_items' in request.data:
             return order_controller.checkout(request)
         return order_controller.create(request)
-
+    
+    @permission_required(['read_order'])
     def get_order(self, request):
         return order_controller.get_order(request)
-
+    
+    @permission_required(['update_order'])
     def update_order(self, request):
         return order_controller.update_order(request)
-
+    
+    @permission_required(['delete_order'])
     def delete_order(self, request):
         return order_controller.delete_order(request)
     
