@@ -163,7 +163,7 @@ const PublicSalesProductsCom = () => {
     };
 
     return (
-        <div className="bg-gradient-to-b from-white to-gray-100 py-16 px-4 sm:px-8 lg:px-20">
+        <div className="bg-gradient-to-b from-white to-gray-100 py-16 px-4 sm:px-8 lg:px-20 mb-28">
   <div className="max-w-screen-xl mx-auto">
     <h2 className="text-5xl font-extrabold font-serif text-gray-900 tracking-wide text-center mb-12">
       ✨ Sales Collection ✨
@@ -175,7 +175,7 @@ const PublicSalesProductsCom = () => {
           <div
             key={item.id}
             onClick={() => handleProductClick(item)}
-            className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 relative"
+            className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 flex flex-col relative"
           >
             {/* Discount Badge */}
             {item.discount_percent > 0 && (
@@ -194,16 +194,17 @@ const PublicSalesProductsCom = () => {
             </div>
 
             {/* Product Details */}
-            <div className="p-4 space-y-2">
-              <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">{item.name}</h3>
-              <p className="text-sm text-gray-500 line-clamp-2">{item.description}</p>
-              
-              <div className="flex items-center gap-2 text-sm">
-                <p className="text-gray-400 line-through">Rs {item.original_price}</p>
-                <p className="text-red-600 font-bold">Rs {item.final_price}</p>
+            <div className="flex flex-col justify-between flex-grow p-4">
+              <div>
+                <h3 className="text-base font-semibold text-gray-900 truncate">{item.name}</h3>
+                <p className="text-sm text-gray-500 line-clamp-2">{item.description}</p>
+                <div className="flex items-center gap-2 text-sm mt-2">
+                  <p className="text-gray-400 line-through">Rs {item.original_price}</p>
+                  <p className="text-red-600 font-bold">Rs {item.final_price}</p>
+                </div>
               </div>
 
-              <button className="mt-2 w-full py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-red-600 transition-all duration-300">
+              <button className="mt-4 w-full py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-red-600 transition-all duration-300">
                 View Details
               </button>
             </div>
@@ -213,9 +214,11 @@ const PublicSalesProductsCom = () => {
         <p className="text-center text-gray-600 col-span-full">Loading products...</p>
       )}
     </div>
+
     <ToastContainer />
   </div>
 </div>
+
     );
 };
 

@@ -54,10 +54,10 @@ const PublicCategoriesOnHome = () => {
           <div
             key={item.id}
             onClick={() => handleCategoryClick(item.id)}
-            className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 relative"
+            className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 flex flex-col"
           >
-            {/* Category Image */}
-            <div className="relative w-full h-48 overflow-hidden">
+            {/* Image */}
+            <div className="relative w-full h-44 overflow-hidden">
               <img
                 src={`http://localhost:8000/${item.image}`}
                 alt={item.name}
@@ -65,12 +65,13 @@ const PublicCategoriesOnHome = () => {
               />
             </div>
 
-            {/* Category Info */}
-            <div className="p-4 space-y-2">
-              <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">{item.name}</h3>
-              <p className="text-sm text-gray-500 line-clamp-2">{item.description}</p>
-
-              <button className="mt-2 w-full py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-red-600 transition-all duration-300">
+            {/* Content */}
+            <div className="flex flex-col justify-between flex-grow p-4">
+              <div>
+                <h3 className="text-base font-semibold text-gray-900 truncate">{item.name}</h3>
+                <p className="text-sm text-gray-500 line-clamp-2">{item.description}</p>
+              </div>
+              <button className="mt-4 w-full py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-red-600 transition-all duration-300">
                 View Products
               </button>
             </div>
@@ -80,9 +81,11 @@ const PublicCategoriesOnHome = () => {
         <p className="text-center text-gray-600 col-span-full">Loading categories...</p>
       )}
     </div>
+
     <ToastContainer />
   </div>
 </div>
+
   );
 };
 
