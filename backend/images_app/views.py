@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
-from .images_controller import ImagesController, CategoriesController, PublicImagesController, TextBoxCategoriesController
+from .images_controller import ImagesController, CategoriesController, PublicImagesController, TextBoxCategoriesController, TextBoxImagesController
 from utils.base_authentication import JWTAuthentication
 from permissions.decorator import permission_required
 
@@ -8,9 +8,11 @@ from permissions.decorator import permission_required
 
 
 images_controller = ImagesController()
+publicimages_controller=PublicImagesController()
+textbox_images_controller=TextBoxImagesController()
 categories_controller = CategoriesController()
 categories_textbox_controller = TextBoxCategoriesController()
-publicimages_controller=PublicImagesController()
+
 
 
 class ImagesViews(ModelViewSet):
@@ -37,6 +39,12 @@ class PublicImagesViews(ModelViewSet):
 
     def get_publicimages(self, request):
         return publicimages_controller.get_publicimages(request)
+    
+class TextBoxImagesViews(ModelViewSet):
+    authentication_classes = [JWTAuthentication]
+    
+    def get_textboxe_images(self, request):
+        return textbox_images_controller.get_textboxe_images(request)
 
 class CategoriesViews(ModelViewSet):
     authentication_classes = [JWTAuthentication]

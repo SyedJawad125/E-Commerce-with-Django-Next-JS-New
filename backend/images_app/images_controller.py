@@ -1,7 +1,7 @@
 
 from django.contrib.auth import authenticate
-from images_app.images_filter import CategoriesFilter, ImagesFilter, PublicImagesFilter, TextBoxCategoriesFilter
-from images_app.images_serializers import CategoriesSerializer, ImagesSerializer, PublicImagesSerializer, TextBoxCategoriesSerializer
+from images_app.images_filter import CategoriesFilter, ImagesFilter, PublicImagesFilter, TextBoxCategoriesFilter, TextBoxImagesFilter
+from images_app.images_serializers import CategoriesSerializer, ImagesSerializer, PublicImagesSerializer, TextBoxCategoriesSerializer, TextBoxImagesSerializer
 from images_app.models import Categories, Images
 from user_auth.user_serializer import UserSerializer
 from utils.reusable_methods import get_first_error_message, generate_six_length_random_number
@@ -282,7 +282,61 @@ class PublicImagesController:
 
         except Exception as e:
             return Response({'error': str(e)}, status=500)
+        
+class TextBoxImagesController:
+    serializer_class = TextBoxImagesSerializer
+    filterset_class = TextBoxImagesFilter
 
+    def get_textboxe_images(self, request):
+        try:
+            images = None  # Initialize images to None
+
+            # Check for different query params and filter accordingly
+            if "category" in request.query_params:
+                category = request.query_params.get('category')
+                if category == "invitationbgimage":
+                    images = Images.objects.filter(category='invitationbgimage')
+                elif category == "bannerimagaeshome":
+                    images = Images.objects.filter(category='bannerimagaeshome')
+                elif category == "animatedimagaeshome":
+                    images = Images.objects.filter(category='animatedimagaeshome')
+                elif category == "meetingsandeventshome":
+                    images = Images.objects.filter(category='meetingsandeventshome')
+                elif category == "featuredamenitieshome":
+                    images = Images.objects.filter(category='featuredamenitieshome')
+                elif category == "exploretheroomshome":
+                    images = Images.objects.filter(category='exploretheroomshome')
+                elif category == "gallerysliderhome":
+                    images = Images.objects.filter(category='gallerysliderhome')
+                elif category == "meetingsroomsgroupshome":
+                    images = Images.objects.filter(category='meetingsroomsgroupshome')
+                else:
+                    return Response({"error": "Category is wrong"}, status=400)
+            else:
+                images = Images.objects.all()
+
+            # if images is None:
+            #     return Response({'error': 'No valid query parameter found.'}, status=400)
+
+            # Filtering data
+            filtered_data = self.filterset_class(request.GET, queryset=images)
+            data = filtered_data.qs
+
+            # Pagination
+            paginated_data, count = paginate_data(data, request)
+
+            # Serialize the data
+            serialized_data = self.serializer_class(paginated_data, many=True).data
+            response_data = {
+                "count": count,
+                "data": serialized_data,
+            }
+
+            # Successful response
+            return create_response(response_data, "SUCCESSFUL", 200)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
 class CategoriesController:
     serializer_class = CategoriesSerializer
     filterset_class = CategoriesFilter
