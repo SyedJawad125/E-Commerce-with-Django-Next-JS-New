@@ -8,6 +8,8 @@ import { AuthContext } from '@/components/AuthContext';
 
 const ImagesCategoryCom = () => {
   const router = useRouter();
+  const { permissions = {} } = useContext(AuthContext);
+  
   const { user } = useContext(AuthContext);
   const [data, setData] = useState({
     categories: [],
@@ -105,6 +107,25 @@ const ImagesCategoryCom = () => {
 
   // Calculate total pages based on count and limit
   const total_pages = Math.ceil(data.count / data.limit);
+    if (!permissions.read_images_category) {
+            return (
+              <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-6">
+                <div className="text-center p-8 max-w-md">
+                  <h2 className="text-2xl text-amber-400 mb-4">Access Denied</h2>
+                  <p className="text-gray-300 mb-6">
+                    You don't have permission to view Images. Please contact your administrator.
+                  </p>
+                  <button 
+                    onClick={() => router.push('/')}
+                    className="px-6 py-2 bg-amber-600 rounded-full hover:bg-amber-700 text-white transition-colors"
+                  >
+                    Return to Dashboard
+                  </button>
+                </div>
+                <ToastContainer position="top-right" autoClose={2000} />
+              </div>
+            );
+          }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -114,15 +135,14 @@ const ImagesCategoryCom = () => {
         <h1 className="text-2xl font-bold text-white">Categories Management</h1>
         {/* Header Section */}
     <div className="flex justify-between items-center mb-12">
-      
-      
+      {permissions.create_images_category && (
       <button 
         onClick={() => router.push('/AddImagesCategoryPage')}
         className="px-6 py-3 border border-amber-500 text-amber-500 rounded-full hover:bg-amber-500 hover:text-black transform hover:scale-105 transition-transform"
       >
         Add Category
       </button>
-      
+      )}
     </div>  
       </div>
 
@@ -183,18 +203,23 @@ const ImagesCategoryCom = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
+
+                         {permissions.update_images_category && (
                             <button
                               onClick={() => updateCategory(category.id)}
                               className="text-blue-600 hover:text-blue-900"
                             >
                               Edit
                             </button>
+                         )}
+                         {permissions.delete_images_category && (
                             <button
                               onClick={() => deleteCategory(category.id)}
                               className="text-red-600 hover:text-red-900"
                             >
                               Delete
                             </button>
+                         )}
                           </div>
                         </td>
                       </tr>

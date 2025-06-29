@@ -5,15 +5,15 @@ django.setup()
 from permissions.models import Permission
 
 permissions = [
-    # Permission(name='Create Role', code='create_role', module_name='Role', description='User can create role'),
-    # Permission(name='Read Role', code='read_role', module_name='Role', description='User can read role'),
-    # Permission(name='Update Role', code='update_role', module_name='Role', description='User can update role'),
-    # Permission(name='Delete Role', code='delete_role', module_name='Role', description='User can delete role'),
+    Permission(name='create_images', code='create_images', description='User can create Images'),
+    Permission(name='read_images', code='read_images', description='User can read Images'),
+    Permission(name='update_images', code='update_images', description='User can update Images'),
+    Permission(name='delete_images', code='delete_images', description='User can delete Images'),
 
-    # Permission(name='Create Room', code='create_room', module_name='Room', description='User can create Room'),
-    # Permission(name='Read Room', code='read_room', module_name='Room', description='User can read Room'),
-    # Permission(name='Update Room', code='update_room', module_name='Room', description='User can update Room'),
-    # Permission(name='Delete Room', code='delete_room', module_name='Room', description='User can delete Room'),
+    Permission(name='create_images_category', code='create_images_category', description='User can create Images Category'),
+    Permission(name='read_images_category', code='read_images_category', description='User can read Images Category'),
+    Permission(name='update_images_category', code='update_images_category', description='User can update Images Category'),
+    Permission(name='delete_images_category', code='delete_images_category', description='User can delete Images Category'),
    
     # Permission(name='Create Employee', code='create_employee', module_name='Employee', description='User can create Employee'),
     # Permission(name='Read Employee', code='read_employee', module_name='Employee', description='User can read Employee'),

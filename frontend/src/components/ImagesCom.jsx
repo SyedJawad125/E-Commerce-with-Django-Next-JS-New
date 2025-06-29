@@ -323,6 +323,25 @@ const ImagesCom = () => {
       current_page: 1 // Reset to first page when changing limit
     }));
   };
+if (!permissions.read_images) {
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-6">
+            <div className="text-center p-8 max-w-md">
+              <h2 className="text-2xl text-amber-400 mb-4">Access Denied</h2>
+              <p className="text-gray-300 mb-6">
+                You don't have permission to view Images. Please contact your administrator.
+              </p>
+              <button 
+                onClick={() => router.push('/')}
+                className="px-6 py-2 bg-amber-600 rounded-full hover:bg-amber-700 text-white transition-colors"
+              >
+                Return to Dashboard
+              </button>
+            </div>
+            <ToastContainer position="top-right" autoClose={2000} />
+          </div>
+        );
+      }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-12 px-4">
@@ -335,13 +354,14 @@ const ImagesCom = () => {
         <h1 className="text-4xl font-light text-white">LUXURY IMAGES</h1>
         <div className="w-20 h-1 bg-gradient-to-r from-amber-400 to-amber-600 mt-1"></div>
       </div>
-      
+      {permissions.create_images && (
       <button 
         onClick={() => router.push('/addimagespage')}
         className="px-6 py-3 border border-amber-500 text-amber-500 rounded-full hover:bg-amber-500 hover:text-black transform hover:scale-105 transition-transform"
       >
         Add Images
       </button>
+      )}
       <button 
         onClick={() => router.push('/ImagesCategoryPage')}
         className="px-6 py-3 border border-amber-500 text-amber-500 rounded-full hover:bg-amber-500 hover:text-black transform hover:scale-105 transition-transform"
@@ -427,6 +447,7 @@ const ImagesCom = () => {
                   
                   <div className="flex justify-between items-center mt-3">
                     <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      {permissions.update_images && (
                       <button
                         onClick={(e) => { 
                           e.stopPropagation(); 
@@ -437,7 +458,8 @@ const ImagesCom = () => {
                       >
                         ✏️
                       </button>
-
+                      )}
+                      {permissions.delete_images && (
                       <button
                         onClick={(e) => { 
                           e.stopPropagation(); 
@@ -448,6 +470,7 @@ const ImagesCom = () => {
                       >
                         🗑️
                       </button>
+                      )}
                     </div>
                   </div>
                 </div>
