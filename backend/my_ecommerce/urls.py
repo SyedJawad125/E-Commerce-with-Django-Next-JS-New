@@ -4,7 +4,7 @@ from .views import CategorySearchViews, CategoryViews, ContactViews, PublicConta
     PubliceReviewViews, \
     PublicproductViews, PubliccategoryViews, ReviewViews, SalesProductViews, \
     SlidercategoryViews, SliderproductViews, EmployeeViews, DropDownListCategoryViews, DropDownListProductViews, \
-    DropDownListSalesProductViews
+    DropDownListSalesProductViews, TextBoxOrderViews
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -51,7 +51,9 @@ urlpatterns = [
                                                 "post": "post_order",
                                                 "patch": "update_order",
                                                 "delete": "delete_order"})),
-                                                
+
+    path('textbox_order', TextBoxOrderViews.as_view({"get": "get_textboxorder"})),     
+
     path('publicorder', PublicOrderViews.as_view({'post': 'create'}), name='public-order'),
 
     path('contact', ContactViews.as_view({"get": "get_contact", "delete": "delete_contact" })),

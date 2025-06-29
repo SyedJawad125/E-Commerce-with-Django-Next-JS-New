@@ -118,7 +118,7 @@ class ImagesController:
 
             # Get pagination parameters from request
             page = request.query_params.get('page', 1)
-            limit = request.query_params.get('limit', 10)  # Default to 10 items per page
+            limit = request.query_params.get('limit', 12)  # Default to 10 items per page
             offset = request.query_params.get('offset', 0)
             
             try:

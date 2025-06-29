@@ -285,6 +285,29 @@ class OrderSerializer(serializers.ModelSerializer):
         data['order_details'] = OrderDetailSerializer(instance.order_details.all(), many=True).data if instance.order_details else None
         return data
     
+class TextBoxOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        # Rename 'id' to 'order_id'
+        data['order_id'] = data.pop('id', None)
+
+        # Add formatted created_at date
+        data['created_at_date'] = instance.created_at.date() if instance.created_at else None
+
+        # Safely serialize related order_details
+        try:
+            order_details_qs = instance.order_details.all()  # reverse relation
+            data['order_details'] = OrderDetailSerializer(order_details_qs, many=True).data
+        except Exception:
+            data['order_details'] = []
+
+        return data
+    
 class PublicOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order

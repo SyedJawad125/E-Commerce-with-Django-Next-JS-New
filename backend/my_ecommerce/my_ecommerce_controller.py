@@ -6,7 +6,7 @@ from my_ecommerce.my_ecommerce_filters import CategoryFilter, ContactFilter, Pub
     ProductFilter, OrderFilter, ProductTagFilter, PublicContactFilter, PublicOrderFilter, PublicReviewFilter, PublicSalesProductFilter, \
     PubliccategorywiseFilter, \
     PublicproductFilter, PubliccategoryFilter, ReviewFilter, SlidercategoryFilter, SliderproductFilter, \
-    DropDownListProductFilter, DropDownListSalesProductFilter
+    DropDownListProductFilter, DropDownListSalesProductFilter, TextBoxOrderFilter
 from my_ecommerce.my_ecommerce_serializer import *
 from my_ecommerce.models import Product
 from utils.reusable_methods import get_first_error_message, generate_six_length_random_number
@@ -1535,7 +1535,43 @@ class OrderController:
                 return Response({"data": "ID NOT PROVIDED"}, 400)
         except Exception as e:
             return Response({'error': str(e)}, 500)
-        
+
+class TextBoxOrderController:
+    serializer_class = TextBoxOrderSerializer
+    filterset_class = TextBoxOrderFilter
+
+
+    def get_textboxorder(self, request):
+        try:
+            order_id = request.query_params.get('id')
+
+            # If ID is provided, return a single order
+            if order_id:
+                instance = self.serializer_class.Meta.model.objects.filter(id=order_id).first()
+                if not instance:
+                    return Response({'error': 'Order not found'}, status=404)
+                
+                serialized_data = self.serializer_class(instance).data
+                return create_response(serialized_data, "SUCCESSFUL", 200)
+
+            # Else return paginated list
+            instances = self.serializer_class.Meta.model.objects.all()
+            filtered_data = self.filterset_class(request.query_params, queryset=instances)
+            data = filtered_data.qs
+
+            paginated_data, count = paginate_data(data, request)
+            serialized_data = self.serializer_class(paginated_data, many=True).data
+
+            return create_response({
+                "count": count,
+                "data": serialized_data,
+            }, "SUCCESSFUL", 200)
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return Response({'error': str(e)}, status=500)
+
 
 class PublicOrderController:
     serializer_class = PublicOrderSerializer

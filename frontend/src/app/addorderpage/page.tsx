@@ -76,8 +76,8 @@ const AddOrder = () => {
   const fetchProducts = async () => {
     try {
       const [productsRes, salesProductsRes] = await Promise.all([
-        AxiosInstance.get('/ecommerce/product'),
-        AxiosInstance.get('/ecommerce/salesproduct')
+        AxiosInstance.get('/ecommerce/dropdownlistproduct'),
+        AxiosInstance.get('/ecommerce/dropdownlistsalesproduct')
       ]);
       
       if (productsRes.data) {

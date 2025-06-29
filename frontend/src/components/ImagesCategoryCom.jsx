@@ -128,7 +128,6 @@ const ImagesCategoryCom = () => {
           }
 
   return (
-    
   <div className="min-h-screen bg-black text-white px-6 py-10">
     <ToastContainer position="top-right" autoClose={3000} />
     

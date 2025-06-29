@@ -11,7 +11,7 @@ from .my_ecommerce_controller import CategoryController, CategorySearchControlle
     CategorySearchController, PublicContactController, PublicOrderController, PublicReviewController, PublicSalesproductController, \
     PubliccategorywiseController, \
     PublicproductController, PubliccategoryController, ReviewController, SalesProductController, \
-    SlidercategoryController, SliderproductController, DropDownListProductController, DropDownListSalesProductController
+    SlidercategoryController, SliderproductController, DropDownListProductController, DropDownListSalesProductController, TextBoxOrderController
 
 # from rest_framework.permissions import IsAdminUser
 # Create your views here.
@@ -29,6 +29,7 @@ publiccategory_controller = PubliccategoryController()
 dropdownlistcategory_controller = DropDownListCategoryController()
 slidercategory_controller = SlidercategoryController()
 order_controller = OrderController()
+textbox_order_controller = TextBoxOrderController()
 publicorder_controller = PublicOrderController()
 producttag_controller = ProductTagController()
 contact_controller = ContactController()
@@ -215,7 +216,11 @@ class OrderViews(ModelViewSet):
 #             return publicorder_controller.checkout(request)
 #         return publicorder_controller.create_order_with_products(request)
 
+class TextBoxOrderViews(ModelViewSet):
+    authentication_classes = [JWTAuthentication]
 
+    def get_textboxorder(self, request):
+        return textbox_order_controller.get_textboxorder(request)
 
 class PublicOrderViews(ModelViewSet):
     
