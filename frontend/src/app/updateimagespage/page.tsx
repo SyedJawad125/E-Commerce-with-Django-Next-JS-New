@@ -36,7 +36,7 @@ const UpdateImage = () => {
     if (!id) return;
 
     try {
-      const res = await AxiosInstance.get(`/images/images?id=${id}`);
+      const res = await AxiosInstance.get(`/images/textbox_images?id=${id}`);
       const imageArray = res?.data?.data?.data;
 
       if (Array.isArray(imageArray)) {

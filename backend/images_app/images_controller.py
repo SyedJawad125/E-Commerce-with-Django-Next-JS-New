@@ -232,56 +232,90 @@ class PublicImagesController:
     serializer_class = PublicImagesSerializer
     filterset_class = PublicImagesFilter
 
+    # def get_publicimages(self, request):
+    #     try:
+    #         images = None  # Initialize images to None
+
+    #         # Check for different query params and filter accordingly
+    #         if "category" in request.query_params:
+    #             category = request.query_params.get('category')
+    #             if category == "invitationbgimage":
+    #                 images = Images.objects.filter(category='invitationbgimage')
+    #             elif category == "bannerimagaeshome":
+    #                 images = Images.objects.filter(category='bannerimagaeshome')
+    #             elif category == "animatedimagaeshome":
+    #                 images = Images.objects.filter(category='animatedimagaeshome')
+    #             elif category == "meetingsandeventshome":
+    #                 images = Images.objects.filter(category='meetingsandeventshome')
+    #             elif category == "featuredamenitieshome":
+    #                 images = Images.objects.filter(category='featuredamenitieshome')
+    #             elif category == "exploretheroomshome":
+    #                 images = Images.objects.filter(category='exploretheroomshome')
+    #             elif category == "gallerysliderhome":
+    #                 images = Images.objects.filter(category='gallerysliderhome')
+    #             elif category == "meetingsroomsgroupshome":
+    #                 images = Images.objects.filter(category='meetingsroomsgroupshome')
+    #             else:
+    #                 return Response({"error": "Category is wrong"}, status=400)
+    #         else:
+    #             images = Images.objects.all()
+
+    #         # if images is None:
+    #         #     return Response({'error': 'No valid query parameter found.'}, status=400)
+
+    #         # Filtering data
+    #         filtered_data = self.filterset_class(request.GET, queryset=images)
+    #         data = filtered_data.qs
+
+    #         # Pagination
+    #         paginated_data, count = paginate_data(data, request)
+
+    #         # Serialize the data
+    #         serialized_data = self.serializer_class(paginated_data, many=True).data
+    #         response_data = {
+    #             "count": count,
+    #             "data": serialized_data,
+    #         }
+
+    #         # Successful response
+    #         return create_response(response_data, "SUCCESSFUL", 200)
+
+    #     except Exception as e:
+    #         return Response({'error': str(e)}, status=500)
+
     def get_publicimages(self, request):
         try:
-            images = None  # Initialize images to None
+            # Get category from query params
+            category = request.query_params.get("category", None)
 
-            # Check for different query params and filter accordingly
-            if "category" in request.query_params:
-                category = request.query_params.get('category')
-                if category == "invitationbgimage":
-                    images = Images.objects.filter(category='invitationbgimage')
-                elif category == "bannerimagaeshome":
-                    images = Images.objects.filter(category='bannerimagaeshome')
-                elif category == "animatedimagaeshome":
-                    images = Images.objects.filter(category='animatedimagaeshome')
-                elif category == "meetingsandeventshome":
-                    images = Images.objects.filter(category='meetingsandeventshome')
-                elif category == "featuredamenitieshome":
-                    images = Images.objects.filter(category='featuredamenitieshome')
-                elif category == "exploretheroomshome":
-                    images = Images.objects.filter(category='exploretheroomshome')
-                elif category == "gallerysliderhome":
-                    images = Images.objects.filter(category='gallerysliderhome')
-                elif category == "meetingsroomsgroupshome":
-                    images = Images.objects.filter(category='meetingsroomsgroupshome')
-                else:
-                    return Response({"error": "Category is wrong"}, status=400)
+            # Dynamically validate and filter images by category
+            if category:
+                existing_categories = Images.objects.values_list('category', flat=True).distinct()
+                if category not in existing_categories:
+                    return Response({"error": "Invalid category provided."}, status=400)
+                images = Images.objects.filter(category=category)
             else:
                 images = Images.objects.all()
 
-            # if images is None:
-            #     return Response({'error': 'No valid query parameter found.'}, status=400)
-
-            # Filtering data
+            # Apply filtering
             filtered_data = self.filterset_class(request.GET, queryset=images)
             data = filtered_data.qs
 
-            # Pagination
+            # Apply pagination
             paginated_data, count = paginate_data(data, request)
 
             # Serialize the data
             serialized_data = self.serializer_class(paginated_data, many=True).data
-            response_data = {
-                "count": count,
-                "data": serialized_data,
-            }
 
-            # Successful response
-            return create_response(response_data, "SUCCESSFUL", 200)
+            # Return successful response
+            return create_response({
+                "count": count,
+                "data": serialized_data
+            }, "SUCCESSFUL", 200)
 
         except Exception as e:
             return Response({'error': str(e)}, status=500)
+
         
 class TextBoxImagesController:
     serializer_class = TextBoxImagesSerializer
@@ -289,54 +323,37 @@ class TextBoxImagesController:
 
     def get_textboxe_images(self, request):
         try:
-            images = None  # Initialize images to None
+            # Get category from query params
+            category = request.query_params.get("category", None)
 
-            # Check for different query params and filter accordingly
-            if "category" in request.query_params:
-                category = request.query_params.get('category')
-                if category == "invitationbgimage":
-                    images = Images.objects.filter(category='invitationbgimage')
-                elif category == "bannerimagaeshome":
-                    images = Images.objects.filter(category='bannerimagaeshome')
-                elif category == "animatedimagaeshome":
-                    images = Images.objects.filter(category='animatedimagaeshome')
-                elif category == "meetingsandeventshome":
-                    images = Images.objects.filter(category='meetingsandeventshome')
-                elif category == "featuredamenitieshome":
-                    images = Images.objects.filter(category='featuredamenitieshome')
-                elif category == "exploretheroomshome":
-                    images = Images.objects.filter(category='exploretheroomshome')
-                elif category == "gallerysliderhome":
-                    images = Images.objects.filter(category='gallerysliderhome')
-                elif category == "meetingsroomsgroupshome":
-                    images = Images.objects.filter(category='meetingsroomsgroupshome')
-                else:
-                    return Response({"error": "Category is wrong"}, status=400)
+            # If category is provided, validate it dynamically
+            if category:
+                existing_categories = Images.objects.values_list('category', flat=True).distinct()
+                if category not in existing_categories:
+                    return Response({"error": "Invalid category provided."}, status=400)
+                images = Images.objects.filter(category=category)
             else:
                 images = Images.objects.all()
 
-            # if images is None:
-            #     return Response({'error': 'No valid query parameter found.'}, status=400)
-
-            # Filtering data
+            # Apply filtering
             filtered_data = self.filterset_class(request.GET, queryset=images)
             data = filtered_data.qs
 
-            # Pagination
+            # Apply pagination
             paginated_data, count = paginate_data(data, request)
 
-            # Serialize the data
+            # Serialize data
             serialized_data = self.serializer_class(paginated_data, many=True).data
-            response_data = {
-                "count": count,
-                "data": serialized_data,
-            }
 
-            # Successful response
-            return create_response(response_data, "SUCCESSFUL", 200)
+            # Return successful response
+            return create_response({
+                "count": count,
+                "data": serialized_data
+            }, "SUCCESSFUL", 200)
 
         except Exception as e:
             return Response({'error': str(e)}, status=500)
+
 class CategoriesController:
     serializer_class = CategoriesSerializer
     filterset_class = CategoriesFilter
