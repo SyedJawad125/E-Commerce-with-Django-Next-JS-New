@@ -501,15 +501,49 @@ const SalesProductDetailsCom = () => {
     router.push('/salesproducts');
   };
 
-  const handleAddToCart = () => {
+//   const handleAddToCart = () => {
+//   if (product) {
+//     addToCart({
+//       ...product,
+//       // Make sure the product has all required fields for your cart
+//       price: product.final_price, // Use final_price for sales products
+//       originalPrice: product.original_price,
+//       isSalesProduct: true // Add a flag if you need to distinguish sales products
+//     }, quantity);
+//     toast.success('Product added to cart!');
+//     router.push('/addtocartpage');
+//   } else {
+//     console.error('No product to add to cart');
+//     toast.error('Failed to add product to cart');
+//   }
+// };
+
+
+
+const handleAddToCart = () => {
   if (product) {
-    addToCart({
+    const cartProduct = {
       ...product,
-      // Make sure the product has all required fields for your cart
-      price: product.final_price, // Use final_price for sales products
-      originalPrice: product.original_price,
-      isSalesProduct: true // Add a flag if you need to distinguish sales products
-    }, quantity);
+      // Common fields for all products
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      image_urls: product.image_urls,
+      quantity: quantity, // Include the selected quantity
+      
+      // Price handling for both regular and sales products
+      price: product.final_price || product.price, // Use final_price if available (sales), otherwise regular price
+      original_price: product.original_price || product.price, // Original price for display
+      
+      // Sales-specific fields if this is a sales product
+      ...(product.final_price && {
+        isSalesProduct: true,
+        discount_percent: product.discount_percent || 
+          Math.round(((product.original_price - product.final_price) / product.original_price * 100))
+      })
+    };
+
+    addToCart(cartProduct, quantity);
     toast.success('Product added to cart!');
     router.push('/addtocartpage');
   } else {

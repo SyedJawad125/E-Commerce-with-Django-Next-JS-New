@@ -512,10 +512,20 @@ const AddToCartPage = () => {
         });
     };
 
-    const handleQuantityChange = (item, newQuantity) => {
-        if (newQuantity < 1) return;
+    // const handleQuantityChange = (item, newQuantity) => {
+    //     if (newQuantity < 1) return;
+    //     updateQuantity(item, newQuantity);
+    // };
+
+    // AddToCartCom.jsx
+const handleQuantityChange = (item, newQuantity) => {
+    if (newQuantity < 1) {
+        // If quantity would go below 1, remove the item instead
+        handleRemoveFromCart(item);
+    } else {
         updateQuantity(item, newQuantity);
-    };
+    }
+};
 
     const calculateTotal = () => {
         return cartItems.reduce((total, item) => {

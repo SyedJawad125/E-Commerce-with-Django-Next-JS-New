@@ -1475,15 +1475,35 @@ const ProductDetailsCom = () => {
     router.push('/publicproducts');
   };
 
-  const handleAddToCart = () => {
+  // const handleAddToCart = () => {
+  //   if (product) {
+  //     addToCart(product, quantity);
+  //     toast.success('Product added to cart!');
+  //     router.push('/addtocartpage');
+  //   } else {
+  //     console.error('No product to add to cart');
+  //   }
+  // };
+
+  // In your ProductDetailsCom.jsx
+const handleAddToCart = () => {
     if (product) {
-      addToCart(product, quantity);
-      toast.success('Product added to cart!');
-      router.push('/addtocartpage');
+        addToCart({
+            ...product,
+            // Make sure all required fields are included
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            final_price: product.price, // or whatever your final price field is
+            image_urls: product.image_urls,
+            // Include any other required fields
+        }, quantity);
+        toast.success('Product added to cart!');
+        router.push('/addtocartpage');
     } else {
-      console.error('No product to add to cart');
+        console.error('No product to add to cart');
     }
-  };
+};
 
   const increaseQuantity = () => {
     setQuantity((prevQuantity) => prevQuantity + 1);
