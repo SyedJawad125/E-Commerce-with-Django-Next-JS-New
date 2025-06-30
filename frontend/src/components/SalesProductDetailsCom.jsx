@@ -344,6 +344,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import AxiosInstance from "@/components/AxiosInstance";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useCart } from '@/components/CartContext';
 import Image from 'next/image';
 
 const SalesProductDetailsCom = () => {
@@ -356,6 +357,7 @@ const SalesProductDetailsCom = () => {
   const [product, setProduct] = useState(null);
   const [mainImage, setMainImage] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState([]);
   const [reviewLoading, setReviewLoading] = useState(true);
@@ -500,13 +502,21 @@ const SalesProductDetailsCom = () => {
   };
 
   const handleAddToCart = () => {
-    if (product) {
-      // Add to cart logic here
-      toast.success('Product added to cart!');
-    } else {
-      console.error('No product to add to cart');
-    }
-  };
+  if (product) {
+    addToCart({
+      ...product,
+      // Make sure the product has all required fields for your cart
+      price: product.final_price, // Use final_price for sales products
+      originalPrice: product.original_price,
+      isSalesProduct: true // Add a flag if you need to distinguish sales products
+    }, quantity);
+    toast.success('Product added to cart!');
+    router.push('/addtocartpage');
+  } else {
+    console.error('No product to add to cart');
+    toast.error('Failed to add product to cart');
+  }
+};
 
   const increaseQuantity = () => {
     setQuantity((prevQuantity) => prevQuantity + 1);
