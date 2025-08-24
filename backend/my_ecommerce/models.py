@@ -215,14 +215,6 @@ class OrderDetail(models.Model):
         super().save(*args, **kwargs)
 
 
-# class Contact(models.Model):
-
-#     name = models.CharField(max_length=100)
-#     email = models.EmailField(unique=False)
-#     phone_number = models.CharField(max_length=20)
-#     message = models.TextField(null=True, blank=True)
-#     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contact_created_by',null=True, blank=True)
-#     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contact_updated_by',null=True, blank=True)
 
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator, RegexValidator
