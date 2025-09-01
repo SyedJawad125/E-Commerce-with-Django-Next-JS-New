@@ -1,4 +1,5 @@
 from venv import logger
+from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.auth import authenticate
@@ -533,67 +534,215 @@ class SalesProductController:
 
 
 
+# class PublicSalesproductController:
+#     serializer_class = PublicSalesProductSerializer
+#     filterset_class = PublicSalesProductFilter
+
+
+#     # mydata = Member.objects.filter(firstname__endswith='s').values()
+#     def get_publicsalesproduct(self, request):
+#         try:
+#             instances = self.serializer_class.Meta.model.objects.all()
+
+#             filtered_data = self.filterset_class(request.GET, queryset=instances)
+#             data = filtered_data.qs
+
+#             # Get pagination parameters from request
+#             page = request.GET.get('page', 1)
+#             limit = request.GET.get('limit', 12)  # Default limit 10 items per page
+#             offset = request.GET.get('offset', 0)  # Default offset 0
+
+#             try:
+#                 page = int(page)
+#                 limit = int(limit)
+#                 offset = int(offset)
+#             except ValueError:
+#                 return create_response(
+#                     {"error": "Invalid pagination parameters. Page, limit and offset must be integers."},
+#                     "BAD_REQUEST",
+#                     400
+#                 )
+
+#             # Apply offset and limit
+#             if offset > 0:
+#                 data = data[offset:]
+
+#             paginator = Paginator(data, limit)
+
+#             try:
+#                 paginated_data = paginator.page(page)
+#             except EmptyPage:
+#                 return create_response(
+#                     {"error": "Page not found"},
+#                     "NOT_FOUND",
+#                     404
+#                 )
+
+#             serialized_data = self.serializer_class(paginated_data, many=True).data
+
+#             response_data = {
+#                 "count": paginator.count,
+#                 "total_pages": paginator.num_pages,
+#                 "current_page": page,
+#                 "limit": limit,
+#                 "offset": offset,
+#                 "next": paginated_data.has_next(),
+#                 "previous": paginated_data.has_previous(),
+#                 "data": serialized_data,
+#             }
+
+#             return create_response(response_data, "SUCCESSFUL", 200)
+
+#         except Exception as e:
+#             return Response({'error': str(e)}, status=500)
+
+
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from rest_framework.response import Response
+import logging
+
+logger = logging.getLogger(__name__)
+
 class PublicSalesproductController:
     serializer_class = PublicSalesProductSerializer
     filterset_class = PublicSalesProductFilter
 
-
-    # mydata = Member.objects.filter(firstname__endswith='s').values()
     def get_publicsalesproduct(self, request):
         try:
+            # Get all instances and apply filters
             instances = self.serializer_class.Meta.model.objects.all()
-
             filtered_data = self.filterset_class(request.GET, queryset=instances)
-            data = filtered_data.qs
+            queryset = filtered_data.qs
 
-            # Get pagination parameters from request
+            # Get and validate pagination parameters
             page = request.GET.get('page', 1)
-            limit = request.GET.get('limit', 12)  # Default limit 10 items per page
-            offset = request.GET.get('offset', 0)  # Default offset 0
+            limit = request.GET.get('limit', 12)
+            offset = request.GET.get('offset', 0)
 
             try:
                 page = int(page)
                 limit = int(limit)
                 offset = int(offset)
-            except ValueError:
+                
+                # Validate parameter ranges
+                if page < 1:
+                    page = 1
+                if limit < 1:
+                    limit = 12
+                if limit > 100:  # Prevent excessive server load
+                    limit = 100
+                if offset < 0:
+                    offset = 0
+                    
+            except (ValueError, TypeError):
                 return create_response(
-                    {"error": "Invalid pagination parameters. Page, limit and offset must be integers."},
+                    {"error": "Invalid pagination parameters. Page, limit and offset must be valid integers."},
                     "BAD_REQUEST",
                     400
                 )
 
-            # Apply offset and limit
+            # Get total count before applying offset
+            total_count = queryset.count()
+            
+            # Apply offset if specified
             if offset > 0:
-                data = data[offset:]
+                # Ensure offset doesn't exceed total count
+                if offset >= total_count:
+                    return create_response(
+                        {
+                            "count": 0,
+                            "total_count": total_count,
+                            "total_pages": 0,
+                            "current_page": 1,
+                            "limit": limit,
+                            "offset": offset,
+                            "next": False,
+                            "previous": False,
+                            "data": [],
+                            "message": "Offset exceeds total number of records"
+                        },
+                        "SUCCESSFUL",
+                        200
+                    )
+                queryset = queryset[offset:]
 
-            paginator = Paginator(data, limit)
+            # Get count after offset for pagination calculation
+            remaining_count = queryset.count()
+            
+            # Create paginator
+            paginator = Paginator(queryset, limit)
 
             try:
                 paginated_data = paginator.page(page)
+            except PageNotAnInteger:
+                # If page is not an integer, deliver first page
+                paginated_data = paginator.page(1)
+                page = 1
             except EmptyPage:
-                return create_response(
-                    {"error": "Page not found"},
-                    "NOT_FOUND",
-                    404
-                )
+                # If page is out of range, deliver last page or return empty if no pages
+                if paginator.num_pages > 0:
+                    paginated_data = paginator.page(paginator.num_pages)
+                    page = paginator.num_pages
+                else:
+                    return create_response(
+                        {
+                            "count": 0,
+                            "total_count": total_count,
+                            "total_pages": 0,
+                            "current_page": 1,
+                            "limit": limit,
+                            "offset": offset,
+                            "next": False,
+                            "previous": False,
+                            "data": [],
+                            "message": "No data available"
+                        },
+                        "SUCCESSFUL",
+                        200
+                    )
 
+            # Serialize the paginated data
             serialized_data = self.serializer_class(paginated_data, many=True).data
 
+            # Calculate actual start and end indices for display
+            start_index = ((page - 1) * limit) + 1 + offset
+            end_index = min(page * limit + offset, total_count)
+
+            # Prepare comprehensive response data
             response_data = {
-                "count": paginator.count,
+                "count": remaining_count,  # Count after offset
+                "total_count": total_count,  # Original total count
                 "total_pages": paginator.num_pages,
                 "current_page": page,
                 "limit": limit,
                 "offset": offset,
                 "next": paginated_data.has_next(),
                 "previous": paginated_data.has_previous(),
+                "start_index": start_index,
+                "end_index": end_index,
                 "data": serialized_data,
+                "pagination_info": {
+                    "has_data": len(serialized_data) > 0,
+                    "items_in_current_page": len(serialized_data),
+                    "is_first_page": page == 1,
+                    "is_last_page": page == paginator.num_pages,
+                }
             }
 
             return create_response(response_data, "SUCCESSFUL", 200)
 
         except Exception as e:
-            return Response({'error': str(e)}, status=500)
+            # Log the error for debugging
+            logger.error(f"Error in get_publicsalesproduct: {str(e)}", exc_info=True)
+            
+            return create_response(
+                {
+                    "error": "An error occurred while fetching products",
+                    "details": str(e) if hasattr(settings, 'DEBUG') and settings.DEBUG else None
+                },
+                "INTERNAL_SERVER_ERROR",
+                500
+            )
     
 class SliderproductController:
     serializer_class = SliderproductSerializer
