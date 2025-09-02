@@ -723,90 +723,87 @@ const CheckoutPage = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        if (cartItems.length === 0) {
-            toast.error('Your cart is empty');
-            return;
-        }
+    e.preventDefault();
 
-        setIsLoading(true);
+    if (cartItems.length === 0) {
+        toast.error('Your cart is empty');
+        return;
+    }
 
-        try {
-            // Prepare items in backend-compatible format
-            const items = cartItems.map(item => ({
-                product_type: item.final_price !== undefined ? 'sales_product' : 'product',
-                product_id: item.id,
-                quantity: item.quantity || 1
-            }));
+    setIsLoading(true);
 
-            // Prepare the complete order data
-            const orderData = {
-                customer_name: form.customer_name,
-                customer_email: form.customer_email,
-                customer_phone: form.customer_phone,
-                delivery_address: form.delivery_address,
-                city: form.city,
-                payment_method: form.payment_method,
-                items: items
-            };
+    try {
+        // Use item.isSales to determine the product_type correctly
+        const items = cartItems.map(item => ({
+            product_type: item.isSales ? 'sales_product' : 'product',
+            product_id: item.id,
+            quantity: item.quantity || 1
+        }));
 
-            // Send to backend using Axios
-            const response = await AxiosInstance.post('/ecommerce/publicorder', orderData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-                }
-            });
+        const orderData = {
+            customer_name: form.customer_name,
+            customer_email: form.customer_email,
+            customer_phone: form.customer_phone,
+            delivery_address: form.delivery_address,
+            city: form.city,
+            payment_method: form.payment_method,
+            items: items
+        };
 
-            // On success
-            const orderResponse = response.data.data;
-            generateInvoice(orderResponse);
-            clearCart();
-
-            // Prepare and store order data for confirmation page
-            const confirmationData = prepareOrderDataForConfirmation(orderResponse);
-            localStorage.setItem('latestOrder', JSON.stringify(confirmationData));
-
-            toast.success('Order placed successfully!', {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-                onClose: () => {
-                    router.push('/orderconfirmation');
-                }
-            });
-
-        } catch (error) {
-            let errorMsg = 'Failed to place order';
-            
-            if (error.response) {
-                if (error.response.status === 400) {
-                    errorMsg = error.response.data.message || 'Validation error';
-                } else if (error.response.status === 401) {
-                    errorMsg = 'Please login to place an order';
-                } else if (error.response.status === 403) {
-                    errorMsg = 'You do not have permission to perform this action';
-                } else {
-                    errorMsg = error.response.data.message || `Server error: ${error.response.status}`;
-                }
-            } else if (error.request) {
-                errorMsg = 'No response from server - please try again';
-            } else {
-                errorMsg = error.message || 'Unknown error occurred';
+        const response = await AxiosInstance.post('/ecommerce/publicorder', orderData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
             }
+        });
 
-            toast.error(errorMsg);
-            console.error('Checkout error:', error);
-        } finally {
-            setIsLoading(false);
+        const orderResponse = response.data.data;
+        generateInvoice(orderResponse);
+        clearCart();
+
+        const confirmationData = prepareOrderDataForConfirmation(orderResponse);
+        localStorage.setItem('latestOrder', JSON.stringify(confirmationData));
+
+        toast.success('Order placed successfully!', {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            onClose: () => {
+                router.push('/orderconfirmation');
+            }
+        });
+
+    } catch (error) {
+        let errorMsg = 'Failed to place order';
+
+        if (error.response) {
+            if (error.response.status === 400) {
+                errorMsg = error.response.data.message || 'Validation error';
+            } else if (error.response.status === 401) {
+                errorMsg = 'Please login to place an order';
+            } else if (error.response.status === 403) {
+                errorMsg = 'You do not have permission to perform this action';
+            } else {
+                errorMsg = error.response.data.message || `Server error: ${error.response.status}`;
+            }
+        } else if (error.request) {
+            errorMsg = 'No response from server - please try again';
+        } else {
+            errorMsg = error.message || 'Unknown error occurred';
         }
-    };
+
+        toast.error(errorMsg);
+        console.error('Checkout error:', error);
+    } finally {
+        setIsLoading(false);
+    }
+};
+
 
     const handleContinueShopping = () => {
         router.push('/publicproducts');
